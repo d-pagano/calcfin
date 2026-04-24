@@ -1,0 +1,3346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080c14">
+<title>CalcFin · Cálculo Financiero FCE UBA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --bg:        #080c14;
+    --bg2:       #0d1220;
+    --bg3:       #141a2e;
+    --bg4:       #1a2240;
+    --border:    #1e2d50;
+    --border2:   #2a3f70;
+    --uba-blue:  #0055a5;
+    --uba-blue2: #1a7fd4;
+    --uba-red:   #c8102e;
+    --uba-red2:  #e8314e;
+    --accent2:   #4da3e8;
+    --gold:      #f0b429;
+    --text:      #dde6f5;
+    --text2:     #7a9bc4;
+    --text3:     #3d5a80;
+    --green:     #34d399;
+    --mono:      'DM Mono', monospace;
+    --sans:      'Syne', sans-serif;
+    --radius:    10px;
+    --radius2:   7px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 55% 35% at 15% 5%,  rgba(0,85,165,.18) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 85% 85%,  rgba(200,16,46,.10) 0%, transparent 60%);
+  }
+
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,12,20,.92);
+    backdrop-filter: blur(18px);
+    border-bottom: 2px solid var(--uba-blue);
+    padding: 0 1.5rem;
+    display: flex; align-items: center; gap: 1rem; height: 56px;
+  }
+  .logo { display: flex; align-items: center; gap: .6rem; }
+  .logo-escudo {
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, var(--uba-blue), var(--uba-blue2));
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 800; color: #fff; font-family: var(--sans);
+    letter-spacing: -.02em; flex-shrink: 0;
+  }
+  .logo-text { font-size: 1rem; font-weight: 800; letter-spacing: -.02em; color: var(--text); }
+  .logo-text span { color: var(--text2); font-weight: 400; font-family: var(--mono); font-size: .78rem; }
+
+  nav { margin-left: auto; display: flex; gap: .2rem; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: var(--sans); font-size: .68rem; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase;
+    padding: .32rem .6rem; border-radius: 5px;
+    border: 1px solid transparent; cursor: pointer;
+    color: var(--text2); background: transparent; transition: all .18s;
+  }
+  .nav-btn:hover:not(:disabled) { color: var(--text); background: var(--bg3); border-color: var(--border); }
+  .nav-btn.active { color: #fff; background: var(--uba-blue); border-color: var(--uba-blue2); }
+  .nav-btn:disabled { opacity: .32; cursor: not-allowed; }
+
+  main {
+    position: relative; z-index: 1;
+    max-width: 940px; margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .page-title { margin-bottom: 1.75rem; animation: fadeUp .45s ease both; }
+  .page-title h1 { font-size: clamp(1.5rem,4vw,2rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; }
+  .page-title h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--uba-blue2), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-title p { margin-top: .45rem; color: var(--text2); font-family: var(--mono); font-size: .79rem; line-height: 1.6; }
+
+  .concept-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-left: 3px solid var(--uba-blue);
+    border-radius: var(--radius); padding: 1.1rem 1.4rem; margin-bottom: 1.1rem;
+    animation: fadeUp .45s .08s ease both;
+  }
+  .concept-box h2 { font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent2); margin-bottom: .55rem; }
+  .concept-box p { font-size: .82rem; color: var(--text2); line-height: 1.7; font-family: var(--mono); }
+
+  .formulas-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.1rem 1.4rem; margin-bottom: 1.75rem;
+    animation: fadeUp .45s .12s ease both;
+  }
+  .formulas-box h2 { font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--uba-red2); margin-bottom: .85rem; }
+  .formula-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(265px,1fr)); gap: .6rem; }
+  .formula-item {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius2);
+    padding: .72rem .95rem;
+  }
+  .formula-item .label { font-size: .62rem; color: var(--text3); font-family: var(--mono); letter-spacing: .05em; text-transform: uppercase; margin-bottom: .28rem; }
+  .formula-item .expr { font-family: var(--mono); font-size: .87rem; color: var(--accent2); }
+
+  .calc-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    animation: fadeUp .45s .16s ease both;
+  }
+  .calc-header {
+    padding: .85rem 1.4rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: .75rem;
+    background: linear-gradient(90deg, rgba(0,85,165,.12), transparent);
+  }
+  .calc-header h2 { font-size: .88rem; font-weight: 700; }
+  .badge {
+    font-family: var(--mono); font-size: .6rem; font-weight: 500;
+    padding: .15rem .42rem; border-radius: 4px;
+    background: rgba(0,85,165,.25); color: var(--accent2);
+    letter-spacing: .05em; text-transform: uppercase;
+  }
+  .calc-body { padding: 1.4rem; }
+
+  .tipo-tabs { display: flex; gap: .38rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .tipo-tab {
+    font-family: var(--sans); font-size: .68rem; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase;
+    padding: .38rem .8rem; border-radius: 5px;
+    border: 1px solid var(--border); cursor: pointer;
+    color: var(--text2); background: var(--bg3); transition: all .16s;
+  }
+  .tipo-tab:hover { border-color: var(--border2); color: var(--text); }
+  .tipo-tab.active { background: var(--uba-blue); border-color: var(--uba-blue2); color: #fff; }
+
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: .95rem; }
+  @media (max-width: 540px) { .input-row { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: .36rem; }
+  .field label { font-size: .65rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--text2); font-family: var(--mono); }
+  .field label span { color: var(--text3); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+  input, select {
+    font-family: var(--mono); font-size: .87rem;
+    background: var(--bg3); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius2);
+    padding: .56rem .78rem; width: 100%;
+    transition: border-color .18s, box-shadow .18s; outline: none; -webkit-appearance: none;
+  }
+  input:focus, select:focus {
+    border-color: var(--uba-blue);
+    box-shadow: 0 0 0 3px rgba(0,85,165,.18);
+  }
+  input::placeholder { color: var(--text3); }
+  select option { background: var(--bg3); }
+
+  .toggle-row {
+    display: flex; align-items: center; gap: .5rem;
+    cursor: pointer; margin-bottom: .6rem; user-select: none;
+  }
+  .sw-track {
+    width: 30px; height: 17px; background: var(--bg3);
+    border: 1px solid var(--border); border-radius: 9px;
+    position: relative; transition: .18s; flex-shrink: 0;
+  }
+  .sw-knob {
+    width: 11px; height: 11px; background: var(--text3);
+    border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: .18s;
+  }
+  .toggle-label { font-size: .72rem; font-family: var(--mono); color: var(--text2); }
+  .chip {
+    display: inline-block; font-family: var(--mono); font-size: .6rem;
+    padding: .1rem .38rem; border-radius: 4px;
+    background: rgba(240,180,41,.12); color: var(--gold);
+    letter-spacing: .04em; text-transform: uppercase; margin-left: .28rem;
+  }
+
+  .btn-calc {
+    font-family: var(--sans); font-size: .82rem; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase;
+    padding: .7rem 2rem; border-radius: var(--radius2);
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--uba-blue), #0077cc);
+    color: #fff; width: 100%; margin-top: .4rem;
+    transition: opacity .18s, transform .13s;
+  }
+  .btn-calc:hover { opacity: .87; transform: translateY(-1px); }
+  .btn-calc:active { transform: translateY(0); }
+
+  .error-msg {
+    font-family: var(--mono); font-size: .79rem; color: var(--uba-red2);
+    background: rgba(200,16,46,.08); border: 1px solid rgba(200,16,46,.25);
+    border-radius: var(--radius2); padding: .52rem .85rem;
+    margin-top: .6rem; display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .results { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.4rem; display: none; }
+  .results.show { display: block; animation: fadeUp .3s ease both; }
+
+  .section-title {
+    font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; font-family: var(--mono); margin-bottom: .7rem;
+  }
+  .st-blue  { color: var(--accent2); }
+  .st-red   { color: var(--uba-red2); }
+  .st-green { color: var(--green); }
+  .st-gold  { color: var(--gold); }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px,1fr));
+    gap: .58rem; margin-bottom: 1.2rem;
+  }
+
+  .result-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius2); padding: .82rem .95rem;
+    transition: border-color .18s;
+  }
+  .result-card:hover { border-color: var(--border2); }
+  .hl-blue  { border-color: rgba(0,85,165,.55) !important;  background: rgba(0,85,165,.09) !important; }
+  .hl-red   { border-color: rgba(200,16,46,.45) !important; background: rgba(200,16,46,.07) !important; }
+  .hl-green { border-color: rgba(52,211,153,.45) !important;background: rgba(52,211,153,.07) !important; }
+
+  .rc-label   { font-size: .63rem; color: var(--text3); font-family: var(--mono); letter-spacing: .04em; text-transform: uppercase; margin-bottom: .28rem; }
+  .rc-value   { font-family: var(--mono); font-size: 1.05rem; font-weight: 500; margin-bottom: .32rem; }
+  .rc-formula { font-family: var(--mono); font-size: .69rem; color: var(--text2); line-height: 1.55; }
+
+  .c-blue  { color: var(--accent2); }
+  .c-red   { color: var(--uba-red2); }
+  .c-green { color: var(--green); }
+  .c-gold  { color: var(--gold); }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+  .nota-equiv {
+    font-family: var(--mono); font-size: .71rem; color: var(--text3); line-height: 1.55;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius2); padding: .58rem .85rem; margin-top: .2rem;
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  footer {
+    text-align: center; padding: 1.5rem 1rem;
+    font-family: var(--mono); font-size: .69rem; color: var(--text3);
+    border-top: 1px solid var(--border); position: relative; z-index: 1;
+  }
+  footer span { color: var(--uba-blue2); }
+
+
+.formulas-section{margin-bottom:1.75rem;animation:fadeUp .45s .12s ease both}
+.formulas-section>h2{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--uba-red2);margin-bottom:.85rem}
+.globo{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:.75rem}
+.globo-title{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-blue{background:var(--uba-blue2)}.dot-red{background:var(--uba-red2)}.dot-gold{background:var(--gold)}.dot-green{background:var(--green)}
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.55rem}
+.formula-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.72rem .95rem}
+.formula-item .flabel{font-size:.61rem;color:var(--text3);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.25rem}
+.formula-item .expr{font-family:var(--mono);font-size:.85rem;color:var(--accent2);line-height:1.5}
+.selector-row{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.sel-btn{font-family:var(--sans);font-size:.75rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.55rem 1.2rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .18s;flex:1;text-align:center}
+.sel-btn:hover{border-color:var(--border2);color:var(--text)}
+.sel-btn.active{background:var(--uba-blue);border-color:var(--uba-blue2);color:#fff}
+.modal-tabs{display:flex;gap:.38rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.modal-tab{font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.35rem .75rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .16s}
+.modal-tab:hover{border-color:var(--border2);color:var(--text)}
+.modal-tab.active{background:rgba(240,180,41,.15);border-color:var(--gold);color:var(--gold)}
+.que-tabs{display:flex;gap:.35rem;flex-wrap:wrap}
+.que-tab{font-family:var(--mono);font-size:.72rem;font-weight:500;padding:.32rem .7rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .15s}
+.que-tab:hover{border-color:var(--border2);color:var(--text)}
+.que-tab.active{background:rgba(52,211,153,.15);border-color:var(--green);color:var(--green)}
+.input-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:.9rem}
+.calc-que{margin-bottom:1.1rem}
+.calc-que label{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text2);font-family:var(--mono);display:block;margin-bottom:.45rem}
+.res-main{background:rgba(0,85,165,.1);border:1px solid rgba(0,85,165,.4);border-radius:var(--radius);padding:1.2rem 1.4rem;margin-bottom:1.2rem}
+.res-main .rm-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-family:var(--mono);margin-bottom:.35rem}
+.res-main .rm-value{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--green);letter-spacing:-.01em}
+.res-main .rm-formula{font-family:var(--mono);font-size:.75rem;color:var(--text2);margin-top:.5rem;line-height:1.6}
+.res-secundario{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.55rem;margin-bottom:1rem}
+.res-sec-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.75rem .9rem}
+.res-sec-card .rsc-label{font-size:.62rem;color:var(--text3);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.25rem}
+.res-sec-card .rsc-value{font-family:var(--mono);font-size:.95rem;color:var(--accent2)}
+.res-sec-card .rsc-formula{font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.2rem;line-height:1.4}
+.section-lbl{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono);color:var(--uba-red2);margin-bottom:.6rem;margin-top:.1rem}
+.tabla-wrap{overflow-x:auto;margin-top:.8rem}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.78rem}
+th{background:var(--bg4);color:var(--text2);font-weight:600;letter-spacing:.05em;text-transform:uppercase;font-size:.65rem;padding:.55rem .8rem;text-align:right;border-bottom:1px solid var(--border2)}
+th:first-child{text-align:left}
+td{padding:.48rem .8rem;text-align:right;color:var(--text2);border-bottom:1px solid var(--border);transition:background .12s}
+td:first-child{text-align:left;color:var(--text3)}
+tr:hover td{background:var(--bg3)}
+tr:last-child td{border-bottom:none;color:var(--text)}
+input.incognita{border-color:var(--green)!important;background:rgba(52,211,153,.06)!important;color:var(--green)!important}
+input.incognita::placeholder{color:rgba(52,211,153,.4)}
+
+
+.sis-tabs{display:flex;gap:.4rem;margin-bottom:1.3rem;flex-wrap:wrap}
+.sis-tab{font-family:var(--sans);font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.42rem .9rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .16s;flex:1;text-align:center}
+.sis-tab:hover{border-color:var(--border2);color:var(--text)}
+.sis-tab.active{background:var(--uba-blue);border-color:var(--uba-blue2);color:#fff}
+.input-row-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.8rem;margin-bottom:.9rem}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.55rem;margin-bottom:1.2rem}
+.kpi-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.8rem .95rem}
+.kpi-card.hl-blue{border-color:rgba(0,85,165,.5)!important;background:rgba(0,85,165,.09)!important}
+.kpi-card.hl-green{border-color:rgba(52,211,153,.45)!important;background:rgba(52,211,153,.07)!important}
+.kpi-card.hl-red{border-color:rgba(200,16,46,.4)!important;background:rgba(200,16,46,.06)!important}
+.kpi-card.hl-gold{border-color:rgba(240,180,41,.4)!important;background:rgba(240,180,41,.06)!important}
+.kpi-label{font-size:.62rem;color:var(--text3);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.25rem}
+.kpi-value{font-family:var(--mono);font-size:1rem;font-weight:500}
+.kpi-sub{font-family:var(--mono);font-size:.68rem;color:var(--text3);margin-top:.15rem;line-height:1.4}
+.c-blue{color:var(--accent2)}.c-green{color:var(--green)}.c-red{color:var(--uba-red2)}.c-gold{color:var(--gold)}
+.sec-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono);margin-bottom:.65rem}
+.st-blue{color:var(--accent2)}.st-red{color:var(--uba-red2)}.st-green{color:var(--green)}.st-gold{color:var(--gold)}
+.tabla-wrap{overflow-x:auto;margin-bottom:1.2rem}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.78rem;min-width:580px}
+.tr-total td{color:var(--text);font-weight:600;border-top:1px solid var(--border2);border-bottom:none;background:var(--bg4)!important}
+.comp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.65rem;margin-bottom:1rem}
+.comp-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.9rem 1rem}
+.comp-card h3{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent2);margin-bottom:.6rem}
+.comp-row{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin-bottom:.28rem}
+.comp-row .cr-lbl{font-family:var(--mono);font-size:.67rem;color:var(--text3)}
+.comp-row .cr-val{font-family:var(--mono);font-size:.82rem;color:var(--text2)}
+.comp-row.best .cr-val{color:var(--green)}.comp-row.worst .cr-val{color:var(--uba-red2)}
+.comp-note{font-family:var(--mono);font-size:.69rem;color:var(--text3);margin-top:.4rem;line-height:1.5}
+.gastos-header{display:flex;align-items:center;gap:.5rem;cursor:pointer;user-select:none;margin-bottom:.6rem}
+.gastos-lbl{font-size:.72rem;font-family:var(--mono);color:var(--text2)}
+.nota{font-family:var(--mono);font-size:.71rem;color:var(--text3);line-height:1.55;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.58rem .85rem;margin-top:.5rem}
+
+
+.ff-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+.ff-title{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text2);font-family:var(--mono)}
+.ff-actions{display:flex;gap:.4rem}
+.btn-sm{font-family:var(--sans);font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.3rem .7rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .16s}
+.btn-sm.add{border-color:rgba(52,211,153,.4);color:var(--green);background:rgba(52,211,153,.06)}
+.btn-sm.remove{border-color:rgba(200,16,46,.35);color:var(--uba-red2);background:rgba(200,16,46,.05)}
+.ff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.5rem;margin-bottom:.9rem}
+.ff-item{display:flex;flex-direction:column;gap:.28rem}
+.ff-item label{font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);font-family:var(--mono)}
+.ff-item label.t0{color:var(--uba-red2)}.ff-item label.pos{color:var(--green)}
+.ff-input{font-family:var(--mono);font-size:.88rem;background:var(--bg3);color:var(--text);border:1px solid var(--border);border-radius:var(--radius2);padding:.52rem .72rem;width:100%;outline:none;transition:border-color .18s,box-shadow .18s;-webkit-appearance:none}
+.ff-input:focus{border-color:var(--uba-blue);box-shadow:0 0 0 3px rgba(0,85,165,.18)}
+.ff-input.is-neg{color:var(--uba-red2)!important;border-color:rgba(200,16,46,.3)!important}
+.ff-input.is-pos{color:var(--green)!important}
+.decision-badge{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:.78rem;font-weight:500;padding:.4rem .85rem;border-radius:6px;margin-bottom:.9rem}
+.dec-verde{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.35);color:var(--green)}
+.dec-rojo{background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.3);color:var(--uba-red2)}
+.dec-neutro{background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);color:var(--gold)}
+.van-chart{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.2rem;margin-bottom:1.2rem}
+.van-chart h3{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-family:var(--mono);margin-bottom:.75rem}
+.bars-wrap{display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+.bar{width:100%;border-radius:3px 3px 0 0;position:relative}
+.bar.pos-bar{background:linear-gradient(180deg,rgba(52,211,153,.8),rgba(52,211,153,.3))}
+.bar.neg-bar{background:linear-gradient(0deg,rgba(200,16,46,.7),rgba(200,16,46,.25));align-self:flex-start;border-radius:0 0 3px 3px}
+.bar-lbl{font-family:var(--mono);font-size:.58rem;color:var(--text3);margin-top:3px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.multirate-row{display:flex;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap;align-items:flex-end}
+.multirate-row .field{flex:1;min-width:120px}
+td.neg{color:var(--uba-red2)}td.pos{color:var(--green)}
+td.rec{background:rgba(52,211,153,.08)!important;color:var(--green)!important;font-weight:600}
+
+
+.dos-cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
+.col-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem}
+.col-box.emisor{border-color:rgba(200,16,46,.35)}.col-box.suscriptor{border-color:rgba(52,211,153,.35)}
+.col-box h3{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);margin-bottom:.75rem}
+.col-box.emisor h3{color:var(--uba-red2)}.col-box.suscriptor h3{color:var(--green)}
+.col-row{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin-bottom:.3rem}
+.col-row .cl{font-family:var(--mono);font-size:.68rem;color:var(--text3)}
+.col-row .cv{font-family:var(--mono);font-size:.85rem}
+.col-row .cv.big{font-size:1.1rem;font-weight:500}
+.toggle-size{display:flex;gap:.4rem;margin-bottom:.9rem;flex-wrap:wrap}
+.tsz-btn{font-family:var(--mono);font-size:.7rem;font-weight:500;padding:.32rem .75rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .15s}
+.tsz-btn:hover{border-color:var(--border2);color:var(--text)}
+.tsz-btn.active{background:rgba(240,180,41,.15);border-color:var(--gold);color:var(--gold)}
+
+/* SPA */
+.page-mod { display:none; }
+.page-mod.active { display:block; }
+main { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+@media(max-width:640px){ .input-row-3,.input-row-4{ grid-template-columns:1fr 1fr; } }
+@media(max-width:400px){ .input-row{ grid-template-columns:1fr; } .dos-cols{ grid-template-columns:1fr; } }
+
+/* ══ UX IMPROVEMENTS ══════════════════════════════════════ */
+
+/* Nav mobile: scroll horizontal sin scrollbar visible */
+nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+nav::-webkit-scrollbar { display: none; }
+
+/* Header compacto en mobile */
+@media (max-width: 480px) {
+  header { padding: 0 .85rem; gap: .6rem; }
+  .logo-text span { display: none; }
+  .nav-btn { font-size: .6rem; padding: .28rem .48rem; }
+}
+
+/* Inputs más grandes en mobile (evitar zoom en iOS) */
+@media (max-width: 600px) {
+  input, select { font-size: 1rem !important; padding: .65rem .85rem; }
+  .ff-input { font-size: 1rem !important; }
+  .btn-calc { font-size: .88rem; padding: .82rem 2rem; }
+  .tipo-tab, .modal-tab, .sis-tab, .que-tab, .sel-btn, .tsz-btn {
+    font-size: .72rem; padding: .42rem .85rem;
+  }
+  .calc-body { padding: 1rem; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .results-grid { grid-template-columns: 1fr; }
+  .formula-grid { grid-template-columns: 1fr; }
+  .ff-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); }
+  .dos-cols { grid-template-columns: 1fr; }
+  .comp-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 400px) {
+  .input-row, .input-row-3, .input-row-4 { grid-template-columns: 1fr; }
+  .tipo-tabs, .modal-tabs, .sis-tabs, .que-tabs { gap: .28rem; }
+  .tipo-tab, .modal-tab, .sis-tab, .que-tab { font-size: .67rem; padding: .35rem .6rem; }
+}
+
+/* Touch targets mínimo 44px */
+.nav-btn, .btn-calc, .tipo-tab, .modal-tab, .sis-tab, .que-tab,
+.sel-btn, .tsz-btn, .btn-sm { min-height: 36px; }
+.nav-btn { min-height: 32px; }
+
+/* ── FEEDBACK VISUAL AL CALCULAR ─── */
+
+/* Botón loading state */
+.btn-calc { position: relative; overflow: hidden; }
+.btn-calc.loading { pointer-events: none; opacity: .8; }
+.btn-calc.loading::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.18) 50%, transparent 100%);
+  animation: shimmer .9s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* Botón success state */
+.btn-calc.success {
+  background: linear-gradient(135deg, #059669, #10b981) !important;
+  transition: background .3s;
+}
+.btn-calc.error-state {
+  background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+  transition: background .3s;
+}
+
+/* ── ANIMACIÓN DE RESULTADOS ─── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.94); }
+  60%  { transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.results.show { animation: slideIn .35s cubic-bezier(.22,.68,0,1.2) both; }
+.kpi-card     { animation: popIn .3s ease both; }
+.result-card  { animation: slideIn .3s ease both; }
+.res-main     { animation: popIn .4s cubic-bezier(.22,.68,0,1.2) both; }
+
+/* Stagger de cards */
+.kpi-card:nth-child(1) { animation-delay: .02s; }
+.kpi-card:nth-child(2) { animation-delay: .06s; }
+.kpi-card:nth-child(3) { animation-delay: .10s; }
+.kpi-card:nth-child(4) { animation-delay: .14s; }
+.kpi-card:nth-child(5) { animation-delay: .18s; }
+.kpi-card:nth-child(6) { animation-delay: .22s; }
+.result-card:nth-child(1) { animation-delay: .04s; }
+.result-card:nth-child(2) { animation-delay: .08s; }
+.result-card:nth-child(3) { animation-delay: .12s; }
+.result-card:nth-child(4) { animation-delay: .16s; }
+.result-card:nth-child(5) { animation-delay: .20s; }
+
+/* ── MICRO-INTERACCIONES ─── */
+.tipo-tab, .modal-tab, .sis-tab, .que-tab, .sel-btn, .tsz-btn {
+  transition: all .15s cubic-bezier(.4,0,.2,1);
+}
+.tipo-tab:active, .modal-tab:active, .sis-tab:active,
+.que-tab:active, .sel-btn:active, .tsz-btn:active {
+  transform: scale(.97);
+}
+.result-card, .kpi-card { transition: border-color .18s, transform .15s, box-shadow .15s; }
+.result-card:hover, .kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+
+/* ── TABLA RESPONSIVE ─── */
+@media (max-width: 600px) {
+  .tabla-wrap { border-radius: 8px; }
+  table { font-size: .72rem; }
+  th, td { padding: .4rem .55rem; }
+}
+
+/* ── ERROR MSG ANIMADO ─── */
+.error-msg.show { animation: slideIn .25s ease both; }
+.error-msg { border-left: 3px solid var(--uba-red2); }
+
+/* ── HOME CARDS MOBILE ─── */
+@media (max-width: 420px) {
+  #page-home > div > div:nth-child(2) { grid-template-columns: 1fr; }
+}
+
+/* ── SCROLL SUAVE EN SECCIONES ─── */
+#page-tasas main, #page-rentas main, #page-prestamos main,
+#page-proyectos main, #page-emprestitos main {
+  animation: slideIn .3s ease both;
+}
+
+/* ── FOCUS VISIBLE PARA ACCESIBILIDAD ─── */
+:focus-visible { outline: 2px solid var(--uba-blue2); outline-offset: 2px; }
+button:focus-visible { outline: 2px solid var(--uba-blue2); }
+
+/* ── INPUT TOUCH FEEDBACK ─── */
+input:active, select:active { border-color: var(--uba-blue) !important; }
+
+/* ── TOAST DE ÉXITO ─── */
+#toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--bg2); border: 1px solid rgba(52,211,153,.4);
+  color: var(--green); font-family: var(--mono); font-size: .78rem;
+  padding: .6rem 1.2rem; border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  transition: transform .3s cubic-bezier(.22,.68,0,1.2), opacity .3s;
+  opacity: 0; z-index: 999; white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+
+.kpi-formula{font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.22rem;line-height:1.45;word-break:break-all;}
+.kpi-formula em{color:var(--accent2);font-style:normal;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showPage('home')" style="cursor:pointer">
+    <div class="logo-escudo">UBA</div>
+    <div class="logo-text">CalcFin <span>· FCE</span></div>
+  </div>
+  <nav>
+    <button class="nav-btn" onclick="showPage('tasas')">Tasas</button>
+    <button class="nav-btn" onclick="showPage('rentas')">Rentas</button>
+    <button class="nav-btn" onclick="showPage('prestamos')">Préstamos</button>
+    <button class="nav-btn" onclick="showPage('proyectos')">Proyectos</button>
+    <button class="nav-btn" onclick="showPage('emprestitos')">Empréstitos</button>
+  </nav>
+</header>
+
+
+<div id="page-home" style="display:block">
+<div style="max-width:680px;margin:3rem auto 0;padding:0 1.25rem;position:relative;z-index:1">
+  <div style="margin-bottom:2.2rem">
+    <div style="font-family:var(--mono);font-size:.73rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem">F.C.E. – U.B.A. · Prof. Mg. Diego Pagano</div>
+    <h1 style="font-size:clamp(2rem,6vw,2.8rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:.65rem">Cálculo<br><span style="background:linear-gradient(90deg,var(--uba-blue2),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Financiero</span></h1>
+    <p style="font-family:var(--mono);font-size:.82rem;color:var(--text2);line-height:1.7;max-width:460px">Calculadora integral de Cálculo Financiero FCE UBA. Seleccioná un módulo para comenzar.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.5rem">
+    <div onclick="showPage('tasas')" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--uba-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">📐</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Tasas de Interés</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">Equivalencia · Nominal · Efectiva · Descuento · Continua · Tasa Real</div>
+    </div>
+    <div onclick="showPage('rentas')" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--uba-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">💰</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Rentas</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">Constantes · Variables · Aritmética · Geométrica · Diferida · Perpetua</div>
+    </div>
+    <div onclick="showPage('prestamos')" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--uba-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">🏦</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Préstamos</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">Francés · Alemán · Tasa Directa · Americano · CFT · Gastos</div>
+    </div>
+    <div onclick="showPage('proyectos')" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--uba-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">📊</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Proyectos</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">VAN · TIR · Plazo de recupero · Flujo de fondos</div>
+    </div>
+    <div onclick="showPage('emprestitos')" style="grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--uba-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">📜</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Empréstitos</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">Francés · Alemán · Americano · Costo del emisor · Rentabilidad del suscriptor · Prima</div>
+    </div>
+  </div>
+  <div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--uba-blue);border-radius:var(--radius);padding:.85rem 1.1rem">
+    <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.65">Resultados en <strong style="color:var(--text2)">tanto por 1</strong> · 6 decimales · Fórmulas con datos sustituidos · Cálculos numéricos por <strong style="color:var(--text2)">bisección</strong></div>
+  </div>
+</div>
+</div>
+<div id="page-tasas" style="display:none"><main><div class="page-title">
+    <h1>Equivalencia de <em>Tasas de Interés</em></h1>
+    <p>Ingresá una tasa y obtené todas sus equivalentes · Interés &amp; Descuento · Nominal &amp; Efectiva · Continua · Tasa Real</p>
+  </div>
+
+  <div class="concept-box">
+    <h2>Marco Conceptual</h2>
+    <p>Dos tasas son <strong style="color:var(--text)">financieramente equivalentes</strong> cuando, aplicadas a un mismo capital durante el mismo período, producen el mismo monto final. La equivalencia permite comparar tasas expresadas en distintas unidades temporales o bajo distintos regímenes (interés / descuento, nominal / efectiva, continua).</p>
+  </div>
+
+  <div class="formulas-box">
+    <h2>Fórmulas Teóricas</h2>
+    <div class="formula-grid">
+      <div class="formula-item">
+        <div class="label">Equivalencia general</div>
+        <div class="expr">(1 + i) = [1 + i(m)/m]ᵐ</div>
+      </div>
+      <div class="formula-item">
+        <div class="label">Tasa nominal → efectiva</div>
+        <div class="expr">i = (1 + j(m)/m)ᵐ − 1</div>
+      </div>
+      <div class="formula-item">
+        <div class="label">Interés ↔ Descuento (comp.)</div>
+        <div class="expr">i = d/(1−d) &nbsp;|&nbsp; d = i/(1+i)</div>
+      </div>
+      <div class="formula-item">
+        <div class="label">Descuento compuesto</div>
+        <div class="expr">(1 + i) = (1 − d)⁻¹</div>
+      </div>
+      <div class="formula-item">
+        <div class="label">Tasa continua (δ)</div>
+        <div class="expr">(1 + i) = eᵟ &nbsp;→&nbsp; δ = ln(1+i)</div>
+      </div>
+      <div class="formula-item">
+        <div class="label">Tasa real (Fisher)</div>
+        <div class="expr">(1+iₐ) = (1+φ)·(1+i_r)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-header">
+      <h2>Calculadora de Tasas Equivalentes</h2>
+      <span class="badge">Módulo 1</span>
+    </div>
+    <div class="calc-body">
+
+      <div style="margin-bottom:.65rem;">
+        <div class="field" style="margin-bottom:.5rem;"><label>Tipo de tasa ingresada</label></div>
+        <div class="tipo-tabs" id="tipoTabs">
+          <button class="tipo-tab active" data-tipo="efectiva_interes">Efectiva de Interés</button>
+          <button class="tipo-tab" data-tipo="nominal_interes">Nominal de Interés</button>
+          <button class="tipo-tab" data-tipo="efectiva_descuento">Efectiva de Descuento</button>
+          <button class="tipo-tab" data-tipo="nominal_descuento">Nominal de Descuento</button>
+          <button class="tipo-tab" data-tipo="continua">Tasa Continua (δ)</button>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div class="field">
+          <label>Tasa ingresada <span>(tanto por 1 — ej: 0,035)</span></label>
+          <input type="number" id="inputTasa" placeholder="Ej: 0,035" step="any" min="0">
+        </div>
+        <div class="field" id="fieldFreqInput">
+          <label>Frecuencia de la tasa ingresada</label>
+          <select id="freqInput">
+            <option value="1">Anual</option>
+            <option value="2">Semestral</option>
+            <option value="4">Trimestral</option>
+            <option value="12" selected>Mensual</option>
+            <option value="365">Diaria</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toggle-row" id="toggleReal">
+        <div class="sw-track" id="swTrack"><div class="sw-knob" id="swKnob"></div></div>
+        <span class="toggle-label">Incluir tasa de inflación — Tasa Real de Fisher<span class="chip">opcional</span></span>
+      </div>
+      <div id="realSection" style="display:none; margin-bottom:.75rem;">
+        <div class="input-row">
+          <div class="field">
+            <label>Inflación φ <span>(anual efectiva, tanto por 1)</span></label>
+            <input type="number" id="inputInflacion" placeholder="Ej: 1,20" step="any" min="0">
+          </div>
+          <div class="field">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.74rem;color:var(--text2);line-height:1.65;height:100%;display:flex;align-items:center;">
+              i_r = (1 + iₐ) / (1 + φ) − 1
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-calc" id="btnCalc">Calcular equivalencias</button>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="results" id="results">
+        <div class="section-title st-blue">Tasas Efectivas de Interés — i(m)</div>
+        <div class="results-grid" id="gridEfectivo"></div>
+
+        <hr class="divider">
+        <div class="section-title st-blue">Tasas Nominales Anuales de Interés — j(m)</div>
+        <div class="results-grid" id="gridNominal"></div>
+
+        <hr class="divider">
+        <div class="section-title st-red">Tasas Efectivas de Descuento — d(m)</div>
+        <div class="results-grid" id="gridDescuento"></div>
+
+        <hr class="divider">
+        <div class="section-title st-red">Tasas Nominales Anuales de Descuento — f(m)</div>
+        <div class="results-grid" id="gridDescNominal"></div>
+
+        <hr class="divider">
+        <div class="section-title st-green">Tasa Continua &amp; Tasa Real</div>
+        <div class="results-grid" id="gridOtras"></div>
+
+        <div class="nota-equiv" id="notaEquiv"></div>
+      </div>
+
+    </div>
+  </div></main></div>
+<div id="page-rentas" style="display:none"><main>
+  <div class="page-title">
+    <h1>Cálculo de <em>Rentas</em></h1>
+    <p>Rentas constantes y variables · Ingresá cualquier tipo de tasa · Vencida · Adelantada · Diferida · Perpetua</p>
+  </div>
+
+  <div class="concept-box">
+    <h2>Marco Conceptual</h2>
+    <p>Una <strong style="color:var(--text)">renta</strong> es una sucesión de pagos realizados a intervalos regulares. Se valúa descontando o capitalizando cada cuota a la tasa del período. La calculadora convierte automáticamente cualquier tasa ingresada a la tasa efectiva del período de la renta.</p>
+    <p>Se llama <strong style="color:var(--text)">vencida</strong> cuando los pagos ocurren al final de cada período, <strong style="color:var(--text)">adelantada</strong> al inicio, <strong style="color:var(--text)">diferida</strong> cuando el primer pago comienza luego de h períodos, y <strong style="color:var(--text)">perpetua</strong> cuando la duración tiende a infinito.</p>
+  </div>
+
+  <div class="formulas-section">
+    <h2>Fórmulas Teóricas</h2>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--accent2)"><span class="dot dot-blue"></span>Rentas Constantes</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">VA vencida — a(1,n,i)</div><div class="expr">a(1,n,i) = (1 − vⁿ) / i</div></div>
+        <div class="formula-item"><div class="flabel">VF vencida — s(1,n,i)</div><div class="expr">s(1,n,i) = ((1+i)ⁿ − 1) / i</div></div>
+        <div class="formula-item"><div class="flabel">VA adelantada</div><div class="expr">ä = a(1,n,i) × (1+i)</div></div>
+        <div class="formula-item"><div class="flabel">VA diferida (h períodos)</div><div class="expr">vV = a(1,n,i) × vʰ</div></div>
+        <div class="formula-item"><div class="flabel">VA perpetua vencida</div><div class="expr">a(1,∞,i) = 1/i</div></div>
+        <div class="formula-item"><div class="flabel">n (fórmula directa)</div><div class="expr">n = −ln(1−VA·i/C) / ln(1+i)</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--gold)"><span class="dot dot-gold"></span>Rentas Variables — Aritmética <span style="font-family:var(--mono);font-size:.7rem;font-weight:400;color:var(--text3)">c(t) = c + (t−1)·r</span></div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">VA vencida</div><div class="expr">vV = [c + r/i]·a(1,n,i) − r·n·vⁿ/i</div></div>
+        <div class="formula-item"><div class="flabel">VF vencida</div><div class="expr">vA = [c + r/i]·s(1,n,i) − r·n/i</div></div>
+        <div class="formula-item"><div class="flabel">VA perpetua</div><div class="expr">vV(1,∞,i,r) = [c + r/i] / i</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--green)"><span class="dot dot-green"></span>Rentas Variables — Geométrica <span style="font-family:var(--mono);font-size:.7rem;font-weight:400;color:var(--text3)">c(t) = c · qᵗ⁻¹</span></div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">VA vencida</div><div class="expr">vV = c·(1 − (q·v)ⁿ) / (1+i−q)</div></div>
+        <div class="formula-item"><div class="flabel">VF vencida</div><div class="expr">vA = c·((1+i)ⁿ − qⁿ) / (1+i−q)</div></div>
+        <div class="formula-item"><div class="flabel">VA perpetua</div><div class="expr">vV(1,∞,i,q) = c / (1+i−q)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECTOR TIPO -->
+  <div class="selector-row">
+    <button class="sel-btn active" id="btnConstante" onclick="setTipo('constante')">📊 Renta Constante</button>
+    <button class="sel-btn" id="btnVariable" onclick="setTipo('variable')">📈 Renta Variable</button>
+  </div>
+
+  <!-- CARD CONSTANTE -->
+  <div class="calc-card" id="cardConstante">
+    <div class="calc-header"><h2>Renta Constante</h2><span class="badge">Módulo 2A</span></div>
+    <div class="calc-body">
+
+      <!-- TASA -->
+      <div class="tasa-selector" id="rTasaSelector">
+        <div style="margin-bottom:.5rem"><div class="field" style="margin-bottom:.4rem"><label>Tasa ingresada — tipo</label></div>
+        <div class="tipo-tabs" id="rTipoTabs">
+          <button class="tipo-tab active" data-rtipo="ef_int">Efectiva interés</button>
+          <button class="tipo-tab" data-rtipo="nom_int">Nominal interés</button>
+          <button class="tipo-tab" data-rtipo="ef_desc">Efectiva desc.</button>
+          <button class="tipo-tab" data-rtipo="nom_desc">Nominal desc.</button>
+          <button class="tipo-tab" data-rtipo="continua">Continua</button>
+        </div></div>
+        <div class="input-row">
+          <div class="field">
+            <label>Valor de la tasa <span>— t.p.1</span></label>
+            <input type="number" id="rInTasa" placeholder="Ej: 0,035" step="any" min="0">
+          </div>
+          <div class="field" id="rFreqField">
+            <label>Frecuencia</label>
+            <select id="rFreqTasa">
+              <option value="365">Anual</option>
+              <option value="180">Semestral</option>
+              <option value="90">Trimestral</option>
+              <option value="30" selected>Mensual</option>
+              <option value="1">Diaria</option>
+            </select>
+          </div>
+          <div class="field" id="rFreqRenta">
+            <label>Frecuencia de la renta</label>
+            <select id="rFreqPago">
+              <option value="365">Anual</option>
+              <option value="180">Semestral</option>
+              <option value="90">Trimestral</option>
+              <option value="30" selected>Mensual</option>
+              <option value="1">Diaria</option>
+            </select>
+          </div>
+        </div>
+        <div id="rTasaConvertida" style="font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:.75rem;display:none">
+          → i del período: <span id="rTasaPer"></span>
+        </div>
+      </div>
+
+      <!-- MODALIDAD -->
+      <div style="margin-bottom:.9rem">
+        <div class="field" style="margin-bottom:.45rem"><label>Modalidad</label></div>
+        <div class="modal-tabs">
+          <button class="modal-tab active" data-mod="vencida">Vencida</button>
+          <button class="modal-tab" data-mod="adelantada">Adelantada</button>
+          <button class="modal-tab" data-mod="diferida">Diferida</button>
+          <button class="modal-tab" data-mod="perpetua">Perpetua</button>
+        </div>
+      </div>
+
+      <!-- INCÓGNITA -->
+      <div class="calc-que">
+        <label>Incógnita a calcular</label>
+        <div class="que-tabs" id="queTabs">
+          <button class="que-tab active" data-q="VA">VA</button>
+          <button class="que-tab" data-q="VF">VF</button>
+          <button class="que-tab" data-q="C">Cuota (C)</button>
+          <button class="que-tab" data-q="n">n</button>
+          <button class="que-tab" data-q="i">i</button>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div class="field" id="fC"><label>Cuota (C) <span>— $</span></label><input type="number" id="inC" placeholder="Ej: 1000" step="any" min="0"></div>
+        <div class="field" id="fVA"><label>Valor Actual (VA)</label><input type="number" id="inVA" placeholder="Ej: 20000" step="any"></div>
+      </div>
+      <div class="input-row">
+        <div class="field" id="fN"><label>Número de cuotas (n)</label><input type="number" id="inN" placeholder="Ej: 24" step="1" min="1"></div>
+        <div class="field" id="fH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="number" id="inH" placeholder="Ej: 3" step="1" min="1"></div>
+        <div class="field" id="fVF"><label>Valor Final (VF)</label><input type="number" id="inVF" placeholder="Ej: 35000" step="any"></div>
+      </div>
+
+      <button class="btn-calc" onclick="calcConFeedback(this,'_calcConstante')">Calcular</button>
+      <div class="error-msg" id="errConst"></div>
+
+      <div class="results" id="resConstante">
+        <div class="res-main">
+          <div class="rm-label" id="resConstLbl">Resultado</div>
+          <div class="rm-value" id="resConstVal">—</div>
+          <div class="rm-formula" id="resConstForm"></div>
+        </div>
+        <div class="section-lbl">Valores derivados</div>
+        <div class="res-secundario" id="resConstSec"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD VARIABLE -->
+  <div class="calc-card" id="cardVariable" style="display:none;margin-top:1.4rem">
+    <div class="calc-header"><h2>Renta Variable</h2><span class="badge">Módulo 2B</span></div>
+    <div class="calc-body">
+
+      <!-- TASA -->
+      <div style="margin-bottom:.5rem"><div class="field" style="margin-bottom:.4rem"><label>Tasa ingresada — tipo</label></div>
+      <div class="tipo-tabs" id="rVTipoTabs">
+        <button class="tipo-tab active" data-rvtipo="ef_int">Efectiva interés</button>
+        <button class="tipo-tab" data-rvtipo="nom_int">Nominal interés</button>
+        <button class="tipo-tab" data-rvtipo="ef_desc">Efectiva desc.</button>
+        <button class="tipo-tab" data-rvtipo="nom_desc">Nominal desc.</button>
+        <button class="tipo-tab" data-rvtipo="continua">Continua</button>
+      </div></div>
+      <div class="input-row" style="margin-bottom:.5rem">
+        <div class="field">
+          <label>Valor de la tasa <span>— t.p.1</span></label>
+          <input type="number" id="rVInTasa" placeholder="Ej: 0,035" step="any" min="0">
+        </div>
+        <div class="field" id="rVFreqField">
+          <label>Frecuencia tasa</label>
+          <select id="rVFreqTasa">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Frecuencia renta</label>
+          <select id="rVFreqPago">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+      </div>
+      <div id="rVTasaConvertida" style="font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:.75rem;display:none">
+        → i del período: <span id="rVTasaPer"></span>
+      </div>
+
+      <!-- PROGRESIÓN -->
+      <div style="margin-bottom:.9rem">
+        <div class="field" style="margin-bottom:.45rem"><label>Tipo de progresión</label></div>
+        <div class="modal-tabs" id="progTabs">
+          <button class="modal-tab active" data-prog="aritmetica">Aritmética</button>
+          <button class="modal-tab" data-prog="geometrica">Geométrica</button>
+        </div>
+      </div>
+
+      <!-- MODALIDAD -->
+      <div style="margin-bottom:.9rem">
+        <div class="field" style="margin-bottom:.45rem"><label>Modalidad</label></div>
+        <div class="modal-tabs" id="modalVarTabs">
+          <button class="modal-tab active" data-modv="vencida">Vencida</button>
+          <button class="modal-tab" data-modv="adelantada">Adelantada</button>
+          <button class="modal-tab" data-modv="diferida">Diferida</button>
+          <button class="modal-tab" data-modv="perpetua">Perpetua</button>
+        </div>
+      </div>
+
+      <!-- INCÓGNITA -->
+      <div class="calc-que">
+        <label>Incógnita a calcular</label>
+        <div class="que-tabs" id="queVarTabs">
+          <button class="que-tab active" data-qv="VA">VA</button>
+          <button class="que-tab" data-qv="VF">VF</button>
+          <button class="que-tab" data-qv="c">Cuota inicial (c)</button>
+          <button class="que-tab" data-qv="razon">Razón (r / q)</button>
+          <button class="que-tab" data-qv="n">n</button>
+        </div>
+      </div>
+
+      <div class="input-row-3">
+        <div class="field"><label>Cuota inicial (c) <span>— $</span></label><input type="number" id="inVC" placeholder="Ej: 1000" step="any" min="0"></div>
+        <div class="field" id="fRazon"><label id="razonLbl">Razón (r) <span>— $</span></label><input type="number" id="inRazon" placeholder="Ej: 50" step="any"></div>
+        <div class="field" id="fVVA"><label>Valor Actual (VA)</label><input type="number" id="inVVA" placeholder="Ej: 20000" step="any"></div>
+      </div>
+      <div class="input-row">
+        <div class="field" id="fVN"><label>Número de cuotas (n)</label><input type="number" id="inVN" placeholder="Ej: 12" step="1" min="1"></div>
+        <div class="field" id="fVH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="number" id="inVH" placeholder="Ej: 3" step="1" min="1"></div>
+        <div class="field" id="fVVF"><label>Valor Final (VF)</label><input type="number" id="inVVF" placeholder="Ej: 35000" step="any"></div>
+      </div>
+
+      <button class="btn-calc" onclick="calcConFeedback(this,'_calcVariable')">Calcular</button>
+      <div class="error-msg" id="errVar"></div>
+
+      <div class="results" id="resVariable">
+        <div class="res-main">
+          <div class="rm-label" id="resVarLbl">Resultado</div>
+          <div class="rm-value" id="resVarVal">—</div>
+          <div class="rm-formula" id="resVarForm"></div>
+        </div>
+        <div class="section-lbl" id="resVarSecLbl" style="display:none">Cuotas del período</div>
+        <div class="tabla-wrap" id="resVarTabla"></div>
+      </div>
+    </div>
+  </div>
+</main></div>
+
+<div id="page-prestamos" style="display:none"><main>
+  <div class="page-title">
+    <h1>Sistemas de <em>Amortización de Préstamos</em></h1>
+    <p>Francés · Alemán · Tasa Directa · Americano · Ingresá cualquier tipo de tasa · Incógnita variable</p>
+  </div>
+
+  <div class="concept-box">
+    <h2>Marco Conceptual</h2>
+    <p>Un préstamo es un contrato por el cual el prestamista entrega un capital V al prestatario, quien lo devuelve con intereses mediante un <strong style="color:var(--text)">cuadro de amortización</strong>. La calculadora convierte cualquier tasa a la efectiva del período y permite despejar V, n o i además de la cuota.</p>
+    <p>El <strong style="color:var(--text)">CFT</strong> incorpora gastos e impuestos al flujo y se expresa como TEM y TEA.</p>
+  </div>
+
+  <div class="formulas-section">
+    <h2>Fórmulas por Sistema</h2>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--accent2)"><span class="dot dot-blue"></span>Francés — cuota constante</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Cuota</div><div class="expr">c = V / a(1,n,i)</div></div>
+        <div class="formula-item"><div class="flabel">Saldo prospectivo</div><div class="expr">V(p) = c · a(1,n−p,i)</div></div>
+        <div class="formula-item"><div class="flabel">Intereses totales</div><div class="expr">I(0;n) = n·c − V</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--gold)"><span class="dot dot-gold"></span>Alemán — amortización constante</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Amortización</div><div class="expr">t(p) = V/n</div></div>
+        <div class="formula-item"><div class="flabel">Cuota período p</div><div class="expr">c(p) = V/n · [1+(n−p+1)·i]</div></div>
+        <div class="formula-item"><div class="flabel">Intereses totales</div><div class="expr">I(0;n) = V·(n+1)/2·i</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--green)"><span class="dot dot-green"></span>Tasa Directa</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Cuota</div><div class="expr">c = V/n + V·r</div></div>
+        <div class="formula-item"><div class="flabel">i sobre saldos (TIR)</div><div class="expr">V/c = a(1,n,i) → despejar i</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--uba-red2)"><span class="dot dot-red"></span>Americano — capital al vencimiento</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Cuota</div><div class="expr">c = V·i + V·s⁻¹(1,n,i')</div></div>
+        <div class="formula-item"><div class="flabel">Fondo acumulado</div><div class="expr">F(p) = dep · s(1,p,i')</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA -->
+  <div class="calc-card">
+    <div class="calc-header"><h2>Cuadro de Amortización</h2><span class="badge">Módulo 3</span></div>
+    <div class="calc-body">
+
+      <!-- SISTEMA -->
+      <div style="margin-bottom:.9rem">
+        <div class="field" style="margin-bottom:.45rem"><label>Sistema</label></div>
+        <div class="sis-tabs">
+          <button class="sis-tab active" data-sis="frances">Francés</button>
+          <button class="sis-tab" data-sis="aleman">Alemán</button>
+          <button class="sis-tab" data-sis="directa">Tasa Directa</button>
+          <button class="sis-tab" data-sis="americano">Americano</button>
+        </div>
+      </div>
+
+      <!-- INCÓGNITA -->
+      <div class="calc-que">
+        <label>Incógnita a calcular</label>
+        <div class="que-tabs" id="pQueTab">
+          <button class="que-tab active" data-pq="cuota">Ver cuadro completo</button>
+          <button class="que-tab" data-pq="V">Capital (V)</button>
+          <button class="que-tab" data-pq="n">N° cuotas (n)</button>
+          <button class="que-tab" data-pq="i">Tasa (i)</button>
+        </div>
+      </div>
+
+      <!-- TASA -->
+      <div style="margin-bottom:.5rem"><div class="field" style="margin-bottom:.4rem"><label>Tasa ingresada — tipo</label></div>
+      <div class="tipo-tabs" id="pTipoTabs">
+        <button class="tipo-tab active" data-ptipo="ef_int">Efectiva interés</button>
+        <button class="tipo-tab" data-ptipo="nom_int">Nominal interés</button>
+        <button class="tipo-tab" data-ptipo="ef_desc">Efectiva desc.</button>
+        <button class="tipo-tab" data-ptipo="nom_desc">Nominal desc.</button>
+        <button class="tipo-tab" data-ptipo="directa_r">Tasa directa r</button>
+        <button class="tipo-tab" data-ptipo="continua">Continua</button>
+      </div></div>
+      <div class="input-row" style="margin-bottom:.5rem">
+        <div class="field">
+          <label id="pLabelTasa">Valor de la tasa <span>— t.p.1</span></label>
+          <input type="number" id="prInI" placeholder="Ej: 0,035" step="any" min="0">
+        </div>
+        <div class="field" id="pFreqField">
+          <label>Frecuencia tasa</label>
+          <select id="pFreqTasa">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Frecuencia cuotas</label>
+          <select id="pFreqCuotas">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+      </div>
+      <div id="pTasaConvertida" style="font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:.75rem;display:none">
+        → i del período: <span id="pTasaPer"></span>
+      </div>
+
+      <!-- DATOS -->
+      <div class="input-row-3">
+        <div class="field" id="pFV">
+          <label>Capital prestado (V) <span>— $</span></label>
+          <input type="number" id="inV" placeholder="Ej: 100000" step="any" min="0">
+        </div>
+        <div class="field" id="pFN">
+          <label>N° de cuotas (n)</label>
+          <input type="number" id="prInN" placeholder="Ej: 24" step="1" min="1">
+        </div>
+        <div class="field" id="pFCuota" style="display:none">
+          <label>Cuota conocida (c) <span>— $ (para despejar V, n o i)</span></label>
+          <input type="number" id="inCuotaKnown" placeholder="Ej: 5000" step="any" min="0">
+        </div>
+      </div>
+
+      <!-- Tasa fondo americano -->
+      <div class="input-row" id="rowTasaF" style="display:none">
+        <div class="field">
+          <label>Tasa fondo amortizante (i') <span>— t.p.1 efectiva del período</span></label>
+          <input type="number" id="inIF" placeholder="Ej: 0,02" step="any" min="0">
+        </div>
+        <div class="field">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.73rem;color:var(--text2);line-height:1.6;display:flex;align-items:center">
+            c = V·[i + s⁻¹(1,n,i')] · Capital al vencimiento
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- GASTOS -->
+      <div class="gastos-header" id="toggleGastos">
+        <div class="sw-track" id="swGastos"><div class="sw-knob" id="knobGastos"></div></div>
+        <span class="gastos-lbl">Incluir gastos e impuestos (CFT)<span class="chip">opcional</span></span>
+      </div>
+      <div id="gastosSection" style="display:none">
+        <div class="input-row-4">
+          <div class="field"><label>Gasto fijo/cuota <span>$</span></label><input type="number" id="inGFijo" placeholder="Ej: 150" step="any" min="0" value="0"></div>
+          <div class="field"><label>Gastos otorgamiento <span>$</span></label><input type="number" id="inGOtorg" placeholder="Ej: 500" step="any" min="0" value="0"></div>
+          <div class="field"><label>Sellado <span>% s/capital</span></label><input type="number" id="inSellado" placeholder="Ej: 1,2" step="any" min="0" value="0"></div>
+          <div class="field"><label>IVA intereses <span>%</span></label><input type="number" id="inIVA" placeholder="Ej: 21" step="any" min="0" value="0"></div>
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="calcConFeedback(this,'_calcPrestamo')">Calcular</button>
+      <div class="error-msg" id="errPrest"></div>
+
+      <div class="results" id="resPrest">
+        <div class="sec-title st-blue" id="pResTitle">Resumen del préstamo</div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div id="cftBlock" style="display:none">
+          <hr class="divider">
+          <div class="sec-title st-gold">Costo Financiero Total (CFT)</div>
+          <div class="kpi-grid" id="kpiCFT"></div>
+        </div>
+        <hr class="divider">
+        <div class="sec-title st-blue" id="pTablaTitle">Cuadro de amortización</div>
+        <div id="pTablaFormula" style="font-family:var(--mono);font-size:.72rem;color:var(--text3);margin-bottom:.6rem;line-height:1.6"></div>
+        <div class="tabla-wrap" id="tablaAmort"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARATIVA -->
+  <div class="calc-card">
+    <div class="calc-header"><h2>Comparativa entre Sistemas</h2><span class="badge">Módulo 3 · Extra</span></div>
+    <div class="calc-body">
+      <p style="font-family:var(--mono);font-size:.8rem;color:var(--text2);margin-bottom:1rem">Comparativa con la misma tasa efectiva del período. Se actualiza automáticamente al calcular.</p>
+      <div id="compContent"><div style="font-family:var(--mono);font-size:.78rem;color:var(--text3)">— Calculá un préstamo para ver la comparativa —</div></div>
+    </div>
+  </div>
+</main></div>
+
+<div id="page-proyectos" style="display:none"><main><div class="page-title">
+    <h1>Evaluación de <em>Proyectos de Inversión</em></h1>
+    <p>Flujo de fondos · Valor Actual Neto (VAN) · Tasa Interna de Retorno (TIR) · Plazo de Recupero (PR)</p>
+  </div>
+
+  <div class="concept-box">
+    <h2>Marco Conceptual</h2>
+    <p>La evaluación financiera de un proyecto consiste en valorar si los flujos futuros que genera justifican la inversión inicial. El <strong style="color:var(--text)">flujo de fondos FF(t)</strong> representa los ingresos netos de caja en cada período t (negativo en t=0 por la inversión).</p>
+    <p>El <strong style="color:var(--text)">VAN</strong> mide la creación de valor: si VAN &gt; 0 el proyecto es conveniente a la tasa de corte. La <strong style="color:var(--text)">TIR</strong> es la tasa que hace VAN = 0; si TIR &gt; tasa de corte, se acepta el proyecto. El <strong style="color:var(--text)">Plazo de Recupero</strong> indica en qué período se recupera la inversión inicial.</p>
+  </div>
+
+  <!-- GLOBOS FÓRMULAS -->
+  <div class="formulas-section">
+    <h2>Fórmulas Teóricas</h2>
+
+    <div class="globo">
+      <div class="globo-title" style="color:var(--accent2)"><span class="dot dot-blue"></span>Valor Actual Neto (VAN)</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Definición general</div><div class="expr">VAN = −I + Σ FF(t)/(1+i)ᵗ</div></div>
+        <div class="formula-item"><div class="flabel">Forma extendida</div><div class="expr">VAN = Σ FF(t)·vᵗ &nbsp;[t=0 a n]</div></div>
+        <div class="formula-item"><div class="flabel">Criterio de decisión</div><div class="expr">VAN &gt; 0 → aceptar · VAN &lt; 0 → rechazar</div></div>
+        <div class="formula-item"><div class="flabel">Factor de descuento</div><div class="expr">v = 1/(1+i) &nbsp;|&nbsp; vᵗ = 1/(1+i)ᵗ</div></div>
+      </div>
+    </div>
+
+    <div class="globo">
+      <div class="globo-title" style="color:var(--gold)"><span class="dot dot-gold"></span>Tasa Interna de Retorno (TIR)</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Definición</div><div class="expr">0 = Σ FF(t)/(1+TIR)ᵗ &nbsp;[t=0 a n]</div></div>
+        <div class="formula-item"><div class="flabel">Criterio de decisión</div><div class="expr">TIR &gt; i_corte → aceptar</div></div>
+        <div class="formula-item"><div class="flabel">Solución numérica</div><div class="expr">Bisección / Newton-Raphson</div></div>
+        <div class="formula-item"><div class="flabel">Relación VAN–TIR</div><div class="expr">VAN(TIR) = 0 por definición</div></div>
+      </div>
+    </div>
+
+    <div class="globo">
+      <div class="globo-title" style="color:var(--green)"><span class="dot dot-green"></span>Plazo de Recupero (PR)</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Plazo simple (sin descuento)</div><div class="expr">PR: Σ FF(t) ≥ 0 &nbsp;[primer t]</div></div>
+        <div class="formula-item"><div class="flabel">Plazo descontado</div><div class="expr">PR*: Σ FF(t)·vᵗ ≥ 0 &nbsp;[primer t]</div></div>
+        <div class="formula-item"><div class="flabel">Fracción del período</div><div class="expr">PR = t−1 + |saldo(t−1)| / FF(t)</div></div>
+        <div class="formula-item"><div class="flabel">Criterio</div><div class="expr">Cuanto menor el PR, mejor</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA -->
+  <div class="calc-card">
+    <div class="calc-header"><h2>Ingreso del Flujo de Fondos</h2><span class="badge">Módulo 4</span></div>
+    <div class="calc-body">
+
+      <div class="input-row">
+        <div class="field">
+          <label>Tasa de corte (i) <span>— t.p.1 por período</span></label>
+          <input type="number" id="inTasa" placeholder="Ej: 0,05" step="any" min="0">
+        </div>
+        <div class="field">
+          <label>N° de períodos (sin contar t=0)</label>
+          <input type="number" id="inPeriodos" placeholder="Ej: 6" step="1" min="1" max="40" value="6">
+        </div>
+      </div>
+
+      <!-- FLUJO DE FONDOS -->
+      <div class="ff-header">
+        <span class="ff-title">Flujo de fondos FF(t) <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0"> — valores negativos para egresos</span></span>
+        <div class="ff-actions">
+          <button class="btn-sm remove" onclick="quitarPeriodo()">− Período</button>
+          <button class="btn-sm add"    onclick="agregarPeriodo()">+ Período</button>
+        </div>
+      </div>
+      <div class="ff-grid" id="ffGrid"></div>
+
+      <button class="btn-calc" onclick="calcConFeedback(this, '_calcProyecto')">Calcular</button>
+      <div class="error-msg" id="errProy"></div>
+
+      <!-- RESULTADOS -->
+      <div class="results" id="resProy">
+
+        <!-- DECISIÓN -->
+        <div id="decisionBadge"></div>
+
+        <!-- KPIs -->
+        <div class="sec-title st-blue">Indicadores del proyecto</div>
+        <div class="kpi-grid" id="kpiProy"></div>
+
+        <!-- VAN A MÚLTIPLES TASAS -->
+        <hr class="divider">
+        <div class="sec-title st-blue">VAN a distintas tasas de corte</div>
+        <div class="multirate-row">
+          <div class="field"><label>Tasa mínima <span>— t.p.1</span></label><input type="number" id="inTMin" placeholder="Ej: 0,00" step="any" min="0" value="0"></div>
+          <div class="field"><label>Tasa máxima <span>— t.p.1</span></label><input type="number" id="inTMax" placeholder="Ej: 0,30" step="any" min="0" value="0.30"></div>
+          <div class="field"><label>Cantidad de puntos</label><input type="number" id="inTPuntos" placeholder="10" step="1" min="3" max="20" value="10"></div>
+          <div><button class="btn-sm add" style="margin-top:1.55rem" onclick="calcMultirate()">Recalcular</button></div>
+        </div>
+        <div class="van-chart"><h3>VAN vs Tasa de corte</h3><div id="chartBars" class="bars-wrap"></div><div id="chartLabels" style="display:flex;gap:4px;padding:0 4px;margin-top:2px"></div></div>
+
+        <!-- TABLA FF DETALLADA -->
+        <hr class="divider">
+        <div class="sec-title st-green">Tabla de flujo de fondos descontado</div>
+        <div class="tabla-wrap" id="tablaFF"></div>
+
+      </div>
+    </div>
+  </div></main></div>
+<div id="page-emprestitos" style="display:none"><main>
+  <div class="page-title">
+    <h1>Análisis de <em>Empréstitos</em></h1>
+    <p>Francés · Alemán · Americano · Incógnita variable · Costo del emisor · Rentabilidad del suscriptor</p>
+  </div>
+
+  <div class="concept-box">
+    <h2>Marco Conceptual</h2>
+    <p>Un <strong style="color:var(--text)">empréstito</strong> es un préstamo fraccionado en títulos emitidos por una empresa o Estado. El <strong style="color:var(--text)">costo del emisor</strong> es la TIR del flujo neto. La <strong style="color:var(--text)">rentabilidad del suscriptor</strong> se calcula como V·i (cupón del 1° período) sobre la inversión, expresada como tasa periódica y TEA equivalente.</p>
+    <p>La <strong style="color:var(--text)">prima de reembolso</strong> ocurre cuando los títulos se amortizan sobre la par, encareciendo el costo para el emisor y mejorando la rentabilidad del suscriptor.</p>
+  </div>
+
+  <div class="formulas-section">
+    <h2>Fórmulas Teóricas</h2>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--text2)"><span class="dot" style="background:var(--text3)"></span>General</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Capital total</div><div class="expr">V = N × VN</div></div>
+        <div class="formula-item"><div class="flabel">Costo emisor (TIR)</div><div class="expr">0 = −V_neto + Σ CF(t)·v^t</div></div>
+        <div class="formula-item"><div class="flabel">Rentabilidad suscriptor</div><div class="expr">r_per = V·i / (N×PE) · TEA = (1+r_per)^m−1</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--accent2)"><span class="dot dot-blue"></span>Francés</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Cuota unitaria</div><div class="expr">c = VN / a(1,n,i)</div></div>
+        <div class="formula-item"><div class="flabel">Saldo</div><div class="expr">VN_vivo(p) = c · a(1,n−p,i)</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--gold)"><span class="dot dot-gold"></span>Alemán</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Amortización constante</div><div class="expr">t(p) = VN/n</div></div>
+        <div class="formula-item"><div class="flabel">Intereses totales</div><div class="expr">I(0;n) = V·(n+1)/2·i</div></div>
+      </div>
+    </div>
+    <div class="globo">
+      <div class="globo-title" style="color:var(--uba-red2)"><span class="dot dot-red"></span>Americano</div>
+      <div class="formula-grid">
+        <div class="formula-item"><div class="flabel">Cupón periódico</div><div class="expr">I(t) = V × i (constante)</div></div>
+        <div class="formula-item"><div class="flabel">Capital al vencimiento</div><div class="expr">Amort(n) = V × (1 + prima%)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA -->
+  <div class="calc-card">
+    <div class="calc-header"><h2>Cuadro del Empréstito</h2><span class="badge">Módulo 5</span></div>
+    <div class="calc-body">
+
+      <!-- SISTEMA -->
+      <div style="margin-bottom:.9rem">
+        <div class="field" style="margin-bottom:.45rem"><label>Sistema de reembolso</label></div>
+        <div class="sis-tabs">
+          <button class="sis-tab active" data-sis="frances">Francés</button>
+          <button class="sis-tab" data-sis="aleman">Alemán</button>
+          <button class="sis-tab" data-sis="americano">Americano</button>
+        </div>
+      </div>
+
+      <!-- INCÓGNITA -->
+      <div class="calc-que">
+        <label>Incógnita a calcular</label>
+        <div class="que-tabs" id="eQueTab">
+          <button class="que-tab active" data-eq="cuota">Ver cuadro completo</button>
+          <button class="que-tab" data-eq="V">Capital (V)</button>
+          <button class="que-tab" data-eq="n">N° períodos (n)</button>
+          <button class="que-tab" data-eq="i">Tasa (i)</button>
+        </div>
+      </div>
+
+      <!-- TASA -->
+      <div style="margin-bottom:.5rem"><div class="field" style="margin-bottom:.4rem"><label>Tasa del empréstito — tipo</label></div>
+      <div class="tipo-tabs" id="eTipoTabs">
+        <button class="tipo-tab active" data-etipo="ef_int">Efectiva interés</button>
+        <button class="tipo-tab" data-etipo="nom_int">Nominal interés</button>
+        <button class="tipo-tab" data-etipo="ef_desc">Efectiva desc.</button>
+        <button class="tipo-tab" data-etipo="nom_desc">Nominal desc.</button>
+        <button class="tipo-tab" data-etipo="continua">Continua</button>
+      </div></div>
+      <div class="input-row" style="margin-bottom:.5rem">
+        <div class="field" id="eTasaField">
+          <label>Valor de la tasa <span>— t.p.1 s/VN</span></label>
+          <input type="number" id="emInI" placeholder="Ej: 0,08" step="any" min="0">
+        </div>
+        <div class="field" id="eFreqField">
+          <label>Frecuencia tasa</label>
+          <select id="eFreqTasa">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Frecuencia períodos</label>
+          <select id="eFreqPer">
+            <option value="365">Anual</option>
+            <option value="180">Semestral</option>
+            <option value="90">Trimestral</option>
+            <option value="30" selected>Mensual</option>
+            <option value="1">Diaria</option>
+          </select>
+        </div>
+      </div>
+      <div id="eTasaConvertida" style="font-family:var(--mono);font-size:.72rem;color:var(--green);margin-bottom:.75rem;display:none">
+        → i del período: <span id="eTasaPer"></span>
+      </div>
+
+      <!-- TAMAÑO -->
+      <div style="margin-bottom:.55rem">
+        <div class="field" style="margin-bottom:.4rem"><label>Definir tamaño por</label></div>
+        <div class="toggle-size">
+          <button class="tsz-btn active" id="btnVNxN" onclick="setTamano('VNxN')">VN unitario × N títulos</button>
+          <button class="tsz-btn" id="btnTotal" onclick="setTamano('total')">Capital total</button>
+        </div>
+      </div>
+
+      <div id="secVNxN">
+        <div class="input-row">
+          <div class="field" id="eFieldVN"><label>Valor nominal unitario (VN) <span>— $</span></label><input type="number" id="emInVN" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
+          <div class="field" id="eFieldN"><label>Cantidad de títulos (N)</label><input type="number" id="emInN" placeholder="Ej: 500" step="1" min="1" value="500"></div>
+        </div>
+      </div>
+      <div id="secTotal" style="display:none">
+        <div class="input-row">
+          <div class="field"><label>Capital total <span>— $</span></label><input type="number" id="inCapTotal" placeholder="Ej: 500000" step="any" min="0"></div>
+          <div class="field"><label>VN unitario <span>— $</span></label><input type="number" id="emInVN2" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
+        </div>
+      </div>
+
+      <!-- cuando incógnita es V o i: mostrar cuota conocida -->
+      <div class="input-row" id="eCuotaKnownRow" style="display:none">
+        <div class="field">
+          <label>Cuota unitaria conocida (c) <span>— $ por título</span></label>
+          <input type="number" id="eCuotaKnown" placeholder="Ej: 120" step="any" min="0">
+        </div>
+        <div class="field"></div>
+      </div>
+
+      <!-- n conocido cuando incógnita no es n -->
+      <div class="input-row" id="ePerRow">
+        <div class="field" id="eFieldPer">
+          <label>N° de períodos (n)</label>
+          <input type="number" id="inPer" placeholder="Ej: 5" step="1" min="1">
+        </div>
+        <div class="field">
+          <label>Precio emisión <span>— % del VN</span></label>
+          <input type="number" id="inPE" placeholder="Ej: 100" step="any" min="0" value="100">
+        </div>
+      </div>
+
+      <div class="input-row-3">
+        <div class="field"><label>Prima reembolso <span>— % s/VN</span></label><input type="number" id="inPrima" placeholder="Ej: 0" step="any" min="0" value="0"></div>
+        <div class="field"><label>Gastos emisión <span>— % s/capital</span></label><input type="number" id="inGastos" placeholder="Ej: 2" step="any" min="0" value="0"></div>
+        <div class="field"><div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.72rem;color:var(--text2);line-height:1.6;display:flex;align-items:center">PR = VN·(1+prima/100)</div></div>
+      </div>
+
+      <button class="btn-calc" onclick="calcConFeedback(this,'_calcEmprestito')">Calcular empréstito</button>
+      <div class="error-msg" id="errEmp"></div>
+
+      <div class="results" id="resEmp">
+        <div class="sec-title st-blue">Parámetros del empréstito</div>
+        <div class="kpi-grid" id="kpiGen"></div>
+        <hr class="divider">
+        <div class="sec-title st-gold">Costo del Emisor &amp; Rentabilidad del Suscriptor</div>
+        <div class="dos-cols">
+          <div class="col-box emisor"><h3>📤 Emisor</h3><div id="colEmisor"></div></div>
+          <div class="col-box suscriptor"><h3>📥 Suscriptor</h3><div id="colSuscriptor"></div></div>
+        </div>
+        <hr class="divider">
+        <div class="sec-title st-red">Flujo del Emisor</div>
+        <div class="tabla-wrap" id="tablaEmisor"></div>
+        <hr class="divider">
+        <div class="sec-title st-blue">Cuadro completo</div>
+        <div class="tabla-wrap" id="tablaEmprestito"></div>
+        <div class="nota" id="notaEmp"></div>
+      </div>
+    </div>
+  </div>
+</main></div>
+
+
+<footer><span>CalcFin</span> · Cálculo Financiero · F.C.E. – U.B.A. · Prof. Mg. Diego Pagano</footer>
+
+<script>
+
+
+// ════ FUNCIONES GLOBALES (disponibles desde el HTML) ═════
+
+function setTamano(m) {
+  window._modoTam = m;
+  var btnVNxN = document.getElementById('btnVNxN');
+  var btnTotal = document.getElementById('btnTotal');
+  var secVNxN  = document.getElementById('secVNxN');
+  var secTotal = document.getElementById('secTotal');
+  if (btnVNxN)  btnVNxN.classList.toggle('active', m === 'VNxN');
+  if (btnTotal) btnTotal.classList.toggle('active', m === 'total');
+  if (secVNxN)  secVNxN.style.display  = m === 'VNxN'  ? '' : 'none';
+  if (secTotal) secTotal.style.display = m === 'total' ? '' : 'none';
+}
+
+function setTipo(t) {
+  if (window._setTipoInternal) {
+    window._setTipoInternal(t);
+  }
+}
+
+
+const PAGES = ['home','tasas','rentas','prestamos','proyectos','emprestitos'];
+window._modoTam = 'VNxN'; // valor por defecto empréstitos
+
+function showPage(id) {
+  PAGES.forEach(function(p) {
+    var el = document.getElementById('page-'+p);
+    if (el) {
+      if (p === id) {
+        el.style.display = 'block';
+        // Refrescar animación
+        void el.offsetWidth;
+      } else {
+        el.style.display = 'none';
+      }
+    }
+  });
+  var navOrder = ['tasas','rentas','prestamos','proyectos','emprestitos'];
+  document.querySelectorAll('.nav-btn').forEach(function(btn, i) {
+    btn.classList.toggle('active', navOrder[i] === id);
+  });
+  window.scrollTo({top:0, behavior:'instant'});
+  // Inicializar módulo la primera vez
+  if (id === 'tasas'       && !window._initTasas)       { window._initTasas=true;       initTasas(); }
+  if (id === 'rentas'      && !window._initRentas)      { window._initRentas=true;      initRentas(); }
+  if (id === 'prestamos'   && !window._initPrestamos)   { window._initPrestamos=true;   initPrestamos(); }
+  if (id === 'proyectos'   && !window._initProyectos)   { window._initProyectos=true;   initProyectos(); }
+  if (id === 'emprestitos' && !window._initEmprestitos) { window._initEmprestitos=true; initEmprestitos(); }
+}
+
+
+// ── WRAPPER CON FEEDBACK PARA TODOS LOS BOTONES ──────────
+function calcConFeedback(btn, fnName) {
+  var orig = btn.textContent;
+  btn.classList.add('loading');
+  btn.textContent = 'Calculando...';
+  setTimeout(function() {
+    try {
+      if (typeof window[fnName] !== 'function') {
+        throw new Error('Función no encontrada: ' + fnName + '. Tipo: ' + typeof window[fnName]);
+      }
+      window[fnName]();
+      var errEl = btn.parentElement ? btn.parentElement.querySelector('.error-msg.show') : null;
+      var ok = !errEl;
+      btnFeedback(btn, ok);
+      if (ok) showToast('✓ Cálculo completado', 'ok');
+      else    showToast('✗ Revisá los datos ingresados', 'error');
+    } catch(e) {
+      console.error('CalcFin error:', e);
+      btnFeedback(btn, false);
+      var errEl = btn.parentElement ? btn.parentElement.querySelector('.error-msg') : null;
+      var msg = e.message || String(e);
+      if (e.stack) msg += ' | Stack: ' + e.stack.split('\n')[1];
+      if (errEl) { errEl.textContent = '⚠ ' + msg; errEl.classList.add('show'); }
+      showToast('✗ ' + (e.message||'error'), 'error');
+    }
+    if (btn) btn.textContent = orig;
+  }, 60);
+}
+
+// ── TOAST ────────────────────────────────────────────────
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.borderColor = type === 'error' ? 'rgba(200,16,46,.4)' : 'rgba(52,211,153,.4)';
+  t.style.color = type === 'error' ? 'var(--uba-red2)' : 'var(--green)';
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+
+// ── FEEDBACK BOTÓN ───────────────────────────────────────
+function btnFeedback(btn, ok) {
+  if (!btn) return;
+  btn.classList.remove('loading');
+  btn.classList.add(ok ? 'success' : 'error-state');
+  var orig = btn.textContent;
+  btn.textContent = ok ? '✓ Calculado' : '✗ Error';
+  setTimeout(function() {
+    if (btn) { btn.classList.remove('success', 'error-state'); btn.textContent = orig; }
+  }, 1800);
+}
+
+
+
+function initTasas() {
+  (function() {
+
+// ── FRECUENCIAS ───────────────────────────────────────────
+// dias: días del período destino (para exponentes en base 365)
+// diasInput: días del período de la tasa ingresada
+const FREQS = [
+  { m: 1,   label: 'Anual',      dias: 365 },
+  { m: 2,   label: 'Semestral',  dias: 180 },
+  { m: 4,   label: 'Trimestral', dias: 90  },
+  { m: 12,  label: 'Mensual',    dias: 30  },
+  { m: 365, label: 'Diaria',     dias: 1   },
+];
+
+function getF(m) { return FREQS.find(f => f.m === m); }
+
+// ── TIPO TABS ─────────────────────────────────────────────
+const tabs = document.getElementById('page-tasas').querySelectorAll('.tipo-tab');
+let tipoActual = 'efectiva_interes';
+
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  tipoActual = t.dataset.tipo;
+  const ff = document.getElementById('fieldFreqInput');
+  const isCont = tipoActual === 'continua';
+  ff.style.opacity = isCont ? '.3' : '1';
+  ff.style.pointerEvents = isCont ? 'none' : 'auto';
+  hide();
+}));
+
+// ── TOGGLE REAL ───────────────────────────────────────────
+let realOn = false;
+document.getElementById('toggleReal').addEventListener('click', () => {
+  realOn = !realOn;
+  const tr = document.getElementById('swTrack');
+  const kn = document.getElementById('swKnob');
+  const se = document.getElementById('realSection');
+  if (realOn) {
+    tr.style.background = 'rgba(0,85,165,.38)'; tr.style.borderColor = 'var(--uba-blue2)';
+    kn.style.left = '15px'; kn.style.background = 'var(--accent2)';
+    se.style.display = 'block';
+  } else {
+    tr.style.background = 'var(--bg3)'; tr.style.borderColor = 'var(--border)';
+    kn.style.left = '2px'; kn.style.background = 'var(--text3)';
+    se.style.display = 'none';
+  }
+});
+
+// ── FORMATO ───────────────────────────────────────────────
+function fmt6(v) { return v.toFixed(6).replace('.', ','); }
+function fmtF(v) { return v.toFixed(6).replace('.', ','); }
+
+// ── CONVERSIÓN A TEA ──────────────────────────────────────
+// Siempre devuelve la TEA (interés efectivo anual)
+function toTEA(tipo, t, diasInput) {
+  // Primero convertimos a interés efectivo anual
+  switch(tipo) {
+    case 'efectiva_interes':
+      // i_x efectiva del período de diasInput días → TEA
+      // (1 + i_x)^(365/diasInput) - 1
+      return Math.pow(1 + t, 365 / diasInput) - 1;
+
+    case 'nominal_interes':
+      // j(m): tasa nominal anual capitalizable en períodos de diasInput días
+      // tasa del sub-período = j(m)/m = t * diasInput/365
+      // TEA = (1 + t*diasInput/365)^(365/diasInput) - 1
+      return Math.pow(1 + t * diasInput / 365, 365 / diasInput) - 1;
+
+    case 'efectiva_descuento':
+      // d_x efectiva → i_x = d/(1-d) → TEA
+      if (t >= 1) return null;
+      const ix = t / (1 - t);
+      return Math.pow(1 + ix, 365 / diasInput) - 1;
+
+    case 'nominal_descuento':
+      // f(m): descuento nominal anual → d sub-período = f(m)*diasInput/365
+      // i sub-período = d_sp/(1-d_sp) → TEA
+      const dsp = t * diasInput / 365;
+      if (dsp >= 1) return null;
+      const isp = dsp / (1 - dsp);
+      return Math.pow(1 + isp, 365 / diasInput) - 1;
+
+    case 'continua':
+      return Math.exp(t) - 1;
+
+    default: return null;
+  }
+}
+
+// ── FÓRMULAS DIRECTAS DESDE TASA INGRESADA ───────────────
+//
+// Toda fórmula parte de la tasa ingresada (t) y el período
+// de origen (diasInput), y llega al período destino (diasDest).
+//
+// La lógica general es:
+//   Paso 1: convertir t_origen a TEA
+//   Paso 2: expresar esa TEA en el período destino
+//
+// Pero para mostrar la fórmula en UN SOLO PASO:
+//   (1 + t_origen)^(diasDest/diasOrigen) - 1
+// porque:
+//   TEA = (1+t)^(365/dO)
+//   i_dest = (1+TEA)^(dD/365) = (1+t)^(dD/dO)
+
+function buildFormulas(tipo, t, diasInput, diasDest, tea) {
+  const T  = fmtF(t);
+  const dI = diasInput;
+  const dD = diasDest;
+
+  switch(tipo) {
+
+    // ── desde efectiva de interés ──────────────────────────
+    case 'efectiva_interes': return {
+      iEf:  dD === dI
+              ? `${T}  (misma frecuencia)`
+              : `(1 + ${T})^(${dD}/${dI}) − 1`,
+      jm:   `(365/${dD}) × [(1 + ${T})^(${dD}/${dI}) − 1]`,
+      dEf:  dD === dI
+              ? `${T} / (1 + ${T})`
+              : `1 − (1 + ${T})^(−${dD}/${dI})`,
+      fmN:  `(365/${dD}) × [1 − (1 + ${T})^(−${dD}/${dI})]`,
+      delta:`ln(1 + ${T})^(365/${dI}) = (365/${dI}) × ln(1 + ${T})`,
+      real: (phi) => `(1 + ${T})^(365/${dI}) / (1 + ${fmtF(phi)}) − 1`,
+    };
+
+    // ── desde nominal de interés ───────────────────────────
+    case 'nominal_interes': return {
+      iEf:  `(1 + ${T}×${dI}/365)^(${dD}/${dI}) − 1`,
+      jm:   `(365/${dD}) × [(1 + ${T}×${dI}/365)^(${dD}/${dI}) − 1]`,
+      dEf:  `1 − (1 + ${T}×${dI}/365)^(−${dD}/${dI})`,
+      fmN:  `(365/${dD}) × [1 − (1 + ${T}×${dI}/365)^(−${dD}/${dI})]`,
+      delta:`(365/${dI}) × ln(1 + ${T}×${dI}/365)`,
+      real: (phi) => `(1 + ${T}×${dI}/365)^(365/${dI}) / (1 + ${fmtF(phi)}) − 1`,
+    };
+
+    // ── desde efectiva de descuento ────────────────────────
+    case 'efectiva_descuento': return {
+      iEf:  `(1 + ${T}/(1−${T}))^(${dD}/${dI}) − 1`,
+      jm:   `(365/${dD}) × [(1 + ${T}/(1−${T}))^(${dD}/${dI}) − 1]`,
+      dEf:  dD === dI
+              ? `${T}  (misma frecuencia)`
+              : `1 − (1 + ${T}/(1−${T}))^(−${dD}/${dI})`,
+      fmN:  `(365/${dD}) × [1 − (1 + ${T}/(1−${T}))^(−${dD}/${dI})]`,
+      delta:`(365/${dI}) × ln(1/(1−${T}))`,
+      real: (phi) => `(1 + ${T}/(1−${T}))^(365/${dI}) / (1 + ${fmtF(phi)}) − 1`,
+    };
+
+    // ── desde nominal de descuento ─────────────────────────
+    case 'nominal_descuento': return {
+      iEf:  `(1 − ${T}×${dI}/365)^(−${dD}/${dI}) − 1`,
+      jm:   `(365/${dD}) × [(1 − ${T}×${dI}/365)^(−${dD}/${dI}) − 1]`,
+      dEf:  `1 − (1 − ${T}×${dI}/365)^(${dD}/${dI})`,
+      fmN:  dD === dI
+              ? `${T}  (misma frecuencia)`
+              : `(365/${dD}) × [1 − (1 − ${T}×${dI}/365)^(${dD}/${dI})]`,
+      delta:`(365/${dI}) × ln(1/(1 − ${T}×${dI}/365))`,
+      real: (phi) => `(1 − ${T}×${dI}/365)^(−365/${dI}) / (1 + ${fmtF(phi)}) − 1`,
+    };
+
+    // ── desde continua ─────────────────────────────────────
+    case 'continua': return {
+      iEf:  `e^(${T}×${dD}/365) − 1`,
+      jm:   `(365/${dD}) × [e^(${T}×${dD}/365) − 1]`,
+      dEf:  `1 − e^(−${T}×${dD}/365)`,
+      fmN:  `(365/${dD}) × [1 − e^(−${T}×${dD}/365)]`,
+      delta:`${T}  (tasa ingresada)`,
+      real: (phi) => `e^${T} / (1 + ${fmtF(phi)}) − 1`,
+    };
+  }
+}
+
+// ── CREAR CARD ────────────────────────────────────────────
+function mkCard(label, value, formula, cColor, hlClass) {
+  const d = document.createElement('div');
+  d.className = 'result-card' + (hlClass ? ' ' + hlClass : '');
+  d.innerHTML =
+    `<div class="rc-label">${label}</div>` +
+    `<div class="rc-value ${cColor}">${fmt6(value)}</div>` +
+    `<div class="rc-formula">${formula}</div>`;
+  return d;
+}
+
+// ── CALCULAR ──────────────────────────────────────────────
+function calcular() {
+  const raw   = document.getElementById('inputTasa').value.replace(',', '.');
+  const tRaw  = parseFloat(raw);
+  const mInput = parseInt(document.getElementById('freqInput').value);
+  const err   = document.getElementById('errorMsg');
+
+  if (isNaN(tRaw) || tRaw <= 0) {
+    err.textContent = '⚠ Ingresá un valor de tasa válido y mayor a cero.';
+    err.classList.add('show'); hide(); return;
+  }
+  err.classList.remove('show');
+
+  const fInput  = getF(mInput);
+  const diasInput = tipoActual === 'continua' ? 365 : fInput.dias;
+
+  const tea = toTEA(tipoActual, tRaw, diasInput);
+  if (tea === null || !isFinite(tea) || tea <= -1) {
+    err.textContent = '⚠ Tasa inválida: verificá el tipo y la frecuencia ingresada.';
+    err.classList.add('show'); return;
+  }
+
+  // ── EFECTIVOS DE INTERÉS
+  const gEf = document.getElementById('gridEfectivo'); gEf.innerHTML = '';
+  FREQS.forEach(f => {
+    const ie   = Math.pow(1 + tea, f.dias / 365) - 1;
+    const form = buildFormulas(tipoActual, tRaw, diasInput, f.dias, tea);
+    const lbl  = `i(${f.dias}/365) — ${f.label}`;
+    gEf.appendChild(mkCard(lbl, ie, form.iEf, 'c-blue', f.dias === 365 ? 'hl-blue' : ''));
+  });
+
+  // ── NOMINALES DE INTERÉS j(m)
+  const gNom = document.getElementById('gridNominal'); gNom.innerHTML = '';
+  FREQS.forEach(f => {
+    const jm   = (365 / f.dias) * (Math.pow(1 + tea, f.dias / 365) - 1);
+    const form = buildFormulas(tipoActual, tRaw, diasInput, f.dias, tea);
+    const lbl  = `j(${365/f.dias > 1 ? (365/f.dias % 1 === 0 ? 365/f.dias : (365+'/'+f.dias)) : 1}) — Nominal ${f.label}`;
+    gNom.appendChild(mkCard(lbl, jm, form.jm, 'c-blue', ''));
+  });
+
+  // ── DESCUENTO EFECTIVO d(m)
+  const gDes = document.getElementById('gridDescuento'); gDes.innerHTML = '';
+  FREQS.forEach(f => {
+    const dp   = 1 - Math.pow(1 + tea, -f.dias / 365);
+    const form = buildFormulas(tipoActual, tRaw, diasInput, f.dias, tea);
+    const lbl  = `d(${f.dias}/365) — ${f.label}`;
+    gDes.appendChild(mkCard(lbl, dp, form.dEf, 'c-red', f.dias === 365 ? 'hl-red' : ''));
+  });
+
+  // ── DESCUENTO NOMINAL f(m)
+  const gDN = document.getElementById('gridDescNominal'); gDN.innerHTML = '';
+  FREQS.forEach(f => {
+    const fm   = (365 / f.dias) * (1 - Math.pow(1 + tea, -f.dias / 365));
+    const form = buildFormulas(tipoActual, tRaw, diasInput, f.dias, tea);
+    const lbl  = `f(${365/f.dias > 1 ? (365/f.dias % 1 === 0 ? 365/f.dias : (365+'/'+f.dias)) : 1}) — Desc. Nom. ${f.label}`;
+    gDN.appendChild(mkCard(lbl, fm, form.fmN, 'c-red', ''));
+  });
+
+  // ── OTRAS
+  const gOtr = document.getElementById('gridOtras'); gOtr.innerHTML = '';
+
+  // TEA
+  gOtr.appendChild(mkCard(
+    'TEA — i(365/365) Anual',
+    tea,
+    buildFormulas(tipoActual, tRaw, diasInput, 365, tea).iEf,
+    'c-green', 'hl-green'
+  ));
+
+  // δ continua
+  const delta = Math.log(1 + tea);
+  const formDelta = buildFormulas(tipoActual, tRaw, diasInput, 365, tea).delta;
+  gOtr.appendChild(mkCard('δ — Tasa Continua', delta, formDelta, 'c-gold', ''));
+
+  // Tasa real Fisher
+  if (realOn) {
+    const phiRaw = document.getElementById('inputInflacion').value.replace(',', '.');
+    const phi    = parseFloat(phiRaw);
+    if (!isNaN(phi) && phi > -1) {
+      const ir     = (1 + tea) / (1 + phi) - 1;
+      const formIr = buildFormulas(tipoActual, tRaw, diasInput, 365, tea).real(phi);
+      gOtr.appendChild(mkCard('i_r — Tasa Real (Fisher)', ir, formIr, 'c-gold', ''));
+    }
+  }
+
+  // Nota resumen
+  const tipoLabel = tipoActual.replace(/_/g,' ');
+  const freqLabel = tipoActual === 'continua' ? 'continua' : fInput.label;
+  document.getElementById('notaEquiv').textContent =
+    `Tasa ingresada: ${fmt6(tRaw)} · Tipo: ${tipoLabel} · ` +
+    `Frecuencia: ${freqLabel} (${diasInput} días) · TEA: ${fmt6(tea)}`;
+
+  document.getElementById('results').classList.add('show');
+}
+
+function hide() { document.getElementById('results').classList.remove('show'); }
+
+window._calcular = calcular;
+document.getElementById('btnCalc').addEventListener('click', function() {
+  calcConFeedback(this, '_calcular');
+});
+document.getElementById('inputTasa').addEventListener('keydown', e => { if(e.key==='Enter') calcular(); });
+
+  })();
+}
+
+
+
+function initRentas() {
+  (function() {
+
+// ── ESTADO ────────────────────────────────────────────────
+let tipoRenta='constante', modalidad='vencida', queCalc='VA';
+let progresion='aritmetica', modalidadV='vencida', queCalcV='VA';
+let rTipoTasa='ef_int', rVTipoTasa='ef_int';
+
+// ── HELPERS ───────────────────────────────────────────────
+const fmt6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
+const fmt2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
+const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
+const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
+const vf=i=>1/(1+i);
+function bisect(f,a,b,tol=1e-10,max=400){
+  let fa=f(a),fb=f(b);if(fa*fb>0)return null;let c;
+  for(let k=0;k<max;k++){c=(a+b)/2;const fc=f(c);if(Math.abs(fc)<tol||(b-a)/2<tol)return c;fa*fc<0?b=c:a=c;}
+  return c;
+}
+
+// ── CONVERSIÓN DE TASA ────────────────────────────────────
+// Convierte cualquier tasa a i efectiva del período destino (en días)
+function convertirTasa(tipo, valor, diasTasa, diasPeriodo) {
+  if (valor === null || valor <= 0) return null;
+  // 1. Convertir a TEA
+  let tea;
+  switch(tipo) {
+    case 'ef_int':   tea = Math.pow(1+valor, 365/diasTasa) - 1; break;
+    case 'nom_int':  tea = Math.pow(1+valor*diasTasa/365, 365/diasTasa) - 1; break;
+    case 'ef_desc':  if(valor>=1)return null; tea = Math.pow(1-valor,-365/diasTasa)-1; break;
+    case 'nom_desc': {const d=valor*diasTasa/365;if(d>=1)return null;tea=Math.pow(1-d,-365/diasTasa)-1;break;}
+    case 'continua': tea = Math.exp(valor) - 1; break;
+    default: return null;
+  }
+  // 2. Convertir TEA a i del período destino
+  return Math.pow(1+tea, diasPeriodo/365) - 1;
+}
+
+function fmt6c(v) { return v.toFixed(6).replace('.',','); }
+
+// ── ACTUALIZAR DISPLAY TASA CONVERTIDA ───────────────────
+function actualizarTasaDisplay(tipoId, tasaId, freqTasaId, freqPeriodoId, displayId, spanId) {
+  const tipo     = tipoId;
+  const valor    = pn(tasaId);
+  const diasT    = parseInt(document.getElementById(freqTasaId).value);
+  const diasP    = parseInt(document.getElementById(freqPeriodoId).value);
+  const display  = document.getElementById(displayId);
+  const span     = document.getElementById(spanId);
+  if (valor && valor > 0) {
+    const i = convertirTasa(tipo, valor, diasT, diasP);
+    if (i !== null && isFinite(i)) {
+      span.textContent = fmt6c(i) + ' (' + (diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria') + ')';
+      display.style.display = '';
+    } else { display.style.display = 'none'; }
+  } else { display.style.display = 'none'; }
+}
+
+function getTasaConst() {
+  const valor = pn('rInTasa');
+  const diasT = parseInt(document.getElementById('rFreqTasa').value);
+  const diasP = parseInt(document.getElementById('rFreqPago').value);
+  return convertirTasa(rTipoTasa, valor, diasT, diasP);
+}
+function getTasaVar() {
+  const valor = pn('rVInTasa');
+  const diasT = parseInt(document.getElementById('rVFreqTasa').value);
+  const diasP = parseInt(document.getElementById('rVFreqPago').value);
+  return convertirTasa(rVTipoTasa, valor, diasT, diasP);
+}
+
+// ── TABS TIPO TASA CONSTANTE ──────────────────────────────
+document.getElementById('page-rentas').querySelectorAll('#rTipoTabs .tipo-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('#rTipoTabs .tipo-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); rTipoTasa=t.dataset.rtipo;
+  const isC=rTipoTasa==='continua';
+  document.getElementById('rFreqField').style.opacity=isC?'.3':'1';
+  document.getElementById('rFreqField').style.pointerEvents=isC?'none':'auto';
+  actualizarTasaDisplay(rTipoTasa,'rInTasa','rFreqTasa','rFreqPago','rTasaConvertida','rTasaPer');
+}));
+['rInTasa','rFreqTasa','rFreqPago'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>
+    actualizarTasaDisplay(rTipoTasa,'rInTasa','rFreqTasa','rFreqPago','rTasaConvertida','rTasaPer'));
+});
+
+// ── TABS TIPO TASA VARIABLE ───────────────────────────────
+document.getElementById('page-rentas').querySelectorAll('#rVTipoTabs .tipo-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('#rVTipoTabs .tipo-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); rVTipoTasa=t.dataset.rvtipo;
+  const isC=rVTipoTasa==='continua';
+  document.getElementById('rVFreqField').style.opacity=isC?'.3':'1';
+  document.getElementById('rVFreqField').style.pointerEvents=isC?'none':'auto';
+  actualizarTasaDisplay(rVTipoTasa,'rVInTasa','rVFreqTasa','rVFreqPago','rVTasaConvertida','rVTasaPer');
+}));
+['rVInTasa','rVFreqTasa','rVFreqPago'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>
+    actualizarTasaDisplay(rVTipoTasa,'rVInTasa','rVFreqTasa','rVFreqPago','rVTasaConvertida','rVTasaPer'));
+});
+
+// ── TABS MODALIDAD / QUÉ / PROGRESIÓN ────────────────────
+document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-mod]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-mod]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); modalidad=t.dataset.mod;
+  actualizarInputsConst(); ocultarRes('resConstante','errConst');
+}));
+document.getElementById('page-rentas').querySelectorAll('.que-tab[data-q]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('.que-tab[data-q]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); queCalc=t.dataset.q;
+  actualizarInputsConst(); ocultarRes('resConstante','errConst');
+}));
+document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-prog]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-prog]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); progresion=t.dataset.prog;
+  document.getElementById('razonLbl').innerHTML=progresion==='aritmetica'?'Razón (r) <span>— $</span>':'Razón (q) <span>— t.p.1</span>';
+  document.getElementById('inRazon').placeholder=progresion==='aritmetica'?'Ej: 50':'Ej: 1,05';
+  ocultarRes('resVariable','errVar');
+}));
+document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-modv]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('.modal-tab[data-modv]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); modalidadV=t.dataset.modv;
+  actualizarInputsVar(); ocultarRes('resVariable','errVar');
+}));
+document.getElementById('page-rentas').querySelectorAll('.que-tab[data-qv]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-rentas').querySelectorAll('.que-tab[data-qv]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); queCalcV=t.dataset.qv;
+  actualizarInputsVar(); ocultarRes('resVariable','errVar');
+}));
+
+// ── ACTUALIZAR INPUTS ─────────────────────────────────────
+function actualizarInputsConst(){
+  const esPerpetua=modalidad==='perpetua', esDiferida=modalidad==='diferida';
+  document.getElementById('fH').style.display=esDiferida?'':'none';
+  document.getElementById('fN').style.opacity=esPerpetua?'.3':'1';
+  document.getElementById('fN').style.pointerEvents=esPerpetua?'none':'auto';
+  // Ocultar VF en perpetua
+  document.getElementById('fVF').style.opacity=esPerpetua?'.3':'1';
+  document.getElementById('fVF').style.pointerEvents=esPerpetua?'none':'auto';
+
+  ['inC','inN','inVA','inVF'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('incognita'); el.readOnly=false;
+    el.placeholder={inC:'Ej: 1000',inN:'Ej: 24',inVA:'Ej: 20000',inVF:'Ej: 35000'}[id]||'';
+  });
+  const map={VA:'inVA',VF:'inVF',C:'inC',n:'inN'};
+  // i no tiene input propio (viene del selector de tasa)
+  const inc=map[queCalc];
+  if(inc){const el=document.getElementById(inc);if(el){el.classList.add('incognita');el.value='';el.placeholder='← incógnita';el.readOnly=true;}}
+
+  // Si queCalc es 'i', mostrar aviso
+  if(queCalc==='i'){
+    document.getElementById('errConst').textContent='ℹ Para calcular i: ingresá VA o VF, C y n. La calculadora devuelve la tasa efectiva del período.';
+    document.getElementById('errConst').style.background='rgba(77,163,232,.08)';
+    document.getElementById('errConst').style.borderColor='rgba(77,163,232,.3)';
+    document.getElementById('errConst').style.color='var(--accent2)';
+    document.getElementById('errConst').classList.add('show');
+  } else {
+    document.getElementById('errConst').classList.remove('show');
+    document.getElementById('errConst').style.background='';
+    document.getElementById('errConst').style.borderColor='';
+    document.getElementById('errConst').style.color='';
+  }
+
+  if(esPerpetua&&(queCalc==='VF'||queCalc==='n'||queCalc==='i')){
+    document.getElementById('page-rentas').querySelectorAll('.que-tab[data-q]').forEach(x=>x.classList.remove('active'));
+    queCalc='VA'; document.getElementById('page-rentas').querySelector('.que-tab[data-q="VA"]').classList.add('active');
+    actualizarInputsConst();
+  }
+}
+
+function actualizarInputsVar(){
+  const esPerpetua=modalidadV==='perpetua', esDiferida=modalidadV==='diferida';
+  document.getElementById('fVH').style.display=esDiferida?'':'none';
+  document.getElementById('fVN').style.opacity=esPerpetua?'.3':'1';
+  document.getElementById('fVN').style.pointerEvents=esPerpetua?'none':'auto';
+  document.getElementById('fVVF').style.opacity=esPerpetua?'.3':'1';
+  document.getElementById('fVVF').style.pointerEvents=esPerpetua?'none':'auto';
+
+  ['inVC','inRazon','inVN','inVVA','inVVF'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('incognita'); el.readOnly=false;
+  });
+  const mapV={VA:'inVVA',VF:'inVVF',c:'inVC',razon:'inRazon',n:'inVN'};
+  const inc=mapV[queCalcV];
+  if(inc){const el=document.getElementById(inc);if(el){el.classList.add('incognita');el.value='';el.placeholder='← incógnita';el.readOnly=true;}}
+}
+
+function ocultarRes(r,e){
+  document.getElementById(r).classList.remove('show');
+  const el=document.getElementById(e);
+  el.classList.remove('show');
+  el.style.background=''; el.style.borderColor=''; el.style.color='';
+}
+function mostrarError(id,msg){const el=document.getElementById(id);el.textContent='⚠ '+msg;el.style.background='';el.style.borderColor='';el.style.color='';el.classList.add('show');}
+
+// ══════════════════════════════════════════════════════════
+// CALCULAR CONSTANTE
+// ══════════════════════════════════════════════════════════
+function calcConstante(){
+  ocultarRes('resConstante','errConst');
+  const C  = queCalc!=='C' ? pn('inC')  : null;
+  const n  = (queCalc!=='n'&&modalidad!=='perpetua') ? pn('inN') : null;
+  const VA = queCalc!=='VA'? pn('inVA') : null;
+  const VF = queCalc!=='VF'? pn('inVF') : null;
+  const h  = modalidad==='diferida' ? pn('inH') : 0;
+
+  // Obtener tasa del período
+  let i;
+  if (queCalc === 'i') {
+    i = null; // la vamos a calcular
+  } else {
+    i = getTasaConst();
+    if (!i || i <= 0) return mostrarError('errConst','Ingresá la tasa y verificá el tipo y frecuencia.');
+  }
+
+  if(queCalc!=='n'&&n!==null&&n<=0) return mostrarError('errConst','n debe ser mayor a cero.');
+  if(queCalc!=='C'&&C!==null&&C<=0) return mostrarError('errConst','La cuota C debe ser mayor a cero.');
+  if(modalidad==='diferida'&&(h===null||h<1)) return mostrarError('errConst','Ingresá el período de diferimiento h ≥ 1.');
+
+  let resultado=null, formula='', iterativo=false;
+
+  const factMod=iVal=>{
+    if(modalidad==='adelantada') return 1+iVal;
+    if(modalidad==='diferida')   return Math.pow(vf(iVal),h);
+    return 1;
+  };
+
+  if(modalidad==='perpetua'){
+    if(queCalc==='VA'){
+      if(C===null||i===null) return mostrarError('errConst','Completá C y la tasa.');
+      resultado=C/i; formula=`C / i = ${fmt2(C)} / ${fmt6(i)}`;
+    } else if(queCalc==='C'){
+      if(VA===null||i===null) return mostrarError('errConst','Completá VA y la tasa.');
+      resultado=VA*i; formula=`VA × i = ${fmt2(VA)} × ${fmt6(i)}`;
+    } else return mostrarError('errConst','Para renta perpetua solo se puede calcular VA o C.');
+  } else {
+    switch(queCalc){
+      case 'VA':{
+        if(C===null||i===null||n===null) return mostrarError('errConst','Completá C, tasa y n.');
+        resultado=an(n,i)*C*factMod(i);
+        formula=`C × a(1,${n},${fmt6(i)}) × factor\n= ${fmt2(C)} × ${fmt6(an(n,i))} × ${fmt6(factMod(i))}`;
+        break;
+      }
+      case 'VF':{
+        if(C===null||i===null||n===null) return mostrarError('errConst','Completá C, tasa y n.');
+        resultado=C*sn(n,i)*(modalidad==='adelantada'?(1+i):1);
+        formula=`C × s(1,${n},${fmt6(i)})${modalidad==='adelantada'?' × (1+i)':''}\n= ${fmt2(C)} × ${fmt6(sn(n,i))}`;
+        break;
+      }
+      case 'C':{
+        if(i===null) return mostrarError('errConst','Ingresá la tasa.');
+        if(VA!==null&&n!==null){
+          resultado=VA/(an(n,i)*factMod(i));
+          formula=`VA / (a(1,${n},${fmt6(i)}) × factor)\n= ${fmt2(VA)} / ${fmt6(an(n,i)*factMod(i))}`;
+        } else if(VF!==null&&n!==null){
+          resultado=VF/(sn(n,i)*(modalidad==='adelantada'?(1+i):1));
+          formula=`VF / (s(1,${n},${fmt6(i)}))\n= ${fmt2(VF)} / ${fmt6(sn(n,i))}`;
+        } else return mostrarError('errConst','Completá (VA o VF) y n.');
+        break;
+      }
+      case 'n':{
+        iterativo=true;
+        if(i===null) return mostrarError('errConst','Ingresá la tasa.');
+        if(VA!==null&&C!==null){
+          if(modalidad==='vencida'){
+            const arg=1-(VA*i/C);
+            if(arg<=0) return mostrarError('errConst','No existe solución (VA·i ≥ C).');
+            resultado=-Math.log(arg)/Math.log(1+i);
+            formula=`−ln(1 − VA·i/C) / ln(1+i)\n= −ln(${fmt6(1-VA*i/C)}) / ln(1+${fmt6(i)})`;
+            iterativo=false;
+          } else {
+            resultado=bisect(nn=>an(nn,i)*factMod(i)-VA/C,0.001,10000);
+            formula=`Solución numérica: a(1,n,${fmt6(i)})·factor = ${fmt6(VA/C)}`;
+          }
+        } else if(VF!==null&&C!==null){
+          resultado=Math.log(VF*i/C+1)/Math.log(1+i);
+          formula=`ln(VF·i/C + 1) / ln(1+i)`;
+          iterativo=false;
+        } else return mostrarError('errConst','Completá (VA o VF) y C.');
+        break;
+      }
+      case 'i':{
+        iterativo=true;
+        // Resolver numéricamente y devolver i efectiva del período
+        if(VA!==null&&C!==null&&n!==null){
+          const r=bisect(ii=>ii>0?an(n,ii)*factMod(ii)-VA/C:NaN,0.0001,100);
+          if(!r||r<=0) return mostrarError('errConst','No se encontró tasa. Verificá los datos.');
+          resultado=r;
+          formula=`Solución numérica: a(1,${n},i)·factor = ${fmt6(VA/C)}\ni efectiva del período`;
+        } else if(VF!==null&&C!==null&&n!==null){
+          const r=bisect(ii=>ii>0?sn(n,ii)*(modalidad==='adelantada'?(1+ii):1)-VF/C:NaN,0.0001,100);
+          if(!r||r<=0) return mostrarError('errConst','No se encontró tasa. Verificá los datos.');
+          resultado=r;
+          formula=`Solución numérica: s(1,${n},i)·factor = ${fmt6(VF/C)}\ni efectiva del período`;
+        } else return mostrarError('errConst','Completá (VA o VF), C y n.');
+        break;
+      }
+    }
+  }
+
+  if(resultado===null||!isFinite(resultado)) return mostrarError('errConst','No se pudo calcular. Verificá los datos.');
+
+  const labels={VA:'Valor Actual (VA)',VF:'Valor Final (VF)',C:'Cuota (C)',n:'Número de cuotas (n)',i:'Tasa efectiva del período (i)'};
+  document.getElementById('resConstLbl').textContent=labels[queCalc]+' — '+modalidad.charAt(0).toUpperCase()+modalidad.slice(1);
+  document.getElementById('resConstVal').textContent=fmt6(resultado);
+  document.getElementById('resConstForm').innerHTML=(iterativo?'<span style="color:var(--gold)">⟳ Numérico · </span>':'')+formula.replace(/\n/g,'<br>');
+
+  // Valores derivados
+  const sec=document.getElementById('resConstSec'); sec.innerHTML='';
+  const iVal=queCalc==='i'?resultado:i;
+  const cVal=queCalc==='C'?resultado:C;
+  const nVal=queCalc==='n'?Math.round(resultado):n;
+  if(iVal&&cVal&&nVal&&modalidad!=='perpetua'){
+    const vaV=an(nVal,iVal)*cVal, vfV=sn(nVal,iVal)*cVal;
+    let vaFinal=vaV;
+    if(modalidad==='adelantada') vaFinal*=(1+iVal);
+    if(modalidad==='diferida')   vaFinal*=Math.pow(vf(iVal),h);
+    // Si calculamos i, también mostrar TEA
+    const extras = queCalc==='i' ? [
+      {lbl:'TEA equivalente',val:fmt6(Math.pow(1+resultado,365/parseInt(document.getElementById('rFreqPago').value))-1),form:`(1+${fmt6(resultado)})^(365/${document.getElementById('rFreqPago').value})−1`}
+    ] : [];
+    [
+      {lbl:'a(1,n,i)',val:fmt6(an(nVal,iVal)),form:`(1−v^${nVal})/${fmt6(iVal)}`},
+      {lbl:'s(1,n,i)',val:fmt6(sn(nVal,iVal)),form:`((1+${fmt6(iVal)})^${nVal}−1)/${fmt6(iVal)}`},
+      {lbl:'VA vencida base',val:fmt6(vaV),form:`${fmt2(cVal)}×${fmt6(an(nVal,iVal))}`},
+      {lbl:'VF vencida base',val:fmt6(vfV),form:`${fmt2(cVal)}×${fmt6(sn(nVal,iVal))}`},
+      ...(modalidad!=='vencida'?[{lbl:'VA ('+modalidad+')',val:fmt6(vaFinal),form:modalidad==='adelantada'?'VA·(1+i)':`VA·v^${h}`}]:[]),
+      ...extras,
+    ].forEach(c=>{
+      const d=document.createElement('div'); d.className='res-sec-card';
+      d.innerHTML=`<div class="rsc-label">${c.lbl}</div><div class="rsc-value">${c.val}</div><div class="rsc-formula">${c.form}</div>`;
+      sec.appendChild(d);
+    });
+  }
+  document.getElementById('resConstante').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════════
+// CALCULAR VARIABLE (igual que antes, con getTasaVar())
+// ══════════════════════════════════════════════════════════
+function calcVariable(){
+  ocultarRes('resVariable','errVar');
+  const c    =queCalcV!=='c'    ?pn('inVC')   :null;
+  const razon=queCalcV!=='razon'?pn('inRazon'):null;
+  const n    =(queCalcV!=='n'&&modalidadV!=='perpetua')?pn('inVN'):null;
+  const VA   =queCalcV!=='VA'   ?pn('inVVA')  :null;
+  const VF   =queCalcV!=='VF'   ?pn('inVVF')  :null;
+  const h    =modalidadV==='diferida'?pn('inVH'):0;
+
+  const i = getTasaVar();
+  if(!i||i<=0) return mostrarError('errVar','Ingresá la tasa y verificá el tipo y frecuencia.');
+  if(modalidadV==='diferida'&&(h===null||h<1)) return mostrarError('errVar','Ingresá el período de diferimiento h ≥ 1.');
+
+  const vDisc=1/(1+i);
+  let resultado=null,formula='',iterativo=false,cuotas=[];
+
+  const factMod=()=>{
+    if(modalidadV==='adelantada')return 1+i;
+    if(modalidadV==='diferida')return Math.pow(vDisc,h);
+    return 1;
+  };
+
+  if(progresion==='aritmetica'){
+    const vaArit=(cV,rV,nV,iV)=>{const a=an(nV,iV);return(cV+rV/iV)*a-rV*nV*Math.pow(1/(1+iV),nV)/iV;};
+    const vfArit=(cV,rV,nV,iV)=>{const s=sn(nV,iV);return(cV+rV/iV)*s-rV*nV/iV;};
+
+    if(modalidadV==='perpetua'){
+      if(queCalcV!=='VA') return mostrarError('errVar','En perpetua aritmética solo VA.');
+      if(c===null||razon===null) return mostrarError('errVar','Completá c y r.');
+      resultado=(c+razon/i)/i;
+      formula=`[c + r/i] / i = [${fmt2(c)} + ${fmt2(razon)}/${fmt6(i)}] / ${fmt6(i)}`;
+    } else {
+      if(c===null&&queCalcV!=='c') return mostrarError('errVar','Completá c.');
+      if(razon===null&&queCalcV!=='razon') return mostrarError('errVar','Completá r.');
+      if(n===null&&queCalcV!=='n') return mostrarError('errVar','Completá n.');
+      switch(queCalcV){
+        case 'VA': resultado=vaArit(c,razon,n,i)*factMod(); formula=`[${fmt2(c)} + ${fmt2(razon)}/${fmt6(i)}]·a(1,${n},${fmt6(i)}) − ${fmt2(razon)}·${n}·v^${n}/${fmt6(i)}`; break;
+        case 'VF': resultado=vfArit(c,razon,n,i)*(modalidadV==='adelantada'?(1+i):1); formula=`[${fmt2(c)} + ${fmt2(razon)}/${fmt6(i)}]·s(1,${n},${fmt6(i)}) − ${fmt2(razon)}·${n}/${fmt6(i)}`; break;
+        case 'c':{if(VA!==null){resultado=(VA/factMod()+razon*n*Math.pow(vDisc,n)/i)/an(n,i)-razon/i;formula=`(VA/factor + r·n·v^n/i)/a − r/i`;}else if(VF!==null){resultado=(VF/(modalidadV==='adelantada'?(1+i):1)+razon*n/i)/sn(n,i)-razon/i;formula=`(VF/factor + r·n/i)/s − r/i`;}else return mostrarError('errVar','Completá VA o VF.');break;}
+        case 'razon':{if(VA!==null){const a=an(n,i),vn=Math.pow(vDisc,n);resultado=(VA/factMod()-c*a)/(a/i-n*vn/i);formula=`(VA/factor − c·a)/(a/i − n·v^n/i)`;}else if(VF!==null){const s=sn(n,i);resultado=(VF/(modalidadV==='adelantada'?(1+i):1)-c*s)/(s/i-n/i);formula=`(VF/factor − c·s)/(s/i − n/i)`;}else return mostrarError('errVar','Completá VA o VF.');break;}
+        case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaArit(c,razon,nn,i)-VA/factMod(),0.5,5000);formula=`Solución numérica`;}else if(VF!==null){resultado=bisect(nn=>vfArit(c,razon,nn,i)-VF/(modalidadV==='adelantada'?(1+i):1),0.5,5000);formula=`Solución numérica`;}else return mostrarError('errVar','Completá VA o VF.');break;}
+      }
+    }
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,rD=queCalcV==='razon'?resultado:razon;for(let t=1;t<=Math.min(nD,60);t++)cuotas.push({t,cuota:cD+(t-1)*rD});}
+  } else {
+    const vaGeo=(cV,qV,nV,iV)=>{const qv=qV/(1+iV);if(Math.abs(qv-1)<1e-10)return cV/(1+iV)*nV;return cV*(1-Math.pow(qv,nV))/(1+iV-qV);};
+    const vfGeo=(cV,qV,nV,iV)=>{if(Math.abs(1+iV-qV)<1e-10)return cV*nV*Math.pow(1+iV,nV-1);return cV*(Math.pow(1+iV,nV)-Math.pow(qV,nV))/(1+iV-qV);};
+    if(modalidadV==='perpetua'){
+      if(queCalcV!=='VA') return mostrarError('errVar','En perpetua geométrica solo VA.');
+      if(c===null||razon===null) return mostrarError('errVar','Completá c y q.');
+      if(razon>=1+i) return mostrarError('errVar','Se requiere q < 1+i.');
+      resultado=c/(1+i-razon); formula=`c/(1+i−q) = ${fmt2(c)}/(1+${fmt6(i)}−${fmt6(razon)})`;
+    } else {
+      if(c===null&&queCalcV!=='c') return mostrarError('errVar','Completá c.');
+      if(razon===null&&queCalcV!=='razon') return mostrarError('errVar','Completá q.');
+      if(n===null&&queCalcV!=='n') return mostrarError('errVar','Completá n.');
+      switch(queCalcV){
+        case 'VA': resultado=vaGeo(c,razon,n,i)*factMod(); formula=`c·(1−(q·v)^n)/(1+i−q)`; break;
+        case 'VF': resultado=vfGeo(c,razon,n,i)*(modalidadV==='adelantada'?(1+i):1); formula=`c·((1+i)^n−q^n)/(1+i−q)`; break;
+        case 'c':{if(VA!==null){resultado=(VA/factMod())/vaGeo(1,razon,n,i);}else if(VF!==null){resultado=(VF/(modalidadV==='adelantada'?(1+i):1))/vfGeo(1,razon,n,i);}else return mostrarError('errVar','Completá VA o VF.');formula=`VA o VF / factor / vV|c=1`;break;}
+        case 'razon':{iterativo=true;if(VA!==null){resultado=bisect(qV=>vaGeo(c,qV,n,i)-VA/factMod(),0.001,1+i-0.0001);}else if(VF!==null){resultado=bisect(qV=>vfGeo(c,qV,n,i)-VF/(modalidadV==='adelantada'?(1+i):1),0.001,10);}else return mostrarError('errVar','Completá VA o VF.');formula=`Solución numérica`;break;}
+        case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaGeo(c,razon,nn,i)-VA/factMod(),0.5,5000);}else if(VF!==null){resultado=bisect(nn=>vfGeo(c,razon,nn,i)-VF/(modalidadV==='adelantada'?(1+i):1),0.5,5000);}else return mostrarError('errVar','Completá VA o VF.');formula=`Solución numérica`;break;}
+      }
+    }
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,qD=queCalcV==='razon'?resultado:razon;for(let t=1;t<=Math.min(nD,60);t++)cuotas.push({t,cuota:cD*Math.pow(qD,t-1)});}
+  }
+
+  if(resultado===null||!isFinite(resultado)) return mostrarError('errVar','No se pudo calcular. Verificá los datos.');
+
+  const labelsV={VA:'Valor Actual (VA)',VF:'Valor Final (VF)',c:'Cuota inicial (c)',razon:progresion==='aritmetica'?'Razón (r)':'Razón (q)',n:'Número de cuotas (n)'};
+  document.getElementById('resVarLbl').textContent=labelsV[queCalcV]+' — '+modalidadV.charAt(0).toUpperCase()+modalidadV.slice(1)+' '+progresion;
+  document.getElementById('resVarVal').textContent=queCalcV==='n'?resultado.toFixed(4).replace('.',','):fmt6(resultado);
+  document.getElementById('resVarForm').innerHTML=(iterativo?'<span style="color:var(--gold)">⟳ Numérico · </span>':'')+formula.replace(/\n/g,'<br>');
+
+  const secLbl=document.getElementById('resVarSecLbl'),tablaWrap=document.getElementById('resVarTabla');
+  if(cuotas.length>0){
+    secLbl.style.display='';
+    const nT=(queCalcV==='n'?Math.round(resultado):n)||cuotas.length;
+    tablaWrap.innerHTML=`<table><thead><tr><th>t</th><th>Cuota c(t)</th></tr></thead><tbody>${cuotas.map(r=>`<tr><td>${r.t}</td><td>${fmt2(r.cuota)}</td></tr>`).join('')}</tbody></table>`;
+  } else {secLbl.style.display='none';tablaWrap.innerHTML='';}
+  document.getElementById('resVariable').classList.add('show');
+}
+
+window._calcConstante = calcConstante;
+window._calcVariable  = calcVariable;
+window._setTipoInternal = setTipo;
+
+function setTipo(t){
+  tipoRenta=t;
+  document.getElementById('btnConstante').classList.toggle('active',t==='constante');
+  document.getElementById('btnVariable').classList.toggle('active',t==='variable');
+  document.getElementById('cardConstante').style.display=t==='constante'?'':'none';
+  document.getElementById('cardVariable').style.display=t==='variable'?'':'none';
+}
+
+actualizarInputsConst(); actualizarInputsVar();
+
+  })();
+}
+
+function initPrestamos() {
+  (function() {
+
+// ── ESTADO ────────────────────────────────────────────────
+let sistema='frances', gastosOn=false, queCalcP='cuota', pTipoTasa='ef_int';
+
+const f2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
+const f6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
+const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
+const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
+function bisect(f,a,b,tol=1e-10,max=500){
+  let fa=f(a),fb=f(b);if(!isFinite(fa)||!isFinite(fb)||fa*fb>0)return null;let c;
+  for(let k=0;k<max;k++){c=(a+b)/2;const fc=f(c);if(Math.abs(fc)<tol||(b-a)/2<tol)return c;fa*fc<0?b=c:a=c;}
+  return c;
+}
+
+// ── CONVERSIÓN DE TASA ────────────────────────────────────
+function convertirTasaPrest(tipo, valor, diasTasa, diasPeriodo) {
+  if (!valor || valor <= 0) return null;
+  if (tipo === 'directa_r') return valor; // tasa directa: se devuelve tal cual
+  let tea;
+  switch(tipo) {
+    case 'ef_int':   tea = Math.pow(1+valor, 365/diasTasa) - 1; break;
+    case 'nom_int':  tea = Math.pow(1+valor*diasTasa/365, 365/diasTasa) - 1; break;
+    case 'ef_desc':  if(valor>=1)return null; tea = Math.pow(1-valor,-365/diasTasa)-1; break;
+    case 'nom_desc': {const d=valor*diasTasa/365;if(d>=1)return null;tea=Math.pow(1-d,-365/diasTasa)-1;break;}
+    case 'continua': tea = Math.exp(valor) - 1; break;
+    default: return null;
+  }
+  return Math.pow(1+tea, diasPeriodo/365) - 1;
+}
+
+function getTasaPrest() {
+  const valor = pn('prInI');
+  const diasT = parseInt(document.getElementById('pFreqTasa').value);
+  const diasP = parseInt(document.getElementById('pFreqCuotas').value);
+  return convertirTasaPrest(pTipoTasa, valor, diasT, diasP);
+}
+
+function actualizarDisplayTasa() {
+  const valor = pn('prInI');
+  const diasT = parseInt(document.getElementById('pFreqTasa').value);
+  const diasP = parseInt(document.getElementById('pFreqCuotas').value);
+  const display = document.getElementById('pTasaConvertida');
+  const span    = document.getElementById('pTasaPer');
+  if (pTipoTasa === 'directa_r') {
+    if (valor && valor > 0) {
+      span.textContent = `tasa directa r = ${valor.toFixed(6).replace('.',',')} (s/capital original por período)`;
+      display.style.display = '';
+    } else display.style.display = 'none';
+    return;
+  }
+  if (valor && valor > 0) {
+    const i = convertirTasaPrest(pTipoTasa, valor, diasT, diasP);
+    if (i && isFinite(i)) {
+      const freq = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      span.textContent = `${i.toFixed(6).replace('.',',')} efectiva ${freq}`;
+      display.style.display = '';
+    } else display.style.display = 'none';
+  } else display.style.display = 'none';
+}
+
+// ── TABS TIPO TASA ────────────────────────────────────────
+document.getElementById('page-prestamos').querySelectorAll('#pTipoTabs .tipo-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-prestamos').querySelectorAll('#pTipoTabs .tipo-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); pTipoTasa=t.dataset.ptipo;
+  const isC=pTipoTasa==='continua'||pTipoTasa==='directa_r';
+  document.getElementById('pFreqField').style.opacity=isC?'.3':'1';
+  document.getElementById('pFreqField').style.pointerEvents=isC?'none':'auto';
+  document.getElementById('pLabelTasa').innerHTML = pTipoTasa==='directa_r'
+    ? 'Tasa directa (r) <span>— t.p.1 por período s/capital orig.</span>'
+    : 'Valor de la tasa <span>— t.p.1</span>';
+  actualizarDisplayTasa();
+}));
+['prInI','pFreqTasa','pFreqCuotas'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', actualizarDisplayTasa);
+});
+
+// ── TABS SISTEMA ──────────────────────────────────────────
+document.getElementById('page-prestamos').querySelectorAll('.sis-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-prestamos').querySelectorAll('.sis-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); sistema=t.dataset.sis;
+  document.getElementById('rowTasaF').style.display=sistema==='americano'?'':'none';
+  actualizarInputsPrest();
+  document.getElementById('resPrest').classList.remove('show');
+}));
+
+// ── TABS INCÓGNITA ────────────────────────────────────────
+document.getElementById('page-prestamos').querySelectorAll('.que-tab[data-pq]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-prestamos').querySelectorAll('.que-tab[data-pq]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); queCalcP=t.dataset.pq;
+  actualizarInputsPrest();
+  document.getElementById('resPrest').classList.remove('show');
+}));
+
+function actualizarInputsPrest() {
+  const necesitaCuota = queCalcP==='V' || queCalcP==='n' || queCalcP==='i';
+  // Mostrar campo cuota conocida solo si se despeja V, n o i
+  document.getElementById('pFCuota').style.display  = necesitaCuota ? '' : 'none';
+  // Ocultar tasa si se despeja i
+  document.getElementById('pTasaConvertida').style.display = 'none';
+
+  // Marcar incógnitas
+  ['inV','prInN','prInI'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('incognita'); el.readOnly=false;
+    el.placeholder=id==='inV'?'Ej: 100000':id==='prInN'?'Ej: 24':'Ej: 0,035';
+  });
+  if(queCalcP==='V'){
+    const el=document.getElementById('inV');
+    el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+  } else if(queCalcP==='n'){
+    const el=document.getElementById('prInN');
+    el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+  } else if(queCalcP==='i'){
+    const el=document.getElementById('prInI');
+    el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+  }
+}
+
+// ── TOGGLE GASTOS ─────────────────────────────────────────
+document.getElementById('toggleGastos').addEventListener('click',()=>{
+  gastosOn=!gastosOn;
+  const tr=document.getElementById('swGastos'),kn=document.getElementById('knobGastos'),se=document.getElementById('gastosSection');
+  if(gastosOn){tr.style.background='rgba(0,85,165,.38)';tr.style.borderColor='var(--uba-blue2)';kn.style.left='15px';kn.style.background='var(--accent2)';se.style.display='';}
+  else{tr.style.background='var(--bg3)';tr.style.borderColor='var(--border)';kn.style.left='2px';kn.style.background='var(--text3)';se.style.display='none';}
+});
+
+// ── FUNCIONES FINANCIERAS ─────────────────────────────────
+function rToI(r,n){
+  const c=1/n+r;
+  return bisect(i=>i>0?an(n,i)-1/c:NaN,0.00001,100);
+}
+
+function buildTabla(V,n,i,sis,iF){
+  const rows=[];
+  if(sis==='frances'){
+    const c=V/an(n,i); let saldo=V;
+    for(let t=1;t<=n;t++){const int=saldo*i;const amort=c-int;saldo-=amort;rows.push({t,cuota:c,interes:int,amort,saldo:Math.abs(saldo)<0.005?0:saldo});}
+  } else if(sis==='aleman'){
+    const amortBase=V/n; let saldo=V;
+    for(let t=1;t<=n;t++){const int=saldo*i;const cuota=amortBase+int;saldo-=amortBase;rows.push({t,cuota,interes:int,amort:amortBase,saldo:Math.abs(saldo)<0.005?0:saldo});}
+  } else if(sis==='directa'){
+    const amortBase=V/n, intFijo=V*i, cuota=amortBase+intFijo; let saldo=V;
+    for(let t=1;t<=n;t++){saldo-=amortBase;rows.push({t,cuota,interes:intFijo,amort:amortBase,saldo:Math.abs(saldo)<0.005?0:saldo});}
+  } else if(sis==='americano'){
+    const dep=V/sn(n,iF), c=V*i+dep;
+    for(let t=1;t<=n;t++){const fondo=dep*sn(t,iF);rows.push({t,cuota:c,interes:V*i,amort:dep,saldo:t<n?V:0,fondoAcum:fondo,esAmericano:true});}
+  }
+  return rows;
+}
+
+function calcCFT(V,rows,gFijo,gOtorg,sellado,ivaPorc){
+  const selladoMonto=V*(sellado/100);
+  const vNeto=V-gOtorg-selladoMonto;
+  const flujo=rows.map(r=>r.cuota+gFijo+r.interes*(ivaPorc/100));
+  const f=i=>{let pv=0;flujo.forEach((cf,idx)=>{pv+=cf/Math.pow(1+i,idx+1)});return pv-vNeto;};
+  const tirPer=bisect(f,0.00001,50);
+  return{tirPer,vNeto,selladoMonto};
+}
+
+function tablaHTML(rows,gFijo=0,ivaPorc=0){
+  const conG=gastosOn&&(gFijo>0||ivaPorc>0);
+  const esAm=rows[0]&&rows[0].esAmericano;
+  const cols=esAm?['t','Cuota','Interés','Dep. Fondo','Fondo Acum.','Saldo']:['t','Cuota c(t)','Interés I(t−1,t)','Amort. t(t)','Saldo V(t)'];
+  if(conG)cols.push('IVA Int.','Cuota c\'(t)');
+  let tC=0,tI=0,tA=0,tIVA=0,tT=0;
+  const body=rows.map(r=>{
+    const iva=r.interes*(ivaPorc/100),tot=r.cuota+gFijo+iva;
+    tC+=r.cuota;tI+=r.interes;tA+=r.amort;tIVA+=iva;tT+=tot;
+    return `<tr><td>${r.t}</td><td>${f2(r.cuota)}</td><td>${f2(r.interes)}</td><td>${f2(r.amort)}</td>${esAm?`<td>${f2(r.fondoAcum)}</td>`:''}<td>${f2(r.saldo)}</td>${conG?`<td>${f2(iva)}</td><td>${f2(tot)}</td>`:''}</tr>`;
+  }).join('');
+  const tot=`<tr class="tr-total"><td>TOTAL</td><td>${f2(tC)}</td><td>${f2(tI)}</td><td>${f2(tA)}</td>${esAm?'<td>—</td>':''}<td>—</td>${conG?`<td>${f2(tIVA)}</td><td>${f2(tT)}</td>`:''}</tr>`;
+  return`<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${body}${tot}</tbody></table>`;
+}
+
+function buildComparativa(V,n,iEquiv){
+  const aVal=an(n,iEquiv);
+  const rEquiv=1/aVal-1/n;
+  const sistemas=[
+    {key:'frances',label:'Francés',i:iEquiv},
+    {key:'aleman', label:'Alemán', i:iEquiv},
+    {key:'directa',label:'T. Directa',i:rEquiv,esDirecta:true},
+  ];
+  const datos=sistemas.map(s=>{
+    const rows=buildTabla(V,n,s.i,s.key,0);
+    return{...s,totInt:rows.reduce((a,r)=>a+r.interes,0),primerC:rows[0].cuota,ultimaC:rows[rows.length-1].cuota};
+  });
+  const minI=Math.min(...datos.map(d=>d.totInt)), maxI=Math.max(...datos.map(d=>d.totInt));
+  return`<div class="comp-grid">${datos.map(d=>`<div class="comp-card"><h3>${d.label}</h3>
+    <div class="comp-row"><span class="cr-lbl">Tasa usada</span><span class="cr-val">${d.esDirecta?'r='+f6(d.i):'i='+f6(d.i)}</span></div>
+    <div class="comp-row ${d.totInt===minI?'best':d.totInt===maxI?'worst':''}"><span class="cr-lbl">Int. totales</span><span class="cr-val">${f2(d.totInt)}</span></div>
+    <div class="comp-row"><span class="cr-lbl">1ª cuota</span><span class="cr-val">${f2(d.primerC)}</span></div>
+    <div class="comp-row"><span class="cr-lbl">Última cuota</span><span class="cr-val">${f2(d.ultimaC)}</span></div>
+  </div>`).join('')}</div>
+  <div class="comp-note">i equiv. = ${f6(iEquiv)} · <span style="color:var(--green)">Verde</span> = menor costo · <span style="color:var(--uba-red2)">Rojo</span> = mayor costo</div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// CALCULAR PRÉSTAMO
+// ══════════════════════════════════════════════════════════
+function calcPrestamo(){
+  const err=document.getElementById('errPrest');
+  if (!err) { console.error('errPrest element not found'); return; }
+  err.classList.remove('show');
+  const resPrest = document.getElementById('resPrest');
+  if (resPrest) resPrest.classList.remove('show');
+
+  function showErr(msg){if(err){err.textContent='⚠ '+msg;err.classList.add('show');}}
+
+  // Leer datos según incógnita
+  let V=null, n=null, iEf=null;  // iEf = i efectiva del período
+
+  if(queCalcP==='cuota'){
+    V=pn('inV'); n=pn('prInN');
+    iEf=pTipoTasa==='directa_r' ? pn('prInI') : getTasaPrest();
+    if(!V||V<=0) return showErr('Ingresá el capital V.');
+    if(!n||n<1)  return showErr('Ingresá el número de cuotas n.');
+    if(!iEf||iEf<=0) return showErr('Ingresá la tasa del período.');
+
+  } else if(queCalcP==='V'){
+    n=pn('prInN'); iEf=getTasaPrest();
+    const cuotaK=pn('inCuotaKnown');
+    if(!n||n<1)      return showErr('Ingresá n.');
+    if(!iEf||iEf<=0) return showErr('Ingresá la tasa.');
+    if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota conocida.');
+    // Despejar V según sistema
+    if(sistema==='frances'){
+      V = cuotaK * an(n, iEf);
+      iEf=iEf;
+    } else if(sistema==='aleman'){
+      // c(1) = V/n + V*i = V*(1/n+i) → V = c(1)/(1/n+i)
+      V = cuotaK / (1/n + iEf);
+    } else if(sistema==='directa'){
+      V = cuotaK / (1/n + pn('prInI'));
+    } else {
+      return showErr('Para Sistema Americano: ingresá V directamente.');
+    }
+
+  } else if(queCalcP==='n'){
+    V=pn('inV'); iEf=getTasaPrest();
+    const cuotaK=pn('inCuotaKnown');
+    if(!V||V<=0)     return showErr('Ingresá el capital V.');
+    if(!iEf||iEf<=0) return showErr('Ingresá la tasa.');
+    if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota conocida.');
+    // Despejar n
+    if(sistema==='frances'){
+      // c = V/a(n,i) → a(n,i)=V/c → bisección
+      const ratio=V/cuotaK;
+      const nCalc=bisect(nn=>an(nn,iEf)-ratio,0.001,10000);
+      if(!nCalc) return showErr('No se encontró solución para n.');
+      n=Math.round(nCalc);
+    } else if(sistema==='aleman'){
+      // Cuota promedio = V/n + V*(n+1)/(2n)*i = V*(1/n + (n+1)*i/(2n))
+      // Complicado → usar bisección en cuota1
+      const nCalc=bisect(nn=>nn>0?(V/nn+V*nn*iEf/(nn)):NaN,0.001,10000);
+      // Más simple: c(1)=V/n+V*i → n=V/(c-V*i) si directa o alemán
+      const nSimple=V/(cuotaK-V*iEf);
+      n=Math.round(Math.max(1,nSimple));
+    } else if(sistema==='directa'){
+      const r=pn('prInI');
+      n=Math.round(V/(cuotaK-V*r));
+    } else {
+      return showErr('Para Sistema Americano: ingresá n directamente.');
+    }
+    if(!n||n<1) return showErr('No se pudo calcular n. Verificá los datos.');
+
+  } else if(queCalcP==='i'){
+    V=pn('inV'); n=pn('prInN');
+    const cuotaK=pn('inCuotaKnown');
+    if(!V||V<=0) return showErr('Ingresá el capital V.');
+    if(!n||n<1)  return showErr('Ingresá n.');
+    if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota conocida.');
+    // Despejar i efectiva del período
+    if(sistema==='frances'||sistema==='aleman'){
+      iEf=bisect(i=>i>0?an(n,i)-V/cuotaK:NaN,0.00001,100);
+    } else if(sistema==='directa'){
+      iEf=rToI(cuotaK/V-1/n, n);
+    } else {
+      return showErr('Para Sistema Americano: ingresá i directamente.');
+    }
+    if(!iEf||iEf<=0) return showErr('No se encontró tasa. Verificá los datos.');
+  }
+
+  let iF=0;
+  if(sistema==='americano'){
+    iF=pn('inIF');
+    if(!iF||iF<=0) return showErr('Ingresá la tasa del fondo i\'.');
+  }
+
+  const gFijo  =gastosOn?(pn('inGFijo') ||0):0;
+  const gOtorg =gastosOn?(pn('inGOtorg')||0):0;
+  const sellado=gastosOn?(pn('inSellado')||0):0;
+  const ivaPorc=gastosOn?(pn('inIVA')   ||0):0;
+
+  // Para tasa directa, iEf es la tasa directa r
+  const iParaBuild = (sistema==='directa'&&pTipoTasa==='directa_r') ? pn('prInI') : iEf;
+  const rows=buildTabla(V,n,iParaBuild,sistema,iF);
+  if(!rows.length) return showErr('No se pudo construir el cuadro.');
+
+  const totCuota=rows.reduce((a,r)=>a+r.cuota,0);
+  const totInt  =rows.reduce((a,r)=>a+r.interes,0);
+  const cuota1=rows[0].cuota, cuotaN=rows[rows.length-1].cuota;
+
+  // KPIs según qué se calculó
+  const kpiTitulo = queCalcP==='cuota'?'Resumen':
+    queCalcP==='V'?`Capital calculado: $ ${f2(V)}`:
+    queCalcP==='n'?`N° cuotas calculado: ${n}`:
+    `Tasa calculada: i = ${f6(iEf)}`;
+  document.getElementById('pResTitle').textContent = kpiTitulo;
+
+  // Incógnita resuelta - mostrar prominente
+  let kpiExtra = [];
+  if(queCalcP==='V')   kpiExtra=[{lbl:'Capital calculado (V)',val:'$ '+f2(V),sub:'Despejado de la cuota conocida',hl:'hl-green'}];
+  if(queCalcP==='n')   kpiExtra=[{lbl:'N° cuotas calculado (n)',val:String(n),sub:'Despejado de la cuota conocida',hl:'hl-green'}];
+  if(queCalcP==='i')   kpiExtra=[
+    {lbl:'i efectiva del período',val:f6(iEf),sub:'Despejada numéricamente',hl:'hl-green'},
+    {lbl:'TEA equivalente',val:f6(Math.pow(1+iEf,365/parseInt(document.getElementById('pFreqCuotas').value))-1),sub:'Anual efectiva',hl:'hl-green'},
+  ];
+
+  const iTexto = sistema==='directa'?f6(iParaBuild):f6(iParaBuild);
+  const cuotaForm = sistema==='frances'
+    ? `V / a(1,n,i) = ${f2(V)} / a(1,${n},${f6(iParaBuild)})`
+    : sistema==='aleman'
+    ? `V/n + V·i = ${f2(V)}/${n} + ${f2(V)}·${f6(iParaBuild)}`
+    : sistema==='directa'
+    ? `V/n + V·r = ${f2(V)}/${n} + ${f2(V)}·${f6(iParaBuild)}`
+    : `V·i + V·s⁻¹(1,n,i') = ${f2(V)}·${f6(iParaBuild)} + ${f2(V/sn(n,iF||0.01))}`;
+  const intTotForm = sistema==='frances'
+    ? `n·c − V = ${n}·${f2(cuota1)} − ${f2(V)}`
+    : sistema==='aleman'
+    ? `V·(n+1)/2·i = ${f2(V)}·${n+1}/2·${f6(iParaBuild)}`
+    : sistema==='directa'
+    ? `V·r·n = ${f2(V)}·${f6(iParaBuild)}·${n}`
+    : `n·c − V = ${n}·${f2(cuota1)} − ${f2(V)}`;
+  const kpis=[
+    ...kpiExtra,
+    {lbl:'Capital V',val:'$ '+f2(V),sub:'',hl:queCalcP==='V'?'':' hl-blue',form:''},
+    {lbl:sistema==='frances'||sistema==='directa'?'Cuota fija c':'1ª cuota c(1)',val:'$ '+f2(cuota1),sub:sistema==='aleman'?`Última: $ ${f2(cuotaN)}`:'',hl:'hl-blue',form:cuotaForm},
+    {lbl:'Total intereses',val:'$ '+f2(totInt),sub:`${((totInt/V)*100).toFixed(2).replace('.',',')}% del capital`,hl:'hl-red',form:intTotForm},
+    {lbl:'Total pagado',val:'$ '+f2(totCuota),sub:'sin gastos',hl:'',form:`Σ c(t) = ${n} cuotas`},
+    {lbl:sistema==='directa'?'Tasa directa r':'i efectiva período',val:f6(iParaBuild),sub:sistema==='directa'?`i equiv.= ${f6(rToI(iParaBuild,n)||0)}`:'',hl:'',form:sistema==='directa'?`V/c = a(1,n,i) → i = ${f6(rToI(iParaBuild,n)||0)}`:`tasa del período de la renta`},
+  ];
+
+  document.getElementById('kpiGrid').innerHTML=kpis.map(k=>`
+    <div class="kpi-card ${k.hl.trim()}">
+      <div class="kpi-label">${k.lbl}</div>
+      <div class="kpi-value ${k.hl.includes('red')?'c-red':k.hl.includes('green')?'c-green':'c-blue'}">${k.val}</div>
+      ${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''}
+      ${k.form?`<div class="kpi-formula">${k.form}</div>`:''}
+    </div>`).join('');
+
+  // CFT
+  const cftBlock=document.getElementById('cftBlock');
+  if(gastosOn){
+    const{tirPer,vNeto,selladoMonto}=calcCFT(V,rows,gFijo,gOtorg,sellado,ivaPorc);
+    cftBlock.style.display='';
+    const tea=tirPer?Math.pow(1+tirPer,12)-1:null;
+    const diasP=parseInt(document.getElementById('pFreqCuotas').value);
+    const teaReal=tirPer?Math.pow(1+tirPer,365/diasP)-1:null;
+    document.getElementById('kpiCFT').innerHTML=`
+      <div class="kpi-card hl-gold"><div class="kpi-label">CFT — TEM</div><div class="kpi-value c-gold">${tirPer?f6(tirPer):'N/D'}</div><div class="kpi-sub">TIR del flujo ajustado</div><div class="kpi-formula">0 = −${f2(vNeto)} + Σ c'(t)/(1+TEM)^t</div></div>
+      <div class="kpi-card hl-gold"><div class="kpi-label">CFT — TEA</div><div class="kpi-value c-gold">${teaReal?f6(teaReal):'N/D'}</div><div class="kpi-sub">(1+TEM)^(365/${diasP})−1</div><div class="kpi-formula">${tirPer?`(1+${f6(tirPer)})^(365/${diasP})−1`:''}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Capital neto</div><div class="kpi-value c-blue">$ ${f2(vNeto)}</div><div class="kpi-sub">V − otorgamiento − sellado</div><div class="kpi-formula">${f2(V)} − ${f2(gOtorg)} − ${f2(selladoMonto)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sellado</div><div class="kpi-value c-blue">$ ${f2(selladoMonto)}</div><div class="kpi-sub">${f2(sellado)}% de V</div><div class="kpi-formula">${f2(V)} × ${f2(sellado)}/100</div></div>
+      <div class="kpi-card"><div class="kpi-label">Gastos fijos total</div><div class="kpi-value c-blue">$ ${f2(gFijo*n)}</div><div class="kpi-sub">$ ${f2(gFijo)} × ${n}</div><div class="kpi-formula">gasto × n cuotas</div></div>
+      <div class="kpi-card"><div class="kpi-label">IVA s/intereses</div><div class="kpi-value c-blue">$ ${f2(rows.reduce((a,r)=>a+r.interes*(ivaPorc/100),0))}</div><div class="kpi-sub">${f2(ivaPorc)}%</div><div class="kpi-formula">Σ I(t) × ${f2(ivaPorc)}/100</div></div>`;
+  } else cftBlock.style.display='none';
+
+  // Fórmula del sistema bajo la tabla
+  const formulaSistema = sistema==='frances'
+    ? `c = V/a(1,n,i) = ${f2(V)}/a(1,${n},${f6(iParaBuild)}) = ${f2(cuota1)} · t(p) = t(1)·(1+i)^(p−1) · V(p) = c·a(1,${n}-p,i)`
+    : sistema==='aleman'
+    ? `t(p) = V/n = ${f2(V)}/${n} = ${f2(cuota1)} · c(p) = V/n·[1+(n−p+1)·i] · I(0;n) = V·(n+1)/2·i = ${f2(totInt)}`
+    : sistema==='directa'
+    ? `c = V/n + V·r = ${f2(V)}/${n} + ${f2(V)}·${f6(iParaBuild)} = ${f2(cuota1)} · I(0;n) = V·r·n = ${f2(totInt)}`
+    : `c = V·[i + s⁻¹(1,n,i')] = ${f2(cuota1)} · dep = V/s(1,n,i') · Capital al vencimiento`;
+  const tablaFormulaEl = document.getElementById('pTablaFormula');
+  if (tablaFormulaEl) tablaFormulaEl.textContent = formulaSistema;
+  document.getElementById('tablaAmort').innerHTML=tablaHTML(rows,gFijo,ivaPorc);
+
+  // Comparativa (solo si modo cuadro completo y no directa en incógnita)
+  const iEquivParaComp = (sistema==='directa'&&pTipoTasa==='directa_r') ? rToI(pn('prInI')||0,n)||iEf : iEf;
+  document.getElementById('compContent').innerHTML=buildComparativa(V,n,iEquivParaComp);
+
+  document.getElementById('resPrest').classList.add('show');
+}
+
+window._calcPrestamo = calcPrestamo;
+actualizarInputsPrest();
+
+  })();
+}
+
+function initProyectos() {
+  (function() {
+
+// ══════════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════════
+let nPer = 6;
+let lastFF = [];
+
+const f2  = v => isFinite(v) ? v.toFixed(2).replace('.',',') : '—';
+const f6  = v => isFinite(v) ? v.toFixed(6).replace('.',',') : '—';
+const f4  = v => isFinite(v) ? v.toFixed(4).replace('.',',') : '—';
+const pn  = id => { const v=parseFloat(document.getElementById(id).value.replace(',','.')); return isNaN(v)?null:v; };
+
+// ── CONSTRUCCIÓN DE INPUTS FF ─────────────────────────────
+function buildFFGrid() {
+  const grid = document.getElementById('ffGrid');
+  const oldVals = {};
+  grid.querySelectorAll('.ff-input').forEach(el => { oldVals[el.dataset.t] = el.value; });
+
+  grid.innerHTML = '';
+  for (let t = 0; t <= nPer; t++) {
+    const div = document.createElement('div');
+    div.className = 'ff-item';
+    const lbl = document.createElement('label');
+    lbl.className = t === 0 ? 't0' : 'pos';
+    lbl.textContent = t === 0 ? 'FF(0) — Inversión' : `FF(${t})`;
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.step = 'any'; inp.className = 'ff-input';
+    inp.dataset.t = t;
+    inp.placeholder = t === 0 ? 'Ej: −100000' : 'Ej: 25000';
+    if (oldVals[t] !== undefined) inp.value = oldVals[t];
+    inp.addEventListener('input', () => colorearInput(inp));
+    div.appendChild(lbl); div.appendChild(inp);
+    grid.appendChild(div);
+  }
+  // Colorear los que ya tienen valor
+  grid.querySelectorAll('.ff-input').forEach(el => colorearInput(el));
+}
+
+function colorearInput(inp) {
+  const v = parseFloat(inp.value.replace(',','.'));
+  inp.classList.remove('is-neg','is-pos');
+  if (!isNaN(v)) { if(v<0) inp.classList.add('is-neg'); else if(v>0) inp.classList.add('is-pos'); }
+}
+
+function agregarPeriodo() {
+  if (nPer >= 40) return;
+  nPer++;
+  document.getElementById('inPeriodos').value = nPer;
+  buildFFGrid();
+}
+
+function quitarPeriodo() {
+  if (nPer <= 1) return;
+  nPer--;
+  document.getElementById('inPeriodos').value = nPer;
+  buildFFGrid();
+}
+
+document.getElementById('inPeriodos').addEventListener('change', () => {
+  const v = parseInt(document.getElementById('inPeriodos').value);
+  if (v >= 1 && v <= 40) { nPer = v; buildFFGrid(); }
+});
+
+// ── LEER FLUJO ────────────────────────────────────────────
+function leerFF() {
+  const ff = [];
+  for (let t = 0; t <= nPer; t++) {
+    const el = document.querySelector(`.ff-input[data-t="${t}"]`);
+    if (!el || el.value === '') return null;
+    const v = parseFloat(el.value.replace(',','.'));
+    if (isNaN(v)) return null;
+    ff.push(v);
+  }
+  return ff;
+}
+
+// ── BISECCIÓN ─────────────────────────────────────────────
+function bisect(f, a, b, tol=1e-10, max=500) {
+  let fa=f(a), fb=f(b);
+  if (!isFinite(fa)||!isFinite(fb)) return null;
+  if (fa*fb > 0) return null;
+  let c;
+  for (let k=0; k<max; k++) {
+    c=(a+b)/2; const fc=f(c);
+    if (Math.abs(fc)<tol || (b-a)/2<tol) return c;
+    fa*fc<0 ? b=c : a=c;
+  }
+  return c;
+}
+
+// ── VAN ───────────────────────────────────────────────────
+function calcVAN(ff, i) {
+  return ff.reduce((sum, fft, t) => sum + fft / Math.pow(1+i, t), 0);
+}
+
+// ── TIR ───────────────────────────────────────────────────
+function calcTIR(ff) {
+  const f = i => calcVAN(ff, i);
+  // Buscar signos distintos en [0, 50]
+  let tirVal = null;
+  // Intentar desde i muy pequeño
+  tirVal = bisect(f, -0.9999, 0.00001) || bisect(f, 0.00001, 50);
+  if (tirVal === null) {
+    // Barrido
+    for (let a=0.00001; a<50; a+=0.5) {
+      const t = bisect(f, a, a+0.5);
+      if (t !== null) { tirVal = t; break; }
+    }
+  }
+  return tirVal;
+}
+
+// ── PLAZO DE RECUPERO ─────────────────────────────────────
+function calcPR(ff, i, descontado=false) {
+  let saldo = 0;
+  for (let t=0; t<=ff.length-1; t++) {
+    const flujo = descontado ? ff[t]/Math.pow(1+i,t) : ff[t];
+    const saldoPrev = saldo;
+    saldo += flujo;
+    if (saldo >= 0) {
+      // fracción
+      const frac = flujo !== 0 ? Math.abs(saldoPrev) / Math.abs(flujo) : 0;
+      return t > 0 ? (t-1) + frac : 0;
+    }
+  }
+  return null; // no se recupera
+}
+
+// ── CALCULAR ──────────────────────────────────────────────
+function calcProyecto() {
+  const err = document.getElementById('errProy');
+  err.classList.remove('show');
+  document.getElementById('resProy').classList.remove('show');
+
+  const i = pn('inTasa');
+  if (i === null) return showErr('Ingresá la tasa de corte.');
+
+  const ff = leerFF();
+  if (!ff) return showErr('Completá todos los valores del flujo de fondos.');
+  if (ff[0] >= 0) return showErr('FF(0) debe ser negativo (la inversión inicial).');
+
+  lastFF = ff;
+
+  // ── Calcular indicadores
+  const van  = calcVAN(ff, i);
+  const tir  = calcTIR(ff);
+  const pr   = calcPR(ff, i, false);
+  const prD  = calcPR(ff, i, true);
+  const inv  = Math.abs(ff[0]);
+  const sumFF = ff.slice(1).reduce((a,b)=>a+b,0);
+
+  // ── BADGE DECISIÓN
+  const badge = document.getElementById('decisionBadge');
+  const vanFormula = `VAN = ${ff.map((v,t)=>`${v>=0?'+':''}${f2(v)}/(1+${f6(i)})^${t}`).join(' ')} = ${f2(van)}`;
+  if (van > 0.01) {
+    badge.innerHTML = `<div class="decision-badge dec-verde">✓ Proyecto CONVENIENTE — VAN = ${f2(van)} &gt; 0 a tasa ${f6(i)}</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--text3);margin-top:.4rem;line-height:1.6;word-break:break-all">${vanFormula}</div>`;
+  } else if (van < -0.01) {
+    badge.innerHTML = `<div class="decision-badge dec-rojo">✗ Proyecto NO conveniente — VAN = ${f2(van)} &lt; 0 a tasa ${f6(i)}</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--text3);margin-top:.4rem;line-height:1.6;word-break:break-all">${vanFormula}</div>`;
+  } else {
+    badge.innerHTML = `<div class="decision-badge dec-neutro">≈ Proyecto INDIFERENTE — VAN ≈ 0</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--text3);margin-top:.4rem">${vanFormula}</div>`;
+  }
+
+  // ── KPI
+  const kpiProy = document.getElementById('kpiProy');
+  const tirVsTasa = tir !== null && tir > i ? 'TIR &gt; i_corte → Aceptar' : tir !== null ? 'TIR &lt; i_corte → Rechazar' : 'No se encontró TIR';
+  kpiProy.innerHTML = [
+    {lbl:'VAN',              val:(van>=0?'$ +':'$ ')+f2(van),     sub:`a tasa ${f6(i)}`,           hl: van>=0?'hl-green':'hl-red',  form:`Σ FF(t)·v^t = Σ FF(t)/(1+${f6(i)})^t`},
+    {lbl:'TIR',              val: tir!==null ? f6(tir) : 'No conv.', sub:tirVsTasa,                hl:'hl-gold',  form: tir!==null?`0 = Σ FF(t)/(1+${f6(tir)})^t`:'Solución numérica (bisección)'},
+    {lbl:'Inversión inicial',val:'$ '+f2(inv),                    sub:'|FF(0)|',                    hl:'hl-blue',  form:`FF(0) = −${f2(inv)}`},
+    {lbl:'Suma flujos FF(t>0)',val:'$ '+f2(sumFF),                 sub:`${sumFF>=inv?'≥':'<'} inversión`,hl:'',   form:`FF(1)+…+FF(n) = ${f2(sumFF)}`},
+    {lbl:'Plazo recupero',   val: pr!==null ? f4(pr)+' per.' : 'No recupera', sub:'sin descontar', hl: pr!==null?'hl-green':'hl-red',  form: pr!==null?`t−1 + |saldo(t−1)|/FF(t)`:'Inversión no recuperada'},
+    {lbl:'Plazo recupero*',  val: prD!==null? f4(prD)+' per.': 'No recupera', sub:'descontado',   hl: prD!==null?'hl-green':'hl-red', form: prD!==null?`t−1 + |saldo desc.(t−1)|/FF(t)·v^t`:'Inversión no recuperada'},
+  ].map(k=>`<div class="kpi-card ${k.hl}"><div class="kpi-label">${k.lbl}</div><div class="kpi-value ${k.hl==='hl-green'?'c-green':k.hl==='hl-red'?'c-red':k.hl==='hl-gold'?'c-gold':'c-blue'}">${k.val}</div>${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''} ${k.form?`<div class="kpi-formula">${k.form}</div>`:''}</div>`).join('');
+
+  // ── TABLA FF
+  buildTablaFF(ff, i, pr, prD);
+
+  // ── GRÁFICO MULTIRATE
+  calcMultirate();
+
+  document.getElementById('resProy').classList.add('show');
+
+  function showErr(msg) { err.textContent='⚠ '+msg; err.classList.add('show'); }
+}
+
+// ── TABLA FF DETALLADA ────────────────────────────────────
+function buildTablaFF(ff, i, pr, prD) {
+  let saldoSimple=0, saldoDesc=0;
+  const rows = ff.map((fft, t) => {
+    const vt   = Math.pow(1+i, -t);
+    const desc = fft * vt;
+    saldoSimple += fft;
+    saldoDesc   += desc;
+    // recupero simple: primer t donde saldo ≥ 0
+    const esRecSimple = pr !== null && t > 0 && Math.abs(t-1 - Math.floor(pr)) < 1 && saldoSimple >= 0 && (saldoSimple - fft) < 0;
+    const esRecDesc   = prD !== null && t > 0 && Math.abs(t-1 - Math.floor(prD)) < 1 && saldoDesc >= 0 && (saldoDesc - desc) < 0;
+    return { t, fft, vt, desc, saldoSimple, saldoDesc, esRecSimple, esRecDesc };
+  });
+
+  const body = rows.map(r => `<tr>
+    <td>${r.t}</td>
+    <td class="${r.fft<0?'neg':'pos'}">${f2(r.fft)}</td>
+    <td class="c-blue">${f6(r.vt)}</td>
+    <td class="${r.desc<0?'neg':'pos'}">${f2(r.desc)}</td>
+    <td class="${r.saldoSimple<0?'neg':r.esRecSimple?'rec':'pos'}">${f2(r.saldoSimple)}${r.esRecSimple?' ✓':''}</td>
+    <td class="${r.saldoDesc<0?'neg':r.esRecDesc?'rec':'pos'}">${f2(r.saldoDesc)}${r.esRecDesc?' ✓':''}</td>
+  </tr>`).join('');
+
+  document.getElementById('tablaFF').innerHTML = `<table>
+    <thead><tr>
+      <th>t</th><th>FF(t)</th><th>v^t = (1+i)^−t</th><th>FF(t)·v^t</th>
+      <th>Saldo acum. s/desc.</th><th>Saldo acum. c/desc.</th>
+    </tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+// ── GRÁFICO VAN MULTIRATE ─────────────────────────────────
+function calcMultirate() {
+  if (!lastFF.length) return;
+  const tMin   = parseFloat(document.getElementById('inTMin').value)   || 0;
+  const tMax   = parseFloat(document.getElementById('inTMax').value)   || 0.3;
+  const puntos = parseInt(document.getElementById('inTPuntos').value)  || 10;
+
+  const paso = (tMax - tMin) / (puntos - 1);
+  const data = [];
+  for (let k=0; k<puntos; k++) {
+    const tasa = tMin + paso*k;
+    data.push({ tasa, van: calcVAN(lastFF, tasa) });
+  }
+
+  const maxAbs = Math.max(...data.map(d=>Math.abs(d.van)));
+  const H = 110; // altura en px
+
+  const barsWrap = document.getElementById('chartBars');
+  const lblsWrap = document.getElementById('chartLabels');
+  barsWrap.innerHTML = '';
+  lblsWrap.innerHTML = '';
+
+  data.forEach(d => {
+    const pct = maxAbs > 0 ? Math.abs(d.van)/maxAbs : 0;
+    const h   = Math.max(2, pct * H);
+    const isPos = d.van >= 0;
+
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    col.style.height = H+'px';
+    col.style.justifyContent = isPos ? 'flex-end' : 'flex-start';
+
+    const bar = document.createElement('div');
+    bar.className = `bar ${isPos?'pos-bar':'neg-bar'}`;
+    bar.style.height = h+'px';
+    bar.title = `i=${(d.tasa*100).toFixed(1)}% → VAN=${f2(d.van)}`;
+    col.appendChild(bar);
+    barsWrap.appendChild(col);
+
+    // Label tasa
+    const lbl = document.createElement('div');
+    lbl.className = 'bar-lbl';
+    lbl.style.flex='1';
+    lbl.style.minWidth='0';
+    lbl.style.textAlign='center';
+    lbl.textContent = (d.tasa*100).toFixed(0)+'%';
+    lblsWrap.appendChild(lbl);
+  });
+
+  // Leyenda
+  const tirVal = calcTIR(lastFF);
+  if (tirVal !== null) {
+    const leyenda = document.createElement('div');
+    leyenda.style.cssText='font-family:var(--mono);font-size:.7rem;color:var(--gold);margin-top:.6rem';
+    leyenda.textContent = `TIR ≈ ${(tirVal*100).toFixed(4)}% — el VAN cambia de signo en este punto`;
+    document.getElementById('chartBars').parentElement.appendChild(leyenda);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────
+buildFFGrid();
+window._calcProyecto = calcProyecto;
+window.agregarPeriodo = agregarPeriodo;
+window.quitarPeriodo = quitarPeriodo;
+
+
+  })();
+}
+
+
+
+function initEmprestitos() {
+  (function() {
+
+// ── ESTADO ────────────────────────────────────────────────
+let eTipoTasa='ef_int', queCalcE='cuota';
+
+const f2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
+const f4=v=>isFinite(v)?v.toFixed(4).replace('.',','):'—';
+const f6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
+const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
+const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
+function bisect(f,a,b,tol=1e-10,max=500){
+  let fa=f(a),fb=f(b);if(!isFinite(fa)||!isFinite(fb)||fa*fb>0)return null;let c;
+  for(let k=0;k<max;k++){c=(a+b)/2;const fc=f(c);if(Math.abs(fc)<tol||(b-a)/2<tol)return c;fa*fc<0?b=c:a=c;}
+  return c;
+}
+
+// ── CONVERSIÓN DE TASA ────────────────────────────────────
+function convertirTasaEmp(tipo, valor, diasTasa, diasPeriodo) {
+  if (!valor || valor <= 0) return null;
+  let tea;
+  switch(tipo) {
+    case 'ef_int':   tea = Math.pow(1+valor, 365/diasTasa) - 1; break;
+    case 'nom_int':  tea = Math.pow(1+valor*diasTasa/365, 365/diasTasa) - 1; break;
+    case 'ef_desc':  if(valor>=1)return null; tea = Math.pow(1-valor,-365/diasTasa)-1; break;
+    case 'nom_desc': {const d=valor*diasTasa/365;if(d>=1)return null;tea=Math.pow(1-d,-365/diasTasa)-1;break;}
+    case 'continua': tea = Math.exp(valor) - 1; break;
+    default: return null;
+  }
+  return Math.pow(1+tea, diasPeriodo/365) - 1;
+}
+
+function getTasaEmp() {
+  const valor = pn('emInI');
+  const diasT = parseInt(document.getElementById('eFreqTasa').value);
+  const diasP = parseInt(document.getElementById('eFreqPer').value);
+  return convertirTasaEmp(eTipoTasa, valor, diasT, diasP);
+}
+
+function actualizarDisplayTasaE() {
+  const valor = pn('emInI');
+  const diasT = parseInt(document.getElementById('eFreqTasa').value);
+  const diasP = parseInt(document.getElementById('eFreqPer').value);
+  const display = document.getElementById('eTasaConvertida');
+  const span    = document.getElementById('eTasaPer');
+  if (valor && valor > 0) {
+    const i = convertirTasaEmp(eTipoTasa, valor, diasT, diasP);
+    if (i && isFinite(i)) {
+      const freq = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      span.textContent = `${i.toFixed(6).replace('.',',')} efectiva ${freq}`;
+      display.style.display = '';
+    } else display.style.display = 'none';
+  } else display.style.display = 'none';
+}
+
+// ── TABS TIPO TASA ────────────────────────────────────────
+document.getElementById('page-emprestitos').querySelectorAll('#eTipoTabs .tipo-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-emprestitos').querySelectorAll('#eTipoTabs .tipo-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); eTipoTasa=t.dataset.etipo;
+  const isC=eTipoTasa==='continua';
+  document.getElementById('eFreqField').style.opacity=isC?'.3':'1';
+  document.getElementById('eFreqField').style.pointerEvents=isC?'none':'auto';
+  actualizarDisplayTasaE();
+}));
+['emInI','eFreqTasa','eFreqPer'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', actualizarDisplayTasaE);
+});
+
+// ── TABS SISTEMA ──────────────────────────────────────────
+document.getElementById('page-emprestitos').querySelectorAll('.sis-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-emprestitos').querySelectorAll('.sis-tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('resEmp').classList.remove('show');
+}));
+
+// ── TABS INCÓGNITA ────────────────────────────────────────
+document.getElementById('page-emprestitos').querySelectorAll('.que-tab[data-eq]').forEach(t=>t.addEventListener('click',()=>{
+  document.getElementById('page-emprestitos').querySelectorAll('.que-tab[data-eq]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); queCalcE=t.dataset.eq;
+  actualizarInputsEmp();
+  document.getElementById('resEmp').classList.remove('show');
+}));
+
+function actualizarInputsEmp() {
+  // Mostrar cuota conocida si se despeja V o i
+  document.getElementById('eCuotaKnownRow').style.display=(queCalcE==='V'||queCalcE==='i')?'':'none';
+  // Marcar incógnitas en campos de tamaño
+  ['emInVN','emInN','emInVN2','inCapTotal','emInI','inPer'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('incognita'); el.readOnly=false;
+  });
+  if(queCalcE==='V'){
+    ['emInVN','emInN','emInVN2','inCapTotal'].forEach(id=>{
+      const el=document.getElementById(id);if(!el)return;
+      el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+    });
+  } else if(queCalcE==='n'){
+    const el=document.getElementById('inPer');
+    el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+  } else if(queCalcE==='i'){
+    const el=document.getElementById('emInI');
+    el.classList.add('incognita'); el.value=''; el.placeholder='← incógnita'; el.readOnly=true;
+  }
+}
+
+// ── CONSTRUIR CUADRO ──────────────────────────────────────
+function buildCuadro(VN, N, n, i, prima, sis) {
+  const PR=VN*(1+prima/100);
+  const rows=[];
+  if(sis==='frances'){
+    const c_unit=VN/an(n,i); let vivo=VN;
+    for(let t=1;t<=n;t++){
+      const int_unit=vivo*i, amort_unit=c_unit-int_unit;
+      vivo-=amort_unit;
+      const amortReemb=amort_unit*(1+prima/100);
+      rows.push({t,int_unit,amort_unit,amortReemb,cuota_unit:int_unit+amortReemb,vivo_unit:Math.abs(vivo)<0.001?0:vivo,
+        int_total:int_unit*N,amort_total:amort_unit*N,amortReemb_total:amortReemb*N,cuota_total:(int_unit+amortReemb)*N,vivo_total:Math.abs(vivo)<0.001?0:vivo*N});
+    }
+  } else if(sis==='aleman'){
+    const amort_unit=VN/n; let vivo=VN;
+    for(let t=1;t<=n;t++){
+      const int_unit=vivo*i; vivo-=amort_unit;
+      const amortReemb=amort_unit*(1+prima/100);
+      rows.push({t,int_unit,amort_unit,amortReemb,cuota_unit:int_unit+amortReemb,vivo_unit:Math.abs(vivo)<0.001?0:vivo,
+        int_total:int_unit*N,amort_total:amort_unit*N,amortReemb_total:amortReemb*N,cuota_total:(int_unit+amortReemb)*N,vivo_total:Math.abs(vivo)<0.001?0:vivo*N});
+    }
+  } else if(sis==='americano'){
+    const int_unit=VN*i;
+    for(let t=1;t<=n;t++){
+      const esUltimo=t===n;
+      const amort_unit=esUltimo?VN:0, amortReemb=esUltimo?PR:0;
+      rows.push({t,int_unit,amort_unit,amortReemb,cuota_unit:int_unit+amortReemb,vivo_unit:esUltimo?0:VN,
+        int_total:int_unit*N,amort_total:amort_unit*N,amortReemb_total:amortReemb*N,cuota_total:(int_unit+amortReemb)*N,vivo_total:(esUltimo?0:VN)*N});
+    }
+  }
+  return rows;
+}
+
+// ══════════════════════════════════════════════════════════
+// CALCULAR EMPRÉSTITO
+// ══════════════════════════════════════════════════════════
+function calcEmprestito() {
+  const err=document.getElementById('errEmp');
+  err.classList.remove('show');
+  document.getElementById('resEmp').classList.remove('show');
+  function showErr(msg){err.textContent='⚠ '+msg;err.classList.add('show');}
+
+  // Leer sistema activo
+  const sisTab=document.getElementById('page-emprestitos').querySelector('.sis-tab.active');
+  const sistema=sisTab?sisTab.dataset.sis:'frances';
+
+  const pePorc = pn('inPE')    ?? 100;
+  const prima  = pn('inPrima') ?? 0;
+  const gastos = pn('inGastos')??  0;
+
+  let VN, N, V, n, i;
+
+  // ── Resolver según incógnita ──────────────────────────
+  if (queCalcE === 'cuota') {
+    // Leer todo directamente
+    i = getTasaEmp();
+    if(!i||i<=0) return showErr('Ingresá la tasa del empréstito.');
+    n = pn('inPer');
+    if(!n||n<1) return showErr('Ingresá el número de períodos n.');
+    // Tamaño
+    if(window._modoTam==='VNxN'){
+      VN=pn('emInVN'); N=pn('emInN');
+      if(!VN||VN<=0) return showErr('Ingresá VN.');
+      if(!N||N<1)    return showErr('Ingresá N.');
+      V=VN*N;
+    } else {
+      const cap=pn('inCapTotal'); VN=pn('emInVN2');
+      if(!cap||cap<=0) return showErr('Ingresá el capital total.');
+      if(!VN||VN<=0)   return showErr('Ingresá VN.');
+      N=Math.round(cap/VN); V=N*VN;
+    }
+
+  } else if (queCalcE === 'V') {
+    // Despejar V (y por ende VN*N): se necesita cuota unitaria conocida y n, i
+    i = getTasaEmp();
+    if(!i||i<=0) return showErr('Ingresá la tasa.');
+    n = pn('inPer');
+    if(!n||n<1) return showErr('Ingresá n.');
+    const cuotaK = pn('eCuotaKnown');
+    if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota unitaria conocida.');
+    // Para sistema francés: c = VN/a(n,i) + VN*i*prima → simplificado: c_unit=VN/a(n,i)*(1+prima/100) aprox
+    // Aproximación: despejar VN del sistema
+    if(sistema==='frances'){
+      // c_unit = VN*(1/a(n,i))*(1+prima/100) + VN*i*(1+prima/100)... 
+      // Simplificado: usar c = VN/a(n,i) si prima=0, con prima ajustar
+      VN = cuotaK * an(n,i) / (1+prima/100);
+    } else if(sistema==='aleman'){
+      // c(1) = VN/n + VN*i = VN*(1/n+i) → VN = c(1)/(1/n+i)
+      VN = cuotaK / (1/n + i);
+    } else {
+      // Americano: c = VN*i + amortReemb_per_period. Si no es último: c=VN*i
+      VN = cuotaK / i;
+    }
+    // Usar VN2 como referencia para N
+    const VN_ref = pn('emInVN2') || pn('emInVN') || 1000;
+    N = Math.max(1, Math.round(VN / VN_ref * (pn('emInN')||1)));
+    // Recalcular V con VN redondeado
+    V = VN * N;
+
+  } else if (queCalcE === 'n') {
+    i = getTasaEmp();
+    if(!i||i<=0) return showErr('Ingresá la tasa.');
+    if(window._modoTam==='VNxN'){
+      VN=pn('emInVN'); N=pn('emInN');
+      if(!VN||VN<=0) return showErr('Ingresá VN.'); if(!N||N<1) return showErr('Ingresá N.'); V=VN*N;
+    } else {
+      const cap=pn('inCapTotal'); VN=pn('emInVN2');
+      if(!cap||cap<=0) return showErr('Ingresá capital.'); if(!VN||VN<=0) return showErr('Ingresá VN.');
+      N=Math.round(cap/VN); V=N*VN;
+    }
+    // Despejar n usando bisección en el precio del bono
+    // Para francés: precio = VA de cupones = VN si emisión a la par
+    if(sistema==='frances'){
+      const nCalc=bisect(nn=>nn>0?an(nn,i)-VN/(VN/an(nn,i)):NaN,0.5,600);
+      // Alternativa simple: n = -ln(1-VN*i/c_unit)/ln(1+i) donde c_unit=VN/a(n,i)
+      // Sin c conocida, no podemos despejar n analíticamente sin dato adicional
+      return showErr('Para despejar n necesitás conocer la cuota — usá "Ver cuadro completo" con n dado.');
+    } else {
+      return showErr('Para despejar n ingresá la cuota conocida en "Capital (V)" y calculá desde ahí.');
+    }
+
+  } else if (queCalcE === 'i') {
+    n = pn('inPer');
+    if(!n||n<1) return showErr('Ingresá n.');
+    if(window._modoTam==='VNxN'){
+      VN=pn('emInVN'); N=pn('emInN');
+      if(!VN||VN<=0) return showErr('Ingresá VN.'); if(!N||N<1) return showErr('Ingresá N.'); V=VN*N;
+    } else {
+      const cap=pn('inCapTotal'); VN=pn('emInVN2');
+      if(!cap||cap<=0) return showErr('Ingresá capital.'); if(!VN||VN<=0) return showErr('Ingresá VN.');
+      N=Math.round(cap/VN); V=N*VN;
+    }
+    const cuotaK=pn('eCuotaKnown');
+    if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota unitaria conocida.');
+    // Despejar i: para francés cuota=VN/a(n,i) → bisección
+    const iCalc=bisect(ii=>ii>0?VN/an(n,ii)-cuotaK:NaN,0.00001,10);
+    if(!iCalc||iCalc<=0) return showErr('No se encontró tasa. Verificá los datos.');
+    i = iCalc;
+  }
+
+  // ── Construir cuadro ──────────────────────────────────
+  const PE       = VN * pePorc/100;
+  const gastosM  = V  * gastos/100;
+  const ingrBruto= N  * PE;
+  const ingrNeto = ingrBruto - gastosM;
+
+  const rows = buildCuadro(VN, N, n, i, prima, sistema);
+  if(!rows.length) return showErr('No se pudo construir el cuadro.');
+
+  // ── Costo del emisor (TIR) ────────────────────────────
+  const ffEmisor = [-ingrNeto, ...rows.map(r=>r.cuota_total)];
+  const costoEmisor = bisect(
+    ii=>{let pv=0;ffEmisor.forEach((cf,t)=>{pv+=cf/Math.pow(1+ii,t)});return pv;},
+    -0.9999, 50
+  );
+
+  // ── Rentabilidad del suscriptor ───────────────────────
+  // Cupón del 1° período = VN * i (interés sobre VN)
+  // Inversión por título = PE
+  // r_per = (VN * i) / PE  → tasa periódica
+  const cupon1 = VN * i;  // interés del 1° período por título
+  const rPer   = cupon1 / PE;  // rentabilidad periódica
+  const diasP  = parseInt(document.getElementById('eFreqPer').value);
+  const teaSus = Math.pow(1 + rPer, 365/diasP) - 1;  // TEA equivalente
+
+  // ── KPI generales ─────────────────────────────────────
+  const kpiExtras = queCalcE==='i' ? [
+    {lbl:'i calculada (período)',val:f6(i),sub:'Despejada de cuota conocida',hl:'hl-green'},
+    {lbl:'TEA equivalente',val:f6(Math.pow(1+i,365/diasP)-1),sub:'Anual efectiva',hl:'hl-green'},
+  ] : [];
+
+  document.getElementById('kpiGen').innerHTML=[
+    ...kpiExtras,
+    {lbl:'Capital total (V)',val:'$ '+f2(V),sub:`${N} títulos × $ ${f2(VN)}`,hl:'hl-blue',form:`V = N × VN = ${N} × ${f2(VN)}`},
+    {lbl:'Precio emisión (PE)',val:'$ '+f2(PE)+'/tít.',sub:`${f2(pePorc)}% del VN`,hl:'hl-blue',form:`PE = VN × ${f2(pePorc)}/100 = ${f2(VN)} × ${f2(pePorc/100)}`},
+    {lbl:'Precio reembolso',val:'$ '+f2(VN*(1+prima/100))+'/tít.',sub:`prima ${f2(prima)}%`,hl:prima>0?'hl-gold':'',form:`PR = VN × (1 + ${f2(prima)}/100) = ${f2(VN*(1+prima/100))}`},
+    {lbl:'Ingreso neto emisor',val:'$ '+f2(ingrNeto),sub:`bruto − gastos`,hl:'hl-green',form:`N×PE − Gastos = ${f2(N*PE)} − ${f2(gastosM)}`},
+    {lbl:'Gastos de emisión',val:'$ '+f2(gastosM),sub:`${f2(gastos)}% s/capital`,hl:gastosM>0?'hl-red':'',form:`V × ${f2(gastos)}/100 = ${f2(V)} × ${f2(gastos/100)}`},
+  ].map(k=>`<div class="kpi-card ${k.hl}"><div class="kpi-label">${k.lbl}</div><div class="kpi-value ${k.hl==='hl-red'?'c-red':k.hl==='hl-gold'?'c-gold':k.hl==='hl-green'?'c-green':'c-blue'}">${k.val}</div>${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''} ${k.form?`<div class="kpi-formula">${k.form}</div>`:''}</div>`).join('');
+
+  // ── Costo emisor box ─────────────────────────────────
+  const totPagadoEmisor = rows.reduce((a,r)=>a+r.cuota_total,0);
+  const totalInt = rows.reduce((a,r)=>a+r.int_total,0);
+  const totalPrima = N*VN*prima/100;
+  document.getElementById('colEmisor').innerHTML=`
+    <div class="col-row"><span class="cl">Ingreso neto</span><span class="cv c-green">$ ${f2(ingrNeto)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">N×PE − Gastos = ${N}×${f2(PE)} − ${f2(gastosM)}</div>
+    <div class="col-row"><span class="cl">Total pagado</span><span class="cv c-red">$ ${f2(totPagadoEmisor)}</span></div>
+    <div class="col-row"><span class="cl">Total intereses</span><span class="cv">$ ${f2(totalInt)}</span></div>
+    <div class="col-row"><span class="cl">Total prima</span><span class="cv">$ ${f2(totalPrima)}</span></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:.4rem 0">
+    <div class="col-row"><span class="cl">Costo emisor (TIR)</span><span class="cv big c-red">${costoEmisor?f6(costoEmisor):'N/D'}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">0 = −${f2(ingrNeto)} + Σ CF(t)/(1+TIR)^t</div>
+    <div class="col-row"><span class="cl">TEA costo emisor</span><span class="cv c-red">${costoEmisor?f6(Math.pow(1+costoEmisor,365/diasP)-1):'—'}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3)">${costoEmisor?`(1+${f6(costoEmisor)})^(365/${diasP})−1`:''}</div>`;
+
+  // ── Rentabilidad suscriptor box ───────────────────────
+  document.getElementById('colSuscriptor').innerHTML=`
+    <div class="col-row"><span class="cl">Inversión (N × PE)</span><span class="cv c-red">$ ${f2(ingrBruto)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">${N} × $ ${f2(PE)}</div>
+    <div class="col-row"><span class="cl">Cupón 1° período</span><span class="cv c-green">$ ${f2(cupon1*N)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">V × i = ${f2(V)} × ${f6(i)}</div>
+    <div class="col-row"><span class="cl">PE por título</span><span class="cv">$ ${f2(PE)}</span></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:.4rem 0">
+    <div class="col-row"><span class="cl">r periódica = VN·i / PE</span><span class="cv big c-green">${f6(rPer)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">${f6(cupon1)} / ${f2(PE)} = ${f6(rPer)}</div>
+    <div class="col-row"><span class="cl">TEA equivalente</span><span class="cv c-green">${f6(teaSus)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3)">(1+${f6(rPer)})^(365/${diasP})−1 = ${f6(teaSus)}</div>`;
+
+  // ── Tabla flujo emisor ────────────────────────────────
+  let totCE=0,totIE=0,totARE=0;
+  const bodyEmisor=rows.map(r=>{
+    const cf=r.cuota_total; totCE+=cf;totIE+=r.int_total;totARE+=r.amortReemb_total;
+    return`<tr><td>${r.t}</td><td class="c-blue">${f6(1/Math.pow(1+i,r.t))}</td><td>${f2(r.int_total)}</td><td>${f2(r.amortReemb_total)}</td><td>${f2(cf)}</td><td>${f2(cf/Math.pow(1+(costoEmisor||i),r.t))}</td></tr>`;
+  });
+  document.getElementById('tablaEmisor').innerHTML=`<table>
+    <thead><tr><th>t</th><th>v^t</th><th>Intereses</th><th>Amort. reembolso</th><th>CF Emisor</th><th>CF descontado</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>1,000000</td><td>—</td><td>—</td><td class="c-green">$ ${f2(ingrNeto)} (entrada)</td><td class="c-green">$ ${f2(ingrNeto)}</td></tr>
+      ${bodyEmisor.join('')}
+      <tr class="tr-total"><td>TOTAL</td><td>—</td><td>${f2(totIE)}</td><td>${f2(totARE)}</td><td>${f2(totCE)}</td><td>—</td></tr>
+    </tbody></table>`;
+
+  // ── Cuadro completo ───────────────────────────────────
+  let tCI=0,tAU=0,tAR=0,tCT=0;
+  const bodyCuadro=rows.map(r=>{
+    tCI+=r.int_total;tAU+=r.amort_total;tAR+=r.amortReemb_total;tCT+=r.cuota_total;
+    return`<tr><td>${r.t}</td><td>${f2(r.vivo_total)}</td><td>${f2(r.int_total)}</td><td>${f2(r.amort_total)}</td>${prima>0?`<td>${f2(r.amortReemb_total)}</td>`:''}<td>${f2(r.cuota_total)}</td><td>${f2(r.int_unit)}</td><td>${f2(r.cuota_unit)}</td></tr>`;
+  });
+  document.getElementById('tablaEmprestito').innerHTML=`<table>
+    <thead><tr><th>t</th><th>VN Vivo</th><th>Intereses ($)</th><th>Amort. Capital ($)</th>${prima>0?'<th>Amort. Reemb. ($)</th>':''}<th>Cuota total ($)</th><th>Int. unit.</th><th>Cuota unit.</th></tr></thead>
+    <tbody>${bodyCuadro.join('')}
+      <tr class="tr-total"><td>TOTAL</td><td>—</td><td>${f2(tCI)}</td><td>${f2(tAU)}</td>${prima>0?`<td>${f2(tAR)}</td>`:''}<td>${f2(tCT)}</td><td>—</td><td>—</td></tr>
+    </tbody></table>`;
+
+  document.getElementById('notaEmp').textContent=`Sistema: ${sistema} · V = $ ${f2(V)} · N = ${N} · VN = $ ${f2(VN)} · i período = ${f6(i)} · PE = ${f2(pePorc)}% · Prima = ${f2(prima)}% · Gastos = ${f2(gastos)}%`;
+  document.getElementById('resEmp').classList.add('show');
+}
+
+window._calcEmprestito = calcEmprestito;
+actualizarInputsEmp();
+
+  })();
+}
+
+</script>
+<div id="toast"></div>
+</body>
+</html>
