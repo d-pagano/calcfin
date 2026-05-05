@@ -672,6 +672,91 @@ body.light-mode tr:hover td { background: var(--bg4); }
 .ec-baja { color: var(--green); }
 .ec-igual { color: var(--text3); }
 .escenario-card .ec-int { font-family:var(--mono); font-size:.68rem; color:var(--text3); margin-top:.2rem; }
+
+/* ── ENTRADA INTELIGENTE DE NÚMEROS ── */
+.num-warning {
+  font-family: var(--mono);
+  font-size: .66rem;
+  color: var(--gold);
+  margin-top: .25rem;
+  line-height: 1.45;
+  display: none;
+}
+.num-warning.show { display: block; }
+
+
+/* ── VISTA SIMPLE / AVANZADA ───────────────────────────── */
+.view-toggle {
+  display:flex; align-items:center; gap:.25rem; flex-shrink:0;
+  border:1px solid var(--border); border-radius:6px; padding:.18rem;
+  background:var(--bg2);
+}
+.view-toggle .view-label {
+  font-family:var(--mono); font-size:.6rem; color:var(--text3);
+  letter-spacing:.08em; text-transform:uppercase; padding:0 .25rem 0 .35rem;
+}
+.view-btn {
+  font-family:var(--sans); font-size:.66rem; font-weight:700;
+  letter-spacing:.04em; text-transform:uppercase; min-height:28px;
+  padding:.22rem .52rem; border-radius:5px; border:1px solid transparent;
+  cursor:pointer; color:var(--text2); background:transparent; transition:all .16s;
+}
+.view-btn:hover { color:var(--text); background:var(--bg3); border-color:var(--border); }
+.view-btn.active { color:#fff; background:var(--uba-blue); border-color:var(--uba-blue2); }
+.view-hint {
+  display:none; background:rgba(77,163,232,.07); border:1px solid rgba(77,163,232,.25);
+  border-left:3px solid var(--accent2); border-radius:var(--radius2);
+  padding:.65rem .9rem; margin-bottom:1rem; font-family:var(--mono);
+  font-size:.72rem; color:var(--text2); line-height:1.55;
+}
+body.simple-mode .view-hint { display:block; }
+body.simple-mode .concept-box,
+body.simple-mode .formulas-box,
+body.simple-mode .formulas-section,
+body.simple-mode .advanced-only { display:none !important; }
+
+/* Tasas: en simple se prioriza la tasa efectiva y la interpretación. */
+body.simple-mode #results .divider,
+body.simple-mode #gridNominal,
+body.simple-mode #gridDescuento,
+body.simple-mode #gridDescNominal,
+body.simple-mode #gridOtras,
+body.simple-mode #notaEquiv { display:none !important; }
+body.simple-mode #results .section-title:not(:first-child) { display:none !important; }
+
+/* Préstamos: se ocultan extras pesados en modo simple. */
+body.simple-mode #toggleGastos,
+body.simple-mode #gastosSection,
+body.simple-mode #cftBlock,
+body.simple-mode #pTablaTitle,
+body.simple-mode #pTablaFormula,
+body.simple-mode #progAmort,
+body.simple-mode #chartAmort,
+body.simple-mode #tablaAmort,
+body.simple-mode #page-prestamos main > .calc-card:not(:first-of-type) { display:none !important; }
+
+/* Proyectos: en simple queda decisión + indicadores principales. */
+body.simple-mode #resProy .divider,
+body.simple-mode #resProy .multirate-row,
+body.simple-mode #resProy .van-chart,
+body.simple-mode #tablaFF { display:none !important; }
+body.simple-mode #resProy .sec-title.st-green { display:none !important; }
+
+/* Empréstitos: en simple queda el resumen económico, no las tablas largas. */
+body.simple-mode #tablaEmisor,
+body.simple-mode #tablaEmprestito,
+body.simple-mode #notaEmp { display:none !important; }
+body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; }
+
+@media (max-width: 720px) {
+  header { height:auto; min-height:56px; flex-wrap:wrap; padding-top:.45rem; padding-bottom:.45rem; }
+  .view-toggle { order:3; width:100%; justify-content:center; }
+  .view-toggle .view-label { display:inline-block; }
+}
+@media (max-width: 480px) {
+  .view-btn { font-size:.62rem; padding:.22rem .46rem; }
+}
+
 </style>
 </head>
 <body>
@@ -681,17 +766,23 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <div class="logo-escudo">CF</div>
     <div class="logo-text">CalcFin <span></span></div>
   </div>
-  <button id="toggleTheme" onclick="toggleTheme()" title="Cambiar tema"
+  <button id="toggleTheme" onclick="toggleTheme()" title="Cambiar modo claro/oscuro"
     style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;
-           padding:.28rem .55rem;font-size:.85rem;color:var(--text2);transition:all .2s;flex-shrink:0"
-    aria-label="Cambiar tema">🌙</button>
+           padding:.28rem .6rem;font-size:.72rem;color:var(--text2);transition:all .2s;flex-shrink:0;
+           display:flex;align-items:center;gap:.35rem;font-family:var(--sans);font-weight:700;letter-spacing:.04em;text-transform:uppercase"
+    aria-label="Cambiar modo claro/oscuro"><span class="theme-icon">🌙</span><span>Modo</span></button>
+  <div class="view-toggle" role="group" aria-label="Cambiar vista simple o avanzada">
+    <span class="view-label">Vista</span>
+    <button type="button" class="view-btn" id="btnViewSimple" onclick="setViewMode('simple')">Simple</button>
+    <button type="button" class="view-btn" id="btnViewAdvanced" onclick="setViewMode('advanced')">Avanzada</button>
+  </div>
   <nav>
     <button class="nav-btn" onclick="showPage('tasas')">Tasas</button>
     <button class="nav-btn" onclick="showPage('rentas')">Rentas</button>
     <button class="nav-btn" onclick="showPage('prestamos')">Préstamos</button>
     <button class="nav-btn" onclick="showPage('proyectos')">Proyectos</button>
     <button class="nav-btn" onclick="showPage('emprestitos')">Empréstitos</button>
-    <button class="nav-btn" onclick="showPage('glosario')" style="border-color:rgba(240,180,41,.3);color:var(--gold)">📖</button>
+    <button class="nav-btn" onclick="showPage('glosario')" style="border-color:rgba(240,180,41,.3);color:var(--gold)">📖 Diccionario</button>
   </nav>
 </header>
 
@@ -739,6 +830,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <h1>Equivalencia de <em>Tasas de Interés</em></h1>
     <p>Ingresá una tasa y obtené todas sus equivalentes · Interés &amp; Descuento · Nominal &amp; Efectiva · Continua · Tasa Real</p>
   </div>
+  <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -796,7 +888,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row">
         <div class="field">
           <label>Tasa ingresada <span>(tanto por 1 — ej: 0,035)</span></label>
-          <input type="number" id="inputTasa" placeholder="Ej: 0,035" step="any" min="0">
+          <input type="text" inputmode="decimal" id="inputTasa" placeholder="Ej: 0,035" step="any" min="0">
         </div>
         <div class="field" id="fieldFreqInput">
           <label>Frecuencia de la tasa ingresada</label>
@@ -818,7 +910,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
         <div class="input-row">
           <div class="field">
             <label>Inflación φ <span>(anual efectiva, tanto por 1)</span></label>
-            <input type="number" id="inputInflacion" placeholder="Ej: 1,20" step="any" min="0">
+            <input type="text" inputmode="decimal" id="inputInflacion" placeholder="Ej: 1,20" step="any" min="0">
           </div>
           <div class="field">
             <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.74rem;color:var(--text2);line-height:1.65;height:100%;display:flex;align-items:center;">
@@ -874,6 +966,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <h1>Cálculo de <em>Rentas</em></h1>
     <p>Rentas constantes y variables · Ingresá cualquier tipo de tasa · Vencida · Adelantada · Diferida · Perpetua</p>
   </div>
+  <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -936,7 +1029,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
         <div class="input-row">
           <div class="field">
             <label>Valor de la tasa <span>— t.p.1</span></label>
-            <input type="number" id="rInTasa" placeholder="Ej: 0,035" step="any" min="0">
+            <input type="text" inputmode="decimal" id="rInTasa" placeholder="Ej: 0,035" step="any" min="0">
           </div>
           <div class="field" id="rFreqField">
             <label>Frecuencia</label>
@@ -988,13 +1081,13 @@ body.light-mode tr:hover td { background: var(--bg4); }
       </div>
 
       <div class="input-row">
-        <div class="field" id="fC"><label>Cuota (C) <span>— $</span></label><input type="number" id="inC" placeholder="Ej: 1000" step="any" min="0"></div>
-        <div class="field" id="fVA"><label>Valor Actual (VA)</label><input type="number" id="inVA" placeholder="Ej: 20000" step="any"></div>
+        <div class="field" id="fC"><label>Cuota (C) <span>— $</span></label><input type="text" inputmode="decimal" id="inC" placeholder="Ej: 1000" step="any" min="0"></div>
+        <div class="field" id="fVA"><label>Valor Actual (VA)</label><input type="text" inputmode="decimal" id="inVA" placeholder="Ej: 20000" step="any"></div>
       </div>
       <div class="input-row">
-        <div class="field" id="fN"><label>Número de cuotas (n)</label><input type="number" id="inN" placeholder="Ej: 24" step="1" min="1"></div>
-        <div class="field" id="fH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="number" id="inH" placeholder="Ej: 3" step="1" min="1"></div>
-        <div class="field" id="fVF"><label>Valor Final (VF)</label><input type="number" id="inVF" placeholder="Ej: 35000" step="any"></div>
+        <div class="field" id="fN"><label>Número de cuotas (n)</label><input type="text" inputmode="decimal" id="inN" placeholder="Ej: 24" step="1" min="1"></div>
+        <div class="field" id="fH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="text" inputmode="decimal" id="inH" placeholder="Ej: 3" step="1" min="1"></div>
+        <div class="field" id="fVF"><label>Valor Final (VF)</label><input type="text" inputmode="decimal" id="inVF" placeholder="Ej: 35000" step="any"></div>
       </div>
 
       <div class="ejemplos-wrap">
@@ -1042,7 +1135,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" style="margin-bottom:.5rem">
         <div class="field">
           <label>Valor de la tasa <span>— t.p.1</span></label>
-          <input type="number" id="rVInTasa" placeholder="Ej: 0,035" step="any" min="0">
+          <input type="text" inputmode="decimal" id="rVInTasa" placeholder="Ej: 0,035" step="any" min="0">
         </div>
         <div class="field" id="rVFreqField">
           <label>Frecuencia tasa</label>
@@ -1102,14 +1195,14 @@ body.light-mode tr:hover td { background: var(--bg4); }
       </div>
 
       <div class="input-row-3">
-        <div class="field"><label>Cuota inicial (c) <span>— $</span></label><input type="number" id="inVC" placeholder="Ej: 1000" step="any" min="0"></div>
-        <div class="field" id="fRazon"><label id="razonLbl">Razón (r) <span>— $</span></label><input type="number" id="inRazon" placeholder="Ej: 50" step="any"><div id="razonHint" style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.25rem;display:none">Si la renta crece un 5% ingresá q = 1,05 · Si decrece un 5% ingresá q = 0,95</div></div>
-        <div class="field" id="fVVA"><label>Valor Actual (VA)</label><input type="number" id="inVVA" placeholder="Ej: 20000" step="any"></div>
+        <div class="field"><label>Cuota inicial (c) <span>— $</span></label><input type="text" inputmode="decimal" id="inVC" placeholder="Ej: 1000" step="any" min="0"></div>
+        <div class="field" id="fRazon"><label id="razonLbl">Razón (r) <span>— $</span></label><input type="text" inputmode="decimal" id="inRazon" placeholder="Ej: 50" step="any"><div id="razonHint" style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.25rem;display:none">Si la renta crece un 5% ingresá q = 1,05 · Si decrece un 5% ingresá q = 0,95</div></div>
+        <div class="field" id="fVVA"><label>Valor Actual (VA)</label><input type="text" inputmode="decimal" id="inVVA" placeholder="Ej: 20000" step="any"></div>
       </div>
       <div class="input-row">
-        <div class="field" id="fVN"><label>Número de cuotas (n)</label><input type="number" id="inVN" placeholder="Ej: 12" step="1" min="1"></div>
-        <div class="field" id="fVH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="number" id="inVH" placeholder="Ej: 3" step="1" min="1"></div>
-        <div class="field" id="fVVF"><label>Valor Final (VF)</label><input type="number" id="inVVF" placeholder="Ej: 35000" step="any"></div>
+        <div class="field" id="fVN"><label>Número de cuotas (n)</label><input type="text" inputmode="decimal" id="inVN" placeholder="Ej: 12" step="1" min="1"></div>
+        <div class="field" id="fVH" style="display:none"><label>Períodos de diferimiento (h)</label><input type="text" inputmode="decimal" id="inVH" placeholder="Ej: 3" step="1" min="1"></div>
+        <div class="field" id="fVVF"><label>Valor Final (VF)</label><input type="text" inputmode="decimal" id="inVVF" placeholder="Ej: 35000" step="any"></div>
       </div>
 
       <div class="ejemplos-wrap">
@@ -1141,6 +1234,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <h1>Sistemas de <em>Amortización de Préstamos</em></h1>
     <p>Francés · Alemán · Tasa Directa · Americano · Ingresá cualquier tipo de tasa · Incógnita variable</p>
   </div>
+  <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1222,7 +1316,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" style="margin-bottom:.5rem">
         <div class="field">
           <label id="pLabelTasa">Valor de la tasa <span>— t.p.1</span></label>
-          <input type="number" id="prInI" placeholder="Ej: 0,035" step="any" min="0">
+          <input type="text" inputmode="decimal" id="prInI" placeholder="Ej: 0,035" step="any" min="0">
         </div>
         <div class="field" id="pFreqField">
           <label>Frecuencia tasa</label>
@@ -1253,15 +1347,15 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row-3">
         <div class="field" id="pFV">
           <label>Capital prestado (V) <span>— $</span></label>
-          <input type="number" id="inV" placeholder="Ej: 100000" step="any" min="0">
+          <input type="text" inputmode="decimal" id="inV" placeholder="Ej: 100000" step="any" min="0">
         </div>
         <div class="field" id="pFN">
           <label>N° de cuotas (n)</label>
-          <input type="number" id="prInN" placeholder="Ej: 24" step="1" min="1">
+          <input type="text" inputmode="decimal" id="prInN" placeholder="Ej: 24" step="1" min="1">
         </div>
         <div class="field" id="pFCuota" style="display:none">
           <label>Cuota conocida (c) <span>— $ (para despejar V, n o i)</span></label>
-          <input type="number" id="inCuotaKnown" placeholder="Ej: 5000" step="any" min="0">
+          <input type="text" inputmode="decimal" id="inCuotaKnown" placeholder="Ej: 5000" step="any" min="0">
         </div>
       </div>
 
@@ -1269,7 +1363,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" id="rowTasaF" style="display:none">
         <div class="field">
           <label>Tasa fondo amortizante (i') <span>— t.p.1 efectiva del período</span></label>
-          <input type="number" id="inIF" placeholder="Ej: 0,02" step="any" min="0">
+          <input type="text" inputmode="decimal" id="inIF" placeholder="Ej: 0,02" step="any" min="0">
         </div>
         <div class="field">
           <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.73rem;color:var(--text2);line-height:1.6;display:flex;align-items:center">
@@ -1287,10 +1381,10 @@ body.light-mode tr:hover td { background: var(--bg4); }
       </div>
       <div id="gastosSection" style="display:none">
         <div class="input-row-4">
-          <div class="field"><label>Gasto fijo/cuota <span>$</span></label><input type="number" id="inGFijo" placeholder="Ej: 150" step="any" min="0" value="0"></div>
-          <div class="field"><label>Gastos otorgamiento <span>$</span></label><input type="number" id="inGOtorg" placeholder="Ej: 500" step="any" min="0" value="0"></div>
-          <div class="field"><label>Sellado <span>% s/capital</span></label><input type="number" id="inSellado" placeholder="Ej: 1,2" step="any" min="0" value="0"></div>
-          <div class="field"><label>IVA intereses <span>%</span></label><input type="number" id="inIVA" placeholder="Ej: 21" step="any" min="0" value="0"></div>
+          <div class="field"><label>Gasto fijo/cuota <span>$</span></label><input type="text" inputmode="decimal" id="inGFijo" placeholder="Ej: 150" step="any" min="0" value="0"></div>
+          <div class="field"><label>Gastos otorgamiento <span>$</span></label><input type="text" inputmode="decimal" id="inGOtorg" placeholder="Ej: 500" step="any" min="0" value="0"></div>
+          <div class="field"><label>Sellado <span>% s/capital</span></label><input type="text" inputmode="decimal" id="inSellado" placeholder="Ej: 1,2" step="any" min="0" value="0"></div>
+          <div class="field"><label>IVA intereses <span>%</span></label><input type="text" inputmode="decimal" id="inIVA" placeholder="Ej: 21" step="any" min="0" value="0"></div>
         </div>
       </div>
 
@@ -1374,9 +1468,9 @@ body.light-mode tr:hover td { background: var(--bg4); }
             Dado un capital y una TEA fija, compará cómo cambia la cuota según la frecuencia de pago (mensual, trimestral, semestral, anual). El número de períodos se ajusta automáticamente.
           </p>
           <div class="input-row-3">
-            <div class="field"><label>Capital (V) <span>— $</span></label><input type="number" id="fqV" placeholder="Ej: 100000" step="any" min="0"></div>
-            <div class="field"><label>TEA <span>— t.p.1</span></label><input type="number" id="fqTEA" placeholder="Ej: 0,45" step="any" min="0"></div>
-            <div class="field"><label>Plazo total <span>— años</span></label><input type="number" id="fqAnios" placeholder="Ej: 2" step="any" min="0.1"></div>
+            <div class="field"><label>Capital (V) <span>— $</span></label><input type="text" inputmode="decimal" id="fqV" placeholder="Ej: 100000" step="any" min="0"></div>
+            <div class="field"><label>TEA <span>— t.p.1</span></label><input type="text" inputmode="decimal" id="fqTEA" placeholder="Ej: 0,45" step="any" min="0"></div>
+            <div class="field"><label>Plazo total <span>— años</span></label><input type="text" inputmode="decimal" id="fqAnios" placeholder="Ej: 2" step="any" min="0.1"></div>
           </div>
           <button class="btn-calc" onclick="calcFreqCompar()">Comparar frecuencias</button>
           <div class="error-msg" id="errFq"></div>
@@ -1398,8 +1492,8 @@ body.light-mode tr:hover td { background: var(--bg4); }
             Dado un préstamo en un sistema, calculá la tasa equivalente en los demás sistemas para que el tomador enfrente el mismo flujo de fondos.
           </p>
           <div class="input-row-3">
-            <div class="field"><label>Capital (V) <span>— $</span></label><input type="number" id="eqV" placeholder="Ej: 100000" step="any" min="0"></div>
-            <div class="field"><label>N° cuotas (n)</label><input type="number" id="eqN" placeholder="Ej: 24" step="1" min="1"></div>
+            <div class="field"><label>Capital (V) <span>— $</span></label><input type="text" inputmode="decimal" id="eqV" placeholder="Ej: 100000" step="any" min="0"></div>
+            <div class="field"><label>N° cuotas (n)</label><input type="text" inputmode="decimal" id="eqN" placeholder="Ej: 24" step="1" min="1"></div>
             <div class="field">
               <label>Sistema base</label>
               <select id="eqSis">
@@ -1409,7 +1503,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
             </div>
           </div>
           <div class="input-row">
-            <div class="field"><label>Tasa base <span>— t.p.1 por período</span></label><input type="number" id="eqTasa" placeholder="Ej: 0,035" step="any" min="0"></div>
+            <div class="field"><label>Tasa base <span>— t.p.1 por período</span></label><input type="text" inputmode="decimal" id="eqTasa" placeholder="Ej: 0,035" step="any" min="0"></div>
             <div class="field"></div>
           </div>
           <button class="btn-calc" onclick="calcEquivSistemas()">Calcular equivalencias</button>
@@ -1427,6 +1521,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <h1>Evaluación de <em>Proyectos de Inversión</em></h1>
     <p>Flujo de fondos · Valor Actual Neto (VAN) · Tasa Interna de Retorno (TIR) · Plazo de Recupero (PR)</p>
   </div>
+  <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1477,11 +1572,11 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row">
         <div class="field">
           <label>Tasa de corte (i) <span>— t.p.1 por período</span></label>
-          <input type="number" id="inTasa" placeholder="Ej: 0,05" step="any" min="0">
+          <input type="text" inputmode="decimal" id="inTasa" placeholder="Ej: 0,05" step="any" min="0">
         </div>
         <div class="field">
           <label>N° de períodos (sin contar t=0)</label>
-          <input type="number" id="inPeriodos" placeholder="Ej: 6" step="1" min="1" max="40" value="6">
+          <input type="text" inputmode="decimal" id="inPeriodos" placeholder="Ej: 6" step="1" min="1" max="40" value="6">
         </div>
       </div>
 
@@ -1512,9 +1607,9 @@ body.light-mode tr:hover td { background: var(--bg4); }
         <hr class="divider">
         <div class="sec-title st-blue">VAN a distintas tasas de corte</div>
         <div class="multirate-row">
-          <div class="field"><label>Tasa mínima <span>— t.p.1</span></label><input type="number" id="inTMin" placeholder="Ej: 0,00" step="any" min="0" value="0"></div>
-          <div class="field"><label>Tasa máxima <span>— t.p.1</span></label><input type="number" id="inTMax" placeholder="Ej: 0,30" step="any" min="0" value="0.30"></div>
-          <div class="field"><label>Cantidad de puntos</label><input type="number" id="inTPuntos" placeholder="10" step="1" min="3" max="20" value="10"></div>
+          <div class="field"><label>Tasa mínima <span>— t.p.1</span></label><input type="text" inputmode="decimal" id="inTMin" placeholder="Ej: 0,00" step="any" min="0" value="0"></div>
+          <div class="field"><label>Tasa máxima <span>— t.p.1</span></label><input type="text" inputmode="decimal" id="inTMax" placeholder="Ej: 0,30" step="any" min="0" value="0.30"></div>
+          <div class="field"><label>Cantidad de puntos</label><input type="text" inputmode="decimal" id="inTPuntos" placeholder="10" step="1" min="3" max="20" value="10"></div>
           <div><button class="btn-sm add" style="margin-top:1.55rem" onclick="calcMultirate()">Recalcular</button></div>
         </div>
         <div class="van-chart"><h3>VAN vs Tasa de corte</h3><div id="chartBars" class="bars-wrap"></div><div id="chartLabels" style="display:flex;gap:4px;padding:0 4px;margin-top:2px"></div></div>
@@ -1532,6 +1627,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
     <h1>Análisis de <em>Empréstitos</em></h1>
     <p>Francés · Alemán · Americano · Incógnita variable · Costo del emisor · Rentabilidad del suscriptor</p>
   </div>
+  <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1610,7 +1706,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" style="margin-bottom:.5rem">
         <div class="field" id="eTasaField">
           <label>Valor de la tasa <span>— t.p.1 s/VN</span></label>
-          <input type="number" id="emInI" placeholder="Ej: 0,08" step="any" min="0">
+          <input type="text" inputmode="decimal" id="emInI" placeholder="Ej: 0,08" step="any" min="0">
         </div>
         <div class="field" id="eFreqField">
           <label>Frecuencia tasa</label>
@@ -1648,14 +1744,14 @@ body.light-mode tr:hover td { background: var(--bg4); }
 
       <div id="secVNxN">
         <div class="input-row">
-          <div class="field" id="eFieldVN"><label>Valor nominal unitario (VN) <span>— $</span></label><input type="number" id="emInVN" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
-          <div class="field" id="eFieldN"><label>Cantidad de títulos (N)</label><input type="number" id="emInN" placeholder="Ej: 500" step="1" min="1" value="500"></div>
+          <div class="field" id="eFieldVN"><label>Valor nominal unitario (VN) <span>— $</span></label><input type="text" inputmode="decimal" id="emInVN" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
+          <div class="field" id="eFieldN"><label>Cantidad de títulos (N)</label><input type="text" inputmode="decimal" id="emInN" placeholder="Ej: 500" step="1" min="1" value="500"></div>
         </div>
       </div>
       <div id="secTotal" style="display:none">
         <div class="input-row">
-          <div class="field"><label>Capital total <span>— $</span></label><input type="number" id="inCapTotal" placeholder="Ej: 500000" step="any" min="0"></div>
-          <div class="field"><label>VN unitario <span>— $</span></label><input type="number" id="emInVN2" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
+          <div class="field"><label>Capital total <span>— $</span></label><input type="text" inputmode="decimal" id="inCapTotal" placeholder="Ej: 500000" step="any" min="0"></div>
+          <div class="field"><label>VN unitario <span>— $</span></label><input type="text" inputmode="decimal" id="emInVN2" placeholder="Ej: 1000" step="any" min="0" value="1000"></div>
         </div>
       </div>
 
@@ -1663,7 +1759,7 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" id="eCuotaKnownRow" style="display:none">
         <div class="field">
           <label>Cuota unitaria conocida (c) <span>— $ por título</span></label>
-          <input type="number" id="eCuotaKnown" placeholder="Ej: 120" step="any" min="0">
+          <input type="text" inputmode="decimal" id="eCuotaKnown" placeholder="Ej: 120" step="any" min="0">
         </div>
         <div class="field"></div>
       </div>
@@ -1672,17 +1768,17 @@ body.light-mode tr:hover td { background: var(--bg4); }
       <div class="input-row" id="ePerRow">
         <div class="field" id="eFieldPer">
           <label>N° de períodos (n)</label>
-          <input type="number" id="inPer" placeholder="Ej: 5" step="1" min="1">
+          <input type="text" inputmode="decimal" id="inPer" placeholder="Ej: 5" step="1" min="1">
         </div>
         <div class="field">
           <label>Precio emisión <span>— % del VN</span></label>
-          <input type="number" id="inPE" placeholder="Ej: 100" step="any" min="0" value="100">
+          <input type="text" inputmode="decimal" id="inPE" placeholder="Ej: 100" step="any" min="0" value="100">
         </div>
       </div>
 
       <div class="input-row-3">
-        <div class="field"><label>Prima reembolso <span>— % s/VN</span></label><input type="number" id="inPrima" placeholder="Ej: 0" step="any" min="0" value="0"></div>
-        <div class="field"><label>Gastos emisión <span>— % s/capital</span></label><input type="number" id="inGastos" placeholder="Ej: 2" step="any" min="0" value="0"></div>
+        <div class="field"><label>Prima reembolso <span>— % s/VN</span></label><input type="text" inputmode="decimal" id="inPrima" placeholder="Ej: 0" step="any" min="0" value="0"></div>
+        <div class="field"><label>Gastos emisión <span>— % s/capital</span></label><input type="text" inputmode="decimal" id="inGastos" placeholder="Ej: 2" step="any" min="0" value="0"></div>
         <div class="field"><div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.72rem;color:var(--text2);line-height:1.6;display:flex;align-items:center">PR = VN·(1+prima/100)</div></div>
       </div>
 
@@ -1807,7 +1903,7 @@ function calcConFeedback(btn, fnName) {
       var errEl = btn.parentElement ? btn.parentElement.querySelector('.error-msg') : null;
       var msg = e.message || String(e);
       if (e.stack) msg += ' | Stack: ' + e.stack.split('\n')[1];
-      if (errEl) { errEl.textContent = '⚠ ' + msg; errEl.classList.add('show'); }
+      if (errEl) { cfSetError(errEl, msg); }
       showToast('✗ ' + (e.message||'error'), 'error');
     }
     if (btn) btn.textContent = orig;
@@ -1838,6 +1934,161 @@ function btnFeedback(btn, ok) {
 }
 
 
+
+
+
+// ── ENTRADA INTELIGENTE DE NÚMEROS ───────────────────────
+// Acepta coma decimal, punto decimal y porcentajes explícitos.
+// cfNum: valores comunes ($, n, porcentajes cargados como 21, etc.).
+// cfRate: tasas en tanto por uno; si el usuario escribe 3,5%, devuelve 0.035.
+function cfParseValue(raw) {
+  raw = (raw ?? '').toString().trim();
+  if (raw === '') return { value: null, hadPercent: false, raw: '' };
+  const hadPercent = raw.includes('%');
+  raw = raw.replace(/%/g, '').replace(/\s/g, '');
+
+  // Soporta formatos usuales: 1.234,56 | 1,234.56 | 0,035 | 0.035
+  const hasComma = raw.includes(',');
+  const hasDot = raw.includes('.');
+  if (hasComma && hasDot) {
+    if (raw.lastIndexOf(',') > raw.lastIndexOf('.')) {
+      raw = raw.replace(/\./g, '').replace(',', '.');
+    } else {
+      raw = raw.replace(/,/g, '');
+    }
+  } else if (hasComma) {
+    raw = raw.replace(',', '.');
+  }
+
+  const value = parseFloat(raw);
+  return { value: isNaN(value) ? null : value, hadPercent, raw };
+}
+
+function cfNum(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const parsed = cfParseValue(el.value);
+  return parsed.value;
+}
+
+function cfNumFromEl(el) {
+  if (!el) return null;
+  const parsed = cfParseValue(el.value);
+  return parsed.value;
+}
+
+function cfRate(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const parsed = cfParseValue(el.value);
+  let value = parsed.value;
+  if (value === null) { cfRateWarning(el, ''); return null; }
+  if (parsed.hadPercent) value = value / 100;
+
+  // No bloquea el cálculo: solo avisa cuando parece que el alumno ingresó porcentaje sin %.
+  if (!parsed.hadPercent && Math.abs(value) > 1) {
+    cfRateWarning(el, 'Ingresaste ' + el.value + ' como tanto por uno. Si querías ' + el.value + '%, escribí ' + el.value + '% o su equivalente decimal.');
+  } else {
+    cfRateWarning(el, '');
+  }
+  return value;
+}
+
+function cfRateWarning(el, msg) {
+  if (!el || !el.parentElement) return;
+  let w = el.parentElement.querySelector('.num-warning');
+  if (!w) {
+    w = document.createElement('div');
+    w.className = 'num-warning';
+    el.parentElement.appendChild(w);
+  }
+  w.textContent = msg;
+  w.classList.toggle('show', !!msg);
+}
+
+
+// ── MENSAJES DIDÁCTICOS DE VALIDACIÓN ────────────────────
+function cfExplainError(msg) {
+  msg = (msg || '').toString().trim();
+  const low = msg.toLowerCase();
+
+  if (low.includes('tasa inválida') || low.includes('verificá el tipo y la frecuencia')) {
+    return 'La tasa no pudo convertirse correctamente. Revisá: 1) que esté en tanto por uno o con % explícito (0,035 o 3,5%); 2) que el tipo de tasa elegido coincida con el dato; 3) que la frecuencia sea la del enunciado.';
+  }
+  if (low.includes('ingresá la tasa de corte')) {
+    return 'Ingresá la tasa de corte del proyecto. Es la rentabilidad mínima exigida para descontar los flujos. Podés escribir 0,12 o 12%.';
+  }
+  if (low.includes('ingresá la tasa del empréstito')) {
+    return 'Ingresá la tasa contractual del empréstito. Debe corresponder al tipo y frecuencia seleccionados. Ejemplo: 8% anual = 8% o 0,08.';
+  }
+  if (low.includes('ingresá la tasa del fondo')) {
+    return "Ingresá la tasa efectiva del fondo amortizante i'. En el sistema americano a dos tasas, esta tasa capitaliza los depósitos destinados a devolver el capital.";
+  }
+  if (low.includes('ingresá la tasa') || low === 'ingresá i.') {
+    return 'Ingresá una tasa válida. Usá tanto por uno (0,035) o porcentaje explícito (3,5%). Además verificá que la frecuencia elegida sea la correcta.';
+  }
+  if (low.includes('mayor a cero') && low.includes('tasa')) {
+    return 'La tasa debe ser mayor que cero. Si querías ingresar 3,5%, escribí 0,035 o 3,5%.';
+  }
+  if (low.includes('ingresá el capital v') || low.includes('ingresá capital')) {
+    return 'Ingresá el capital V del préstamo/empréstito. Es el valor inicial sobre el que se calculan intereses y amortizaciones; debe ser mayor que cero.';
+  }
+  if (low.includes('ingresá vn')) {
+    return 'Ingresá el valor nominal unitario (VN) de cada título. Debe ser mayor que cero.';
+  }
+  if (low.includes('ingresá n') || low.includes('ingresá el número de cuotas') || low.includes('ingresá el número de períodos')) {
+    return 'Ingresá n como cantidad de períodos/cuotas. Debe ser un número entero mayor o igual a 1 y debe coincidir con la frecuencia de pagos seleccionada.';
+  }
+  if (low.includes('n debe ser mayor')) {
+    return 'n debe ser mayor que cero. Recordá que n representa la cantidad de períodos o cuotas, no años salvo que la frecuencia también sea anual.';
+  }
+  if (low.includes('cuota conocida')) {
+    return 'Ingresá la cuota conocida para poder despejar la incógnita elegida. Sin una cuota de referencia no se puede resolver V, n o i.';
+  }
+  if (low.includes('cuota c debe') || low.includes('completá c') || low === 'completá c y r.' || low === 'completá c y q.') {
+    return 'Completá la cuota C. Es el pago periódico de la renta o préstamo y debe ser mayor que cero.';
+  }
+  if (low.includes('completá c, tasa y n')) {
+    return 'Para calcular este valor necesitás tres datos: cuota C, tasa efectiva del período y cantidad de períodos n.';
+  }
+  if (low.includes('completá va y la tasa')) {
+    return 'Para calcular la cuota de una perpetuidad necesitás el Valor Actual (VA) y la tasa del período. Fórmula base: C = VA × i.';
+  }
+  if (low.includes('completá c y la tasa')) {
+    return 'Para calcular el Valor Actual de una perpetuidad necesitás la cuota C y la tasa del período. Fórmula base: VA = C / i.';
+  }
+  if (low.includes('completá va o vf') || low.includes('completá (va o vf)')) {
+    return 'Completá al menos uno de estos valores: Valor Actual (VA) o Valor Final (VF). La calculadora necesita uno de ellos para despejar la incógnita.';
+  }
+  if (low.includes('período de diferimiento')) {
+    return 'Ingresá h, el número de períodos de diferimiento. Debe ser mayor o igual a 1: indica cuántos períodos se posterga el primer pago.';
+  }
+  if (low.includes('perpetua') && low.includes('solo')) {
+    return 'En una renta perpetua no existe número final de cuotas ni Valor Final finito. Por eso solo corresponde calcular VA o C según el caso.';
+  }
+  if (low.includes('q debe ser positivo')) {
+    return 'La razón geométrica q debe ser positiva. Si la cuota crece 5%, ingresá q = 1,05. Si decrece 5%, ingresá q = 0,95.';
+  }
+  if (low.includes('ff(0) debe ser negativo')) {
+    return 'FF(0) debe ser negativo porque representa la inversión inicial del proyecto. Ejemplo: si invertís $100.000 al inicio, ingresá -100000.';
+  }
+  if (low.includes('flujo de fondos')) {
+    return 'Completá todos los flujos de fondos. Usá valores negativos para egresos y positivos para ingresos.';
+  }
+  if (low.includes('no se encontró tasa') || low.includes('no se pudo calcular') || low.includes('verificá los datos')) {
+    return 'No se encontró una solución financiera con los datos ingresados. Revisá que la incógnita elegida tenga datos suficientes, que las tasas correspondan al período y que los importes tengan signo correcto.';
+  }
+  if (low.includes('no existe solución para n')) {
+    return msg + ' En términos financieros, la cuota es insuficiente frente al interés generado: aumentá la cuota, reducí la tasa o revisá el VA.';
+  }
+  return msg;
+}
+
+function cfSetError(el, msg) {
+  if (!el) return;
+  el.textContent = '⚠ ' + cfExplainError(msg);
+  el.classList.add('show');
+}
 
 function initTasas() {
   (function() {
@@ -2024,14 +2275,12 @@ function mkCard(label, value, formula, cColor, hlClass) {
 
 // ── CALCULAR ──────────────────────────────────────────────
 function calcular() {
-  const raw   = document.getElementById('inputTasa').value.replace(',', '.');
-  const tRaw  = parseFloat(raw);
+  const tRaw  = cfRate('inputTasa');
   const mInput = parseInt(document.getElementById('freqInput').value);
   const err   = document.getElementById('errorMsg');
 
   if (isNaN(tRaw) || tRaw <= 0) {
-    err.textContent = '⚠ Ingresá un valor de tasa válido y mayor a cero.';
-    err.classList.add('show'); hide(); return;
+    cfSetError(err, 'La tasa debe ser mayor que cero.'); hide(); return;
   }
   err.classList.remove('show');
 
@@ -2040,8 +2289,7 @@ function calcular() {
 
   const tea = toTEA(tipoActual, tRaw, diasInput);
   if (tea === null || !isFinite(tea) || tea <= -1) {
-    err.textContent = '⚠ Tasa inválida: verificá el tipo y la frecuencia ingresada.';
-    err.classList.add('show'); return;
+    cfSetError(err, 'Tasa inválida: verificá el tipo y la frecuencia ingresada.'); return;
   }
 
   // ── EFECTIVOS DE INTERÉS
@@ -2098,8 +2346,7 @@ function calcular() {
 
   // Tasa real Fisher
   if (realOn) {
-    const phiRaw = document.getElementById('inputInflacion').value.replace(',', '.');
-    const phi    = parseFloat(phiRaw);
+    const phi    = cfRate('inputInflacion');
     if (!isNaN(phi) && phi > -1) {
       const ir     = (1 + tea) / (1 + phi) - 1;
       const formIr = buildFormulas(tipoActual, tRaw, diasInput, 365, tea).real(phi);
@@ -2141,7 +2388,7 @@ let rTipoTasa='ef_int', rVTipoTasa='ef_int';
 // ── HELPERS ───────────────────────────────────────────────
 const fmt6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
 const fmt2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
-const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const pn=id=>cfNum(id);
 const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
 const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
 const vf=i=>1/(1+i);
@@ -2174,7 +2421,7 @@ function fmt6c(v) { return v.toFixed(6).replace('.',','); }
 // ── ACTUALIZAR DISPLAY TASA CONVERTIDA ───────────────────
 function actualizarTasaDisplay(tipoId, tasaId, freqTasaId, freqPeriodoId, displayId, spanId) {
   const tipo     = tipoId;
-  const valor    = pn(tasaId);
+  const valor    = cfRate(tasaId);
   const diasT    = parseInt(document.getElementById(freqTasaId).value);
   const diasP    = parseInt(document.getElementById(freqPeriodoId).value);
   const display  = document.getElementById(displayId);
@@ -2189,13 +2436,13 @@ function actualizarTasaDisplay(tipoId, tasaId, freqTasaId, freqPeriodoId, displa
 }
 
 function getTasaConst() {
-  const valor = pn('rInTasa');
+  const valor = cfRate('rInTasa');
   const diasT = parseInt(document.getElementById('rFreqTasa').value);
   const diasP = parseInt(document.getElementById('rFreqPago').value);
   return convertirTasa(rTipoTasa, valor, diasT, diasP);
 }
 function getTasaVar() {
-  const valor = pn('rVInTasa');
+  const valor = cfRate('rVInTasa');
   const diasT = parseInt(document.getElementById('rVFreqTasa').value);
   const diasP = parseInt(document.getElementById('rVFreqPago').value);
   return convertirTasa(rVTipoTasa, valor, diasT, diasP);
@@ -2322,7 +2569,7 @@ function ocultarRes(r,e){
   el.classList.remove('show');
   el.style.background=''; el.style.borderColor=''; el.style.color='';
 }
-function mostrarError(id,msg){const el=document.getElementById(id);el.textContent='⚠ '+msg;el.style.background='';el.style.borderColor='';el.style.color='';el.classList.add('show');}
+function mostrarError(id,msg){const el=document.getElementById(id); if(!el) return; cfSetError(el,msg); el.style.background=''; el.style.borderColor=''; el.style.color='';}
 
 // ══════════════════════════════════════════════════════════
 // CALCULAR CONSTANTE
@@ -2601,7 +2848,7 @@ let sistema='frances', gastosOn=false, queCalcP='cuota', pTipoTasa='ef_int';
 
 const f2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
 const f6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
-const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const pn=id=>cfNum(id);
 const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
 const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
 function bisect(f,a,b,tol=1e-10,max=500){
@@ -2627,14 +2874,14 @@ function convertirTasaPrest(tipo, valor, diasTasa, diasPeriodo) {
 }
 
 function getTasaPrest() {
-  const valor = pn('prInI');
+  const valor = cfRate('prInI');
   const diasT = parseInt(document.getElementById('pFreqTasa').value);
   const diasP = parseInt(document.getElementById('pFreqCuotas').value);
   return convertirTasaPrest(pTipoTasa, valor, diasT, diasP);
 }
 
 function actualizarDisplayTasa() {
-  const valor = pn('prInI');
+  const valor = cfRate('prInI');
   const diasT = parseInt(document.getElementById('pFreqTasa').value);
   const diasP = parseInt(document.getElementById('pFreqCuotas').value);
   const display = document.getElementById('pTasaConvertida');
@@ -2802,7 +3049,7 @@ function calcPrestamo(){
   const resPrest = document.getElementById('resPrest');
   if (resPrest) resPrest.classList.remove('show');
 
-  function showErr(msg){if(err){err.textContent='⚠ '+msg;err.classList.add('show');}}
+  function showErr(msg){ if(err) cfSetError(err,msg); }
 
   // Leer datos según incógnita
   let V=null, n=null, iEf=null;  // iEf = i efectiva del período
@@ -2880,7 +3127,7 @@ function calcPrestamo(){
 
   let iF=0;
   if(sistema==='americano'){
-    iF=pn('inIF');
+    iF=cfRate('inIF');
     if(!iF||iF<=0) return showErr('Ingresá la tasa del fondo i\'.');
   }
 
@@ -2890,7 +3137,7 @@ function calcPrestamo(){
   const ivaPorc=gastosOn?(pn('inIVA')   ||0):0;
 
   // Para tasa directa, iEf es la tasa directa r
-  const iParaBuild = (sistema==='directa'&&pTipoTasa==='directa_r') ? pn('prInI') : iEf;
+  const iParaBuild = (sistema==='directa'&&pTipoTasa==='directa_r') ? cfRate('prInI') : iEf;
   const rows=buildTabla(V,n,iParaBuild,sistema,iF);
   if(!rows.length) return showErr('No se pudo construir el cuadro.');
 
@@ -3002,7 +3249,7 @@ let lastFF = [];
 const f2  = v => isFinite(v) ? v.toFixed(2).replace('.',',') : '—';
 const f6  = v => isFinite(v) ? v.toFixed(6).replace('.',',') : '—';
 const f4  = v => isFinite(v) ? v.toFixed(4).replace('.',',') : '—';
-const pn  = id => { const v=parseFloat(document.getElementById(id).value.replace(',','.')); return isNaN(v)?null:v; };
+const pn=id=>cfNum(id);
 
 // ── CONSTRUCCIÓN DE INPUTS FF ─────────────────────────────
 function buildFFGrid() {
@@ -3031,7 +3278,7 @@ function buildFFGrid() {
 }
 
 function colorearInput(inp) {
-  const v = parseFloat(inp.value.replace(',','.'));
+  const v = cfNumFromEl(inp);
   inp.classList.remove('is-neg','is-pos');
   if (!isNaN(v)) { if(v<0) inp.classList.add('is-neg'); else if(v>0) inp.classList.add('is-pos'); }
 }
@@ -3061,7 +3308,7 @@ function leerFF() {
   for (let t = 0; t <= nPer; t++) {
     const el = document.querySelector(`.ff-input[data-t="${t}"]`);
     if (!el || el.value === '') return null;
-    const v = parseFloat(el.value.replace(',','.'));
+    const v = cfNumFromEl(el);
     if (isNaN(v)) return null;
     ff.push(v);
   }
@@ -3126,7 +3373,7 @@ function calcProyecto() {
   err.classList.remove('show');
   document.getElementById('resProy').classList.remove('show');
 
-  const i = pn('inTasa');
+  const i = cfRate('inTasa');
   if (i === null) return showErr('Ingresá la tasa de corte.');
 
   const ff = leerFF();
@@ -3183,7 +3430,7 @@ function calcProyecto() {
 
   document.getElementById('resProy').classList.add('show');
 
-  function showErr(msg) { err.textContent='⚠ '+msg; err.classList.add('show'); }
+  function showErr(msg) { cfSetError(err,msg); }
 }
 
 // ── TABLA FF DETALLADA ────────────────────────────────────
@@ -3221,8 +3468,8 @@ function buildTablaFF(ff, i, pr, prD) {
 // ── GRÁFICO VAN MULTIRATE ─────────────────────────────────
 function calcMultirate() {
   if (!lastFF.length) return;
-  const tMin   = parseFloat(document.getElementById('inTMin').value)   || 0;
-  const tMax   = parseFloat(document.getElementById('inTMax').value)   || 0.3;
+  const tMin   = cfRate('inTMin') ?? 0;
+  const tMax   = cfRate('inTMax') ?? 0.3;
   const puntos = Math.max(20, parseInt(document.getElementById('inTPuntos').value) || 20);
 
   const paso = (tMax - tMin) / (puntos - 1);
@@ -3374,7 +3621,7 @@ let eTipoTasa='ef_int', queCalcE='cuota';
 const f2=v=>isFinite(v)?v.toFixed(2).replace('.',','):'—';
 const f4=v=>isFinite(v)?v.toFixed(4).replace('.',','):'—';
 const f6=v=>isFinite(v)?v.toFixed(6).replace('.',','):'—';
-const pn=id=>{const v=parseFloat(document.getElementById(id).value.replace(',','.'));return isNaN(v)?null:v};
+const pn=id=>cfNum(id);
 const an=(n,i)=>(1-Math.pow(1+i,-n))/i;
 const sn=(n,i)=>(Math.pow(1+i,n)-1)/i;
 function bisect(f,a,b,tol=1e-10,max=500){
@@ -3399,14 +3646,14 @@ function convertirTasaEmp(tipo, valor, diasTasa, diasPeriodo) {
 }
 
 function getTasaEmp() {
-  const valor = pn('emInI');
+  const valor = cfRate('emInI');
   const diasT = parseInt(document.getElementById('eFreqTasa').value);
   const diasP = parseInt(document.getElementById('eFreqPer').value);
   return convertirTasaEmp(eTipoTasa, valor, diasT, diasP);
 }
 
 function actualizarDisplayTasaE() {
-  const valor = pn('emInI');
+  const valor = cfRate('emInI');
   const diasT = parseInt(document.getElementById('eFreqTasa').value);
   const diasP = parseInt(document.getElementById('eFreqPer').value);
   const display = document.getElementById('eTasaConvertida');
@@ -3511,7 +3758,7 @@ function calcEmprestito() {
   const err=document.getElementById('errEmp');
   err.classList.remove('show');
   document.getElementById('resEmp').classList.remove('show');
-  function showErr(msg){err.textContent='⚠ '+msg;err.classList.add('show');}
+  function showErr(msg){ cfSetError(err,msg); }
 
   // Leer sistema activo
   const sisTab=document.getElementById('page-emprestitos').querySelector('.sis-tab.active');
@@ -3989,7 +4236,7 @@ function buildFFGridComp(gridId, nPer) {
     const lbl = document.createElement('label');
     lbl.className = t===0?'t0':'pos'; lbl.textContent = `FF(${t})`;
     const inp = document.createElement('input');
-    inp.type='number'; inp.step='any'; inp.className='ff-input'; inp.dataset.t=t;
+    inp.type='text'; inp.inputMode='decimal'; inp.step='any'; inp.className='ff-input'; inp.dataset.t=t;
     inp.placeholder = t===0?'−Inversión':'Flujo';
     if (oldVals[t] !== undefined) inp.value = oldVals[t];
     inp.addEventListener('input', () => colorearInput(inp));
@@ -4008,7 +4255,7 @@ function leerFFComp(gridId, nPer) {
   for (let t=0; t<=nPer; t++) {
     const el = document.querySelector(`#${gridId} .ff-input[data-t="${t}"]`);
     if (!el || el.value==='') return null;
-    const v = parseFloat(el.value.replace(',','.'));
+    const v = cfNumFromEl(el);
     if (isNaN(v)) return null;
     ff.push(v);
   }
@@ -4020,7 +4267,7 @@ function compararProyectos() {
   err.classList.remove('show');
   document.getElementById('resComp').style.display = 'none';
 
-  const i   = parseFloat(document.getElementById('compTasa').value.replace(',','.'));
+  const i   = cfRate('compTasa');
   if (!isFinite(i) || i < 0) return showCompErr('Ingresá la tasa de corte.');
 
   const ffA = leerFFComp('ffGridA', nPerA);
@@ -4082,7 +4329,7 @@ function compararProyectos() {
   document.getElementById('compVeredicto').innerHTML = veredicto;
   document.getElementById('resComp').style.display = '';
 
-  function showCompErr(msg) { err.textContent='⚠ '+msg; err.classList.add('show'); }
+  function showCompErr(msg) { cfSetError(err,msg); }
 }
 
 // Inicializar grids del comparador cuando se navegue a proyectos
@@ -4094,11 +4341,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// ── VISTA SIMPLE / AVANZADA ──────────────────────────────
+function setViewMode(mode) {
+  mode = mode === 'simple' ? 'simple' : 'advanced';
+  document.body.classList.toggle('simple-mode', mode === 'simple');
+  document.body.classList.toggle('advanced-mode', mode === 'advanced');
+
+  const bSimple = document.getElementById('btnViewSimple');
+  const bAdvanced = document.getElementById('btnViewAdvanced');
+  if (bSimple) bSimple.classList.toggle('active', mode === 'simple');
+  if (bAdvanced) bAdvanced.classList.toggle('active', mode === 'advanced');
+
+  try { localStorage.setItem('calcfin-view-mode', mode); } catch(e) {}
+}
+
+function initViewMode() {
+  let saved = 'simple';
+  try { saved = localStorage.getItem('calcfin-view-mode') || 'simple'; } catch(e) {}
+  setViewMode(saved);
+}
+
+
 // ── MODO CLARO / OSCURO ───────────────────────────────────
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-mode');
   const btn = document.getElementById('toggleTheme');
-  if (btn) btn.textContent = isLight ? '☀️' : '🌙';
+  if (btn) btn.innerHTML = '<span class="theme-icon">' + (isLight ? '☀️' : '🌙') + '</span><span>Modo</span>';
   try { localStorage.setItem('calcfin-theme', isLight ? 'light' : 'dark'); } catch(e) {}
 }
 // Restaurar preferencia guardada
@@ -4109,11 +4377,13 @@ function toggleTheme() {
       document.body.classList.add('light-mode');
       document.addEventListener('DOMContentLoaded', () => {
         const btn = document.getElementById('toggleTheme');
-        if (btn) btn.textContent = '☀️';
+        if (btn) btn.innerHTML = '<span class="theme-icon">☀️</span><span>Modo</span>';
       });
     }
   } catch(e) {}
 })();
+
+document.addEventListener('DOMContentLoaded', initViewMode);
 
 
 // ════ DICCIONARIO DE TÉRMINOS ═════════════════════════════
@@ -4417,9 +4687,9 @@ function calcFreqCompar() {
   err.classList.remove('show');
   document.getElementById('resFq').style.display = 'none';
 
-  const V    = parseFloat(document.getElementById('fqV').value.replace(',','.'));
-  const tea  = parseFloat(document.getElementById('fqTEA').value.replace(',','.'));
-  const anos = parseFloat(document.getElementById('fqAnios').value.replace(',','.'));
+  const V    = cfNum('fqV');
+  const tea  = cfRate('fqTEA');
+  const anos = cfNum('fqAnios');
 
   if (!isFinite(V)||V<=0)   return fqErr('Ingresá el capital V.');
   if (!isFinite(tea)||tea<=0) return fqErr('Ingresá la TEA.');
@@ -4467,7 +4737,7 @@ function calcFreqCompar() {
     `Pagar con mayor frecuencia reduce el saldo más rápido y genera menos intereses totales.`;
   document.getElementById('resFq').style.display = '';
 
-  function fqErr(msg) { err.textContent='⚠ '+msg; err.classList.add('show'); }
+  function fqErr(msg) { cfSetError(err,msg); }
 }
 
 
@@ -4477,10 +4747,10 @@ function calcEquivSistemas() {
   err.classList.remove('show');
   document.getElementById('resEq').style.display = 'none';
 
-  const V   = parseFloat(document.getElementById('eqV').value.replace(',','.'));
+  const V   = cfNum('eqV');
   const n   = parseInt(document.getElementById('eqN').value);
   const sis = document.getElementById('eqSis').value;
-  const t   = parseFloat(document.getElementById('eqTasa').value.replace(',','.'));
+  const t   = cfRate('eqTasa');
 
   if (!isFinite(V)||V<=0) return eqErr('Ingresá V.');
   if (!n||n<1)            return eqErr('Ingresá n.');
@@ -4543,7 +4813,7 @@ function calcEquivSistemas() {
     `El alemán tiene cuota decreciente con el mismo i.`;
   document.getElementById('resEq').style.display = '';
 
-  function eqErr(msg) { err.textContent='⚠ '+msg; err.classList.add('show'); }
+  function eqErr(msg) { cfSetError(err,msg); }
 }
 
 
