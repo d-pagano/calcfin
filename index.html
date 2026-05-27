@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c14">
-<title>CalcFin · Cálculo Financiero  CF</title>
+<meta name="description" content="CalcFin v3 - Calculadora integral de Cálculo Financiero. Tasas, Rentas, Préstamos, Proyectos y Empréstitos. Prof. Mg. Diego Pagano.">
+<title>CalcFin v3 · Cálculo Financiero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -333,9 +334,8 @@ input.incognita::placeholder{color:rgba(52,211,153,.4)}
 .kpi-label{font-size:.62rem;color:var(--text3);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;margin-bottom:.25rem}
 .kpi-value{font-family:var(--mono);font-size:1rem;font-weight:500}
 .kpi-sub{font-family:var(--mono);font-size:.68rem;color:var(--text3);margin-top:.15rem;line-height:1.4}
-.c-blue{color:var(--accent2)}.c-green{color:var(--green)}.c-red{color:var(--uba-red2)}.c-gold{color:var(--gold)}
+/* colores ya definidos globalmente - no se repiten */
 .sec-title{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono);margin-bottom:.65rem}
-.st-blue{color:var(--accent2)}.st-red{color:var(--uba-red2)}.st-green{color:var(--green)}.st-gold{color:var(--gold)}
 .tabla-wrap{overflow-x:auto;margin-bottom:1.2rem}
 table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.78rem;min-width:580px}
 .tr-total td{color:var(--text);font-weight:600;border-top:1px solid var(--border2);border-bottom:none;background:var(--bg4)!important}
@@ -772,6 +772,30 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
 .renta-mode-group { margin-bottom:.85rem; }
 .renta-mode-group .field { margin-bottom:.38rem; }
 
+/* ── TOOLTIPS EN LABELS (Cambio 11) ── */
+.lbl-tooltip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: rgba(77,163,232,.15); border: 1px solid rgba(77,163,232,.35);
+  font-family: var(--mono); font-size: .6rem; color: var(--accent2);
+  cursor: help; margin-left: .28rem; vertical-align: middle;
+  position: relative; font-style: normal;
+}
+.lbl-tooltip:hover::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: calc(100% + 6px);
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-radius: 6px; padding: .45rem .65rem;
+  font-size: .69rem; color: var(--text2); line-height: 1.5;
+  white-space: normal; min-width: 220px; max-width: 320px;
+  z-index: 200; pointer-events: none;
+  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+}
+body.light-mode .lbl-tooltip:hover::after {
+  background: var(--bg2); border-color: var(--border);
+}
+
 /* ── LÍNEA DE TIEMPO DE RENTAS ── */
 .timeline-wrap {
   margin: 1rem 0 .5rem;
@@ -859,6 +883,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
     <p>Dos tasas son <strong style="color:var(--text)">financieramente equivalentes</strong> cuando, aplicadas a un mismo capital durante el mismo período, producen el mismo monto final. La equivalencia permite comparar tasas expresadas en distintas unidades temporales o bajo distintos regímenes (interés / descuento, nominal / efectiva, continua).</p>
+    <p style="margin-top:.65rem">⚠ <strong style="color:var(--text)">Tasa nominal j(m)</strong>: en Argentina el BCRA define la tasa nominal anual capitalizable m veces como j(m) = m × i_sub. Esta es la convención usada en esta calculadora. No confundir con la acepción anglosajona donde "nominal" puede significar "antes de inflación".</p>
   </div>
 
   <div class="formulas-box">
@@ -911,7 +936,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
 
       <div class="input-row">
         <div class="field">
-          <label>Tasa ingresada <span>(tanto por 1 — ej: 0,035)</span></label>
+          <label>Tasa ingresada <span>(tanto por 1 — ej: 0,035)</span> <i class="lbl-tooltip" data-tip="Ingresá la tasa en tanto por uno: 3,5% = 0,035 · 45% = 0,45 · También podés escribir 3,5% con el símbolo % y la calculadora lo convierte automáticamente.">?</i></label>
           <input type="text" inputmode="decimal" id="inputTasa" placeholder="Ej: 0,035" step="any" min="0">
         </div>
         <div class="field" id="fieldFreqInput">
@@ -987,7 +1012,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
         <div class="results-grid" id="gridOtras"></div>
 
         <hr class="divider">
-        <div class="section-title st-gold">Relación Interés ↔ Descuento — i y d por período</div>
+        <div class="section-title st-gold">Relación Interés ↔ Descuento — i y d por período <span style="color:var(--text3);font-weight:400;font-size:.58rem;text-transform:none;letter-spacing:0;margin-left:.5rem">Las grillas anteriores ya muestran estos valores por separado. Esta sección los presenta en pares con las fórmulas de conversión explícitas.</span></div>
         <div class="results-grid" id="gridRelID"></div>
         <div class="nota-equiv" id="notaRelID" style="margin-top:.5rem"></div>
 
@@ -1067,7 +1092,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
         </div></div>
         <div class="input-row">
           <div class="field">
-            <label>Valor de la tasa <span>— t.p.1</span></label>
+            <label>Valor de la tasa <span>— t.p.1</span> <i class="lbl-tooltip" data-tip="Ingresá en tanto por uno: 3,5% = 0,035. La calculadora convierte automáticamente al período de la renta.">?</i></label>
             <input type="text" inputmode="decimal" id="rInTasa" placeholder="Ej: 0,035" step="any" min="0">
           </div>
           <div class="field" id="rFreqField">
@@ -1140,7 +1165,11 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
       </div>
       <div class="input-row">
         <div class="field" id="fN"><label>Número de cuotas (n)</label><input type="text" inputmode="decimal" id="inN" placeholder="Ej: 24" step="1" min="1"></div>
-        <div class="field" id="fH" style="display:none"><label>Período del primer pago (h)</label><input type="text" inputmode="decimal" id="inH" placeholder="Ej: 3" step="any" min="1"></div>
+        <div class="field" id="fH" style="display:none">
+          <label>Período del primer pago (h) <span title="h indica el período del primer pago. En renta vencida: el VA queda h−1 períodos antes del primer pago. En adelantada: el VA coincide con el momento del primer pago.">ⓘ</span></label>
+          <input type="text" inputmode="decimal" id="inH" placeholder="Ej: 3" step="any" min="1">
+          <div id="hNotaConst" style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.25rem;line-height:1.45;display:none"></div>
+        </div>
         <div class="field" id="fVF"><label>Valor Final (VF)</label><input type="text" inputmode="decimal" id="inVF" placeholder="Ej: 35000" step="any"></div>
       </div>
 
@@ -1168,6 +1197,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
         </div>
         <div class="sec-title st-blue" style="margin-bottom:.5rem">Línea de tiempo</div>
         <div class="timeline-wrap" id="timelineConst"><svg class="timeline-svg" id="tlSvgConst"></svg></div>
+        <div id="bloqueExplicaIRenta" style="display:none"></div>
         <div class="section-lbl">Valores derivados</div>
         <div class="res-secundario" id="resConstSec"></div>
       </div>
@@ -1272,7 +1302,11 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
       </div>
       <div class="input-row">
         <div class="field" id="fVN"><label>Número de cuotas (n)</label><input type="text" inputmode="decimal" id="inVN" placeholder="Ej: 12" step="1" min="1"></div>
-        <div class="field" id="fVH" style="display:none"><label>Período del primer pago (h)</label><input type="text" inputmode="decimal" id="inVH" placeholder="Ej: 3" step="any" min="1"></div>
+        <div class="field" id="fVH" style="display:none">
+          <label>Período del primer pago (h) <i class="lbl-tooltip" data-tip="h indica el período del primer pago. Vencida: VA queda h−1 períodos antes del primer pago. Adelantada: VA coincide con el primer pago.">?</i></label>
+          <input type="text" inputmode="decimal" id="inVH" placeholder="Ej: 3" step="any" min="1">
+          <div id="hNotaVar" style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-top:.25rem;line-height:1.45;display:none"></div>
+        </div>
         <div class="field" id="fVVF"><label>Valor Final (VF)</label><input type="text" inputmode="decimal" id="inVVF" placeholder="Ej: 35000" step="any"></div>
       </div>
 
@@ -1423,7 +1457,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
       <!-- DATOS -->
       <div class="input-row-3">
         <div class="field" id="pFV">
-          <label>Capital prestado (V) <span>— $</span></label>
+          <label>Capital prestado (V) <span>— $</span> <i class="lbl-tooltip" data-tip="Monto total del préstamo que recibe el deudor. Es la base para calcular el cuadro de amortización.">?</i></label>
           <input type="text" inputmode="decimal" id="inV" placeholder="Ej: 100000" step="any" min="0">
         </div>
         <div class="field" id="pFN">
@@ -1649,7 +1683,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
 
       <div class="input-row">
         <div class="field">
-          <label>Tasa de corte (i) <span>— t.p.1 por período</span></label>
+          <label>Tasa de corte (i) <span>— t.p.1 por período</span> <i class="lbl-tooltip" data-tip="Rendimiento mínimo exigido al proyecto. Refleja el costo de oportunidad del capital. Si VAN(i_corte) > 0, el proyecto crea valor.">?</i></label>
           <input type="text" inputmode="decimal" id="inTasa" placeholder="Ej: 0,05" step="any" min="0">
         </div>
         <div class="field">
@@ -1668,7 +1702,16 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
       </div>
       <div class="ff-grid" id="ffGrid"></div>
 
+      <div class="ejemplos-wrap">
+        <span class="ejemplos-label">Cargar ejemplo</span>
+        <div class="ejemplos-btns">
+          <button class="ej-btn" onclick="ejProyecto(1)">VAN positivo (flujos crecientes)</button>
+          <button class="ej-btn" onclick="ejProyecto(2)">TIR múltiple (flujo no convencional)</button>
+          <button class="ej-btn" onclick="ejProyecto(3)">Proyecto marginal (VAN≈0)</button>
+        </div>
+      </div>
       <button class="btn-calc" onclick="calcConFeedback(this, '_calcProyecto')">Calcular</button>
+      <div id="warnFF0Proy" style="display:none;font-family:var(--mono);font-size:.75rem;color:var(--gold);background:rgba(240,180,41,.08);border:1px solid rgba(240,180,41,.3);border-left:3px solid var(--gold);border-radius:var(--radius2);padding:.5rem .85rem;margin-top:.5rem;line-height:1.55"></div>
       <div class="error-msg" id="errProy"></div>
 
       <!-- RESULTADOS -->
@@ -1699,7 +1742,64 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
 
       </div>
     </div>
-  </div></main></div>
+  </div>
+
+  <!-- COMPARADOR DE PROYECTOS -->
+  <div class="calc-card" style="margin-top:1.5rem">
+    <div class="calc-header"><h2>Comparador de Proyectos A vs B</h2><span class="badge">Módulo 4 · Extra</span></div>
+    <div class="calc-body">
+      <p style="font-family:var(--mono);font-size:.8rem;color:var(--text2);margin-bottom:1rem">Ingresá dos proyectos y compará VAN, TIR y Plazo de Recupero a la misma tasa de corte.</p>
+      <div class="input-row" style="margin-bottom:1rem">
+        <div class="field">
+          <label>Tasa de corte (i) <span>— t.p.1 por período</span></label>
+          <input type="text" inputmode="decimal" id="compTasa" placeholder="Ej: 0,10" step="any" min="0">
+        </div>
+        <div class="field">
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:.56rem .78rem;font-family:var(--mono);font-size:.73rem;color:var(--text2);line-height:1.6;display:flex;align-items:center">
+            Usá la misma tasa para ambos proyectos. El criterio VAN prevalece sobre la TIR cuando hay conflicto.
+          </div>
+        </div>
+      </div>
+      <div class="comp-proj-grid">
+        <div>
+          <div class="ff-header">
+            <span class="ff-title" style="color:var(--accent2)">📊 Proyecto A</span>
+            <div class="ff-actions">
+              <button class="btn-sm remove" onclick="quitarPeriodoA()">− Período</button>
+              <button class="btn-sm add" onclick="agregarPeriodoA()">+ Período</button>
+            </div>
+          </div>
+          <div class="ff-grid" id="ffGridA"></div>
+        </div>
+        <div>
+          <div class="ff-header">
+            <span class="ff-title" style="color:var(--gold)">📊 Proyecto B</span>
+            <div class="ff-actions">
+              <button class="btn-sm remove" onclick="quitarPeriodoB()">− Período</button>
+              <button class="btn-sm add" onclick="agregarPeriodoB()">+ Período</button>
+            </div>
+          </div>
+          <div class="ff-grid" id="ffGridB"></div>
+        </div>
+      </div>
+      <div class="ejemplos-wrap">
+        <span class="ejemplos-label">Cargar par de ejemplos</span>
+        <div class="ejemplos-btns">
+          <button class="ej-btn" onclick="ejCompProy(1)">Proyectos con mismo VAN inicial</button>
+          <button class="ej-btn" onclick="ejCompProy(2)">Conflicto VAN vs TIR</button>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="compararProyectos()">Comparar proyectos</button>
+      <div class="error-msg" id="errComp"></div>
+      <div id="resComp" style="display:none;margin-top:1.2rem;border-top:1px solid var(--border);padding-top:1.2rem">
+        <div class="sec-title st-blue">Resultados comparativos</div>
+        <div class="comp-proj-grid" id="compResultados"></div>
+        <div class="comp-veredicto" id="compVeredicto" style="margin-top:.8rem"></div>
+      </div>
+    </div>
+  </div>
+
+</main></div>
 <div id="page-emprestitos" style="display:none"><main>
   <div class="page-title">
     <h1>Análisis de <em>Empréstitos</em></h1>
@@ -1881,7 +1981,7 @@ body.simple-mode #resEmp hr.divider:nth-of-type(n+2) { display:none !important; 
   <div style="display:grid;gap:.65rem;" id="glosarioGrid"></div>
 </main></div>
 
-<footer><span>CalcFin</span> · Cálculo Financiero · Prof. Mg. Diego Pagano</footer>
+<footer><span>CalcFin v3</span> · Cálculo Financiero · Prof. Mg. Diego Pagano · <span style="color:var(--text3)">15 mejoras técnicas y pedagógicas aplicadas</span></footer>
 
 <script>
 
@@ -2042,9 +2142,14 @@ function cfRate(id) {
   if (value === null) { cfRateWarning(el, ''); return null; }
   if (parsed.hadPercent) value = value / 100;
 
-  // No bloquea el cálculo: solo avisa cuando parece que el alumno ingresó porcentaje sin %.
+  // CAMBIO 15: No bloquea el cálculo. Avisa cuando el valor parece ser un % sin símbolo.
+  // Para tasas continuas δ, valores > 1 son válidos (δ = ln(1+i), ej: δ=1.5 implica i=e^1.5-1 ≈ 348%)
+  // Para tasas de interés comunes, valores > 1 son sospechosos pero no imposibles.
   if (!parsed.hadPercent && Math.abs(value) > 1) {
-    cfRateWarning(el, 'Ingresaste ' + el.value + ' como tanto por uno. Si querías ' + el.value + '%, escribí ' + el.value + '% o su equivalente decimal.');
+    const equiv = (value/100).toFixed(4);
+    cfRateWarning(el, `⚠ Valor ${el.value.trim()} parece alto para una tasa en tanto por uno. ` +
+      `¿Querías decir ${value.toFixed(1)}%? En ese caso ingresá ${equiv} ó ${value.toFixed(1)}%. ` +
+      `Si es correcto como tanto por uno, podés ignorar este aviso.`);
   } else {
     cfRateWarning(el, '');
   }
@@ -2146,6 +2251,60 @@ function cfSetError(el, msg) {
   el.textContent = '⚠ ' + cfExplainError(msg);
   el.classList.add('show');
 }
+
+// ════════════════════════════════════════════════════════════
+// CAMBIO 10: UTILIDADES FINANCIERAS GLOBALES COMPARTIDAS
+// Eliminan duplicación entre módulos (bisect ×5, an/sn ×4, fmt ×4)
+// ════════════════════════════════════════════════════════════
+window.CF = window.CF || {};
+
+/** Bisección numérica - función única compartida entre módulos */
+window.CF.bisect = function(f, a, b, tol, max) {
+  tol = tol || 1e-10; max = max || 500;
+  var fa=f(a), fb=f(b);
+  if (!isFinite(fa) || !isFinite(fb) || fa*fb > 0) return null;
+  var c;
+  for (var k=0; k<max; k++) {
+    c = (a+b)/2;
+    var fc = f(c);
+    if (Math.abs(fc) < tol || (b-a)/2 < tol) return c;
+    if (fa*fc < 0) b = c; else a = c;
+  }
+  return c;
+};
+
+/** Valor actual renta unitaria vencida */
+window.CF.an = function(n, i) { return (1 - Math.pow(1+i, -n)) / i; };
+
+/** Valor futuro renta unitaria vencida */
+window.CF.sn = function(n, i) { return (Math.pow(1+i, n) - 1) / i; };
+
+/** Formato 2 decimales estilo AR */
+window.CF.fmt2 = function(v) {
+  return isFinite(v) ? v.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—';
+};
+
+/** Formato 6 decimales con coma */
+window.CF.fmt6 = function(v) {
+  return isFinite(v) ? v.toFixed(6).replace('.', ',') : '—';
+};
+
+/** Conversión de cualquier tasa a i efectiva del período destino */
+window.CF.convertirTasa = function(tipo, valor, diasTasa, diasPeriodo) {
+  if (!valor || valor <= 0) return null;
+  var tea;
+  switch(tipo) {
+    case 'ef_int':   tea = Math.pow(1+valor, 365/diasTasa) - 1; break;
+    case 'nom_int':  tea = Math.pow(1+valor*diasTasa/365, 365/diasTasa) - 1; break;
+    case 'ef_desc':  if(valor>=1)return null; tea = Math.pow(1-valor,-365/diasTasa)-1; break;
+    case 'nom_desc': {var d=valor*diasTasa/365;if(d>=1)return null;tea=Math.pow(1-d,-365/diasTasa)-1;break;}
+    case 'continua': tea = Math.exp(valor) - 1; break;
+    default: return null;
+  }
+  return Math.pow(1+tea, diasPeriodo/365) - 1;
+};
+
+// ════════════════════════════════════════════════════════════
 
 function initTasas() {
   (function() {
@@ -2575,6 +2734,9 @@ function getTasaVar() {
 }
 
 // ── TABS TIPO TASA CONSTANTE ──────────────────────────────
+// CAMBIO 7: actualizar nota h cuando cambia el valor
+document.getElementById('inH').addEventListener('input', actualizarInputsConst);
+document.getElementById('inVH').addEventListener('input', actualizarInputsVar);
 document.getElementById('page-rentas').querySelectorAll('#rTipoTabs .tipo-tab').forEach(t=>t.addEventListener('click',()=>{
   document.getElementById('page-rentas').querySelectorAll('#rTipoTabs .tipo-tab').forEach(x=>x.classList.remove('active'));
   t.classList.add('active'); rTipoTasa=t.dataset.rtipo;
@@ -2637,6 +2799,25 @@ document.getElementById('page-rentas').querySelectorAll('.que-tab[data-qv]').for
 function actualizarInputsConst(){
   const esPerpetua=duracion==='perpetua', esDiferida=diferimiento==='diferida';
   document.getElementById('fH').style.display=esDiferida?'':'none';
+  // CAMBIO 7: nota dinámica del diferimiento
+  const hNotaEl = document.getElementById('hNotaConst');
+  if (hNotaEl) {
+    if (esDiferida) {
+      const hVal = parseFloat(document.getElementById('inH').value.replace(',','.'));
+      if (isFinite(hVal) && hVal >= 1) {
+        const expD = momento==='adelantada' ? hVal : Math.max(hVal-1,0);
+        const notaText = momento==='vencida'
+          ? `h=${hVal}: primer pago al final del período ${hVal}. El VA se ubica ${expD} período(s) antes → se descuenta v^${expD}.`
+          : `h=${hVal}: primer pago al inicio del período ${hVal}. El VA coincide con el primer pago → se descuenta v^${expD}.`;
+        hNotaEl.textContent = notaText;
+        hNotaEl.style.display = '';
+      } else {
+        hNotaEl.style.display = 'none';
+      }
+    } else {
+      hNotaEl.style.display = 'none';
+    }
+  }
   document.getElementById('fN').style.opacity=esPerpetua?'.3':'1';
   document.getElementById('fN').style.pointerEvents=esPerpetua?'none':'auto';
   // Ocultar VF en perpetua
@@ -2682,6 +2863,20 @@ function actualizarInputsConst(){
 function actualizarInputsVar(){
   const esPerpetua=duracionV==='perpetua', esDiferida=diferimientoV==='diferida';
   document.getElementById('fVH').style.display=esDiferida?'':'none';
+  // Nota dinámica h variable
+  const hNotaVarEl = document.getElementById('hNotaVar');
+  if (hNotaVarEl) {
+    if (esDiferida) {
+      const hVv = parseFloat(document.getElementById('inVH').value.replace(',','.'));
+      if (isFinite(hVv) && hVv >= 1) {
+        const expDv = momentoV==='adelantada' ? hVv : Math.max(hVv-1,0);
+        hNotaVarEl.textContent = momentoV==='vencida'
+          ? `h=${hVv}: primer pago al final del período ${hVv}. Descuento: v^${expDv}.`
+          : `h=${hVv}: primer pago al inicio del período ${hVv}. Descuento: v^${expDv}.`;
+        hNotaVarEl.style.display='';
+      } else { hNotaVarEl.style.display='none'; }
+    } else { hNotaVarEl.style.display='none'; }
+  }
   document.getElementById('fVN').style.opacity=esPerpetua?'.3':'1';
   document.getElementById('fVN').style.pointerEvents=esPerpetua?'none':'auto';
   document.getElementById('fVVF').style.opacity=esPerpetua?'.3':'1';
@@ -2869,6 +3064,28 @@ function calcConstante(){
     });
   }
   // Interpretación textual
+  // CAMBIO 5: Bloque explicativo cuando la incógnita es i en rentas
+  const bloqueIRenta = document.getElementById('bloqueExplicaIRenta');
+  if (bloqueIRenta) {
+    if (queCalc === 'i' && isFinite(resultado)) {
+      const diasP = parseInt(document.getElementById('rFreqPago').value);
+      const freqLabel = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      const teaRenta = Math.pow(1+resultado, 365/diasP) - 1;
+      const ecBase = VA !== null ? `a(1,n,i) = VA/C = ${(VA/C).toFixed(6).replace('.',',')}` : `s(1,n,i) = VF/C = ${(VF/C).toFixed(6).replace('.',',')}`;
+      bloqueIRenta.innerHTML = `<div class="interp-box" style="margin-top:.8rem">
+        <span class="interp-title">📐 ¿Por qué no se puede despejar i algebraicamente?</span>
+        <p style="margin-bottom:.55rem"><strong>Ecuación de partida:</strong> ${ecBase}</p>
+        <p style="margin-bottom:.5rem">La función a(n,i) = (1−(1+i)^{−n})/i es <strong>trascendente en i</strong>: no existe fórmula algebraica que despeje i directamente. Por eso se usa <strong>bisección numérica</strong> con precisión 10^{−10}: se evalúa f(i) = a(n,i) − VA/C en intervalos sucesivos biseccionados hasta que |f(i)| &lt; 10⁻¹⁰.</p>
+        <p><strong>Resultado:</strong> i efectiva del período = <span style="color:var(--green);font-weight:600">${resultado.toFixed(6).replace('.',',')}</span>
+          &nbsp;→&nbsp; TEA = (1+${resultado.toFixed(6).replace('.',',')})^(365/${diasP})−1 = <span style="color:var(--green);font-weight:600">${teaRenta.toFixed(6).replace('.',',')}</span> (${freqLabel} → anual)</p>
+      </div>`;
+      bloqueIRenta.style.display = '';
+    } else {
+      bloqueIRenta.style.display = 'none';
+      bloqueIRenta.innerHTML = '';
+    }
+  }
+
   const interpC = document.getElementById('interpConst');
   const interpCT = document.getElementById('interpConstText');
   if (interpC && interpCT) {
@@ -2964,7 +3181,11 @@ function calcVariable(){
         case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaArit(c,razon,nn,i)-VA/factMod(),0.5,5000);formula=`Solución numérica`;}else if(VF!==null){resultado=bisect(nn=>vfArit(c,razon,nn,i)-VF/(momentoV==='adelantada'?(1+i):1),0.5,5000);formula=`Solución numérica`;}else return mostrarError('errVar','Completá VA o VF.');break;}
       }
     }
-    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,rD=queCalcV==='razon'?resultado:razon;for(let t=1;t<=Math.min(nD,60);t++)cuotas.push({t,cuota:cD+(t-1)*rD});}
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,rD=queCalcV==='razon'?resultado:razon;
+    const limCuotas=Math.min(nD,60);
+    window._cuotasVarTruncadas = nD > 60;
+    window._cuotasVarTotal = nD;
+    for(let t=1;t<=limCuotas;t++)cuotas.push({t,cuota:cD+(t-1)*rD});}
   } else {
     const vaGeo=(cV,qV,nV,iV)=>{const qv=qV/(1+iV);if(Math.abs(qv-1)<1e-10)return cV/(1+iV)*nV;return cV*(1-Math.pow(qv,nV))/(1+iV-qV);};
     const vfGeo=(cV,qV,nV,iV)=>{if(Math.abs(1+iV-qV)<1e-10)return cV*nV*Math.pow(1+iV,nV-1);return cV*(Math.pow(1+iV,nV)-Math.pow(qV,nV))/(1+iV-qV);};
@@ -2995,7 +3216,11 @@ function calcVariable(){
         case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaGeo(c,razon,nn,i)-VA/factMod(),0.5,5000);formula=`Solución numérica: c·(1−(q·v)^n)/(1+i−q) × factor = VA`;}else if(VF!==null){resultado=bisect(nn=>vfGeo(c,razon,nn,i)-VF/(momentoV==='adelantada'?(1+i):1),0.5,5000);formula=`Solución numérica: c·((1+i)^n−q^n)/(1+i−q) × factor = VF`;}else return mostrarError('errVar','Completá VA o VF.');break;}
       }
     }
-    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,qD=queCalcV==='razon'?resultado:razon;for(let t=1;t<=Math.min(nD,60);t++)cuotas.push({t,cuota:cD*Math.pow(qD,t-1)});}
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,qD=queCalcV==='razon'?resultado:razon;
+    const limCuotasG=Math.min(nD,60);
+    window._cuotasVarTruncadas = nD > 60;
+    window._cuotasVarTotal = nD;
+    for(let t=1;t<=limCuotasG;t++)cuotas.push({t,cuota:cD*Math.pow(qD,t-1)});}
   }
 
   if(resultado===null||!isFinite(resultado)) return mostrarError('errVar','No se pudo calcular. Verificá los datos.');
@@ -3007,9 +3232,16 @@ function calcVariable(){
 
   const secLbl=document.getElementById('resVarSecLbl'),tablaWrap=document.getElementById('resVarTabla');
   if(cuotas.length>0){
+    const nTotal = window._cuotasVarTotal || cuotas.length;
+    const truncada = window._cuotasVarTruncadas || false;
     secLbl.style.display='';
-    const nT=(queCalcV==='n'?Math.round(resultado):n)||cuotas.length;
-    tablaWrap.innerHTML=`<table><thead><tr><th>t</th><th>Cuota c(t)</th></tr></thead><tbody>${cuotas.map(r=>`<tr><td>${r.t}</td><td>${fmt2(r.cuota)}</td></tr>`).join('')}</tbody></table>`;
+    secLbl.textContent = truncada
+      ? `Primeras 60 cuotas de ${nTotal} totales (tabla limitada para rendimiento)`
+      : 'Cuotas del período';
+    const filaFinal = truncada
+      ? `<tr style="background:var(--bg4)"><td colspan="2" style="text-align:center;color:var(--text3);font-family:var(--mono);font-size:.7rem">… ${nTotal - 60} cuotas adicionales no mostradas</td></tr>`
+      : '';
+    tablaWrap.innerHTML=`<table><thead><tr><th>t</th><th>Cuota c(t)</th></tr></thead><tbody>${cuotas.map(r=>`<tr><td>${r.t}</td><td>${fmt2(r.cuota)}</td></tr>`).join('')}${filaFinal}</tbody></table>`;
   } else {secLbl.style.display='none';tablaWrap.innerHTML='';}
   const interpV=document.getElementById('interpVar'), interpVT=document.getElementById('interpVarText');
   if(interpV&&interpVT){
@@ -3444,11 +3676,13 @@ function calcPrestamo(){
       if(!nCalc) return showErr('No se encontró solución para n.');
       n=Math.round(nCalc);
     } else if(sistema==='aleman'){
-      // Cuota promedio = V/n + V*(n+1)/(2n)*i = V*(1/n + (n+1)*i/(2n))
-      // Complicado → usar bisección en cuota1
-      const nCalc=bisect(nn=>nn>0?(V/nn+V*nn*iEf/(nn)):NaN,0.001,10000);
-      // Más simple: c(1)=V/n+V*i → n=V/(c-V*i) si directa o alemán
+      // En el sistema alemán la cuota VARÍA en cada período.
+      // La cuota ingresada DEBE ser la primera cuota c(1) = V/n + V·i.
+      // De c(1) = V/n + V·i → n = V / (c(1) − V·i)
+      // AVISO: si se ingresa una cuota promedio o distinta de c(1), el resultado es incorrecto.
+      if(cuotaK <= V*iEf) return showErr('En el sistema alemán c(1) debe ser mayor que V·i = $'+an(1,iEf).toFixed(2)+'. Revisá que estés ingresando la primera cuota c(1) = V/n + V·i, no una cuota promedio.');
       const nSimple=V/(cuotaK-V*iEf);
+      if(nSimple < 1) return showErr('n calculado < 1. Verificá que la cuota ingresada sea c(1) (primera cuota del sistema alemán = V/n + V·i).');
       n=Math.round(Math.max(1,nSimple));
     } else if(sistema==='directa'){
       const r=pn('prInI');
@@ -3610,7 +3844,12 @@ function calcPrestamo(){
     ? `c = V/n + V·r = ${f2(V)}/${n} + ${f2(V)}·${f6(iParaBuild)} = ${f2(cuota1)} · I(0;n) = V·r·n = ${f2(totInt)}`
     : `c = V·[i + s⁻¹(1,n,i')] = ${f2(cuota1)} · dep = V/s(1,n,i') · Capital al vencimiento`;
   const tablaFormulaEl = document.getElementById('pTablaFormula');
-  if (tablaFormulaEl) tablaFormulaEl.textContent = formulaSistema;
+  if (tablaFormulaEl) {
+    const saldoProspNote = sistema === 'frances'
+      ? ` | Saldo prospectivo: V(p) = c·a(1,${n}−p,${f6(iParaBuild)}) | Saldo retrospectivo: V(p) = V·(1+i)^p − c·s(1,p,i)`
+      : '';
+    tablaFormulaEl.textContent = formulaSistema + saldoProspNote;
+  }
   document.getElementById('tablaAmort').innerHTML=tablaHTML(rows,gFijo,ivaPorc);
   buildGraficoAmort(rows);
   buildSimulador(V, n, iParaBuild, sistema, iF);
@@ -3777,7 +4016,16 @@ function calcProyecto() {
 
   const ff = leerFF();
   if (!ff) return showErr('Completá todos los valores del flujo de fondos.');
-  if (ff[0] >= 0) return showErr('FF(0) debe ser negativo (la inversión inicial).');
+  // CAMBIO 9: No bloquear si FF(0) >= 0, solo advertir
+  const warnFF0 = document.getElementById('warnFF0Proy');
+  if (ff[0] >= 0) {
+    if (warnFF0) {
+      warnFF0.style.display = '';
+      warnFF0.innerHTML = '⚠ FF(0) = ' + ff[0] + ': el flujo inicial no es negativo. Esto es inusual — en la mayoría de proyectos FF(0) representa la inversión inicial (valor negativo). Si es un ingreso neto inicial, el cálculo es igualmente válido.';
+    }
+  } else {
+    if (warnFF0) warnFF0.style.display = 'none';
+  }
 
   lastFF = ff;
 
@@ -3817,7 +4065,9 @@ function calcProyecto() {
     {lbl:'TIR',              val: tir!==null ? f6(tir) : 'No conv.', sub:tirVsTasa,                hl:'hl-gold',  form: tir!==null?`0 = Σ FF(t)/(1+${f6(tir)})^t`:'Solución numérica (bisección)'},
     {lbl:'Inversión inicial',val:'$ '+f2(inv),                    sub:'|FF(0)|',                    hl:'hl-blue',  form:`FF(0) = −${f2(inv)}`},
     {lbl:'Suma flujos FF(t>0)',val:'$ '+f2(sumFF),                 sub:`${sumFF>=inv?'≥':'<'} inversión`,hl:'',   form:`FF(1)+…+FF(n) = ${f2(sumFF)}`},
-    {lbl:'Plazo recupero descontado',val: prD!==null? f4(prD)+' per.': 'No recupera', sub: prD!==null?`Descontado a tasa ${f6(i)}: se recupera a los ${f4(prD)} períodos`:'No se recupera en términos de valor actual', hl: prD!==null?'hl-green':'hl-red', form: prD!==null?`t−1 + |saldo desc.(t−1)|/FF(t)·v^t`:'Inversión no recuperada'},
+    {lbl:'Plazo recupero simple (sin desc.)',val: pr!==null? f4(pr)+' per.': 'No recupera', sub: pr!==null?`Se recupera en el período ${f4(pr)} sin descontar flujos`:'No se recupera en el horizonte analizado', hl: pr!==null?'hl-blue':'hl-red', form: pr!==null?`PR: primer t tal que Σ FF(k) ≥ 0`:'Inversión no recuperada'},
+    {lbl:'Plazo recupero descontado (PR*)',val: prD!==null? f4(prD)+' per.': 'No recupera', sub: prD!==null?`Descontado a tasa ${f6(i)}: se recupera a los ${f4(prD)} períodos`:'No se recupera en términos de valor actual', hl: prD!==null?'hl-green':'hl-red', form: prD!==null?`t−1 + |saldo desc.(t−1)|/FF(t)·v^t`:'Inversión no recuperada'},
+    {lbl:'IVAN — Índice Rentabilidad',val: isFinite(van) && inv>0 ? CF.fmt6(1 + van/inv) : '—', sub: isFinite(van) && inv>0 ? (1+van/inv)>1?'IVAN > 1 → conveniente':'IVAN < 1 → no conveniente' : '', hl:'', form:`1 + VAN/I₀ = 1 + ${CF.fmt6(van)}/${CF.fmt2(inv)}`},
   ].map(k=>`<div class="kpi-card ${k.hl}"><div class="kpi-label">${k.lbl}</div><div class="kpi-value ${k.hl==='hl-green'?'c-green':k.hl==='hl-red'?'c-red':k.hl==='hl-gold'?'c-gold':'c-blue'}">${k.val}</div>${k.sub?`<div class="kpi-sub">${k.sub}</div>`:''} ${k.form?`<div class="kpi-formula">${k.form}</div>`:''}</div>`).join('');
 
   // ── TABLA FF
@@ -4002,7 +4252,16 @@ function calcMultirate() {
 buildFFGrid();
 window._calcProyecto = calcProyecto;
 window.agregarPeriodo = agregarPeriodo;
-window.quitarPeriodo = quitarPeriodo;
+window.quitarPeriodo  = quitarPeriodo;
+window.calcMultirate  = calcMultirate;   // llamado desde onclick en HTML
+// Exponer funciones al scope global para uso en ejProyecto y comparador
+window._calcVAN = calcVAN;
+window._calcTIR = calcTIR;
+window._calcPR  = calcPR;
+window._colorearInput = colorearInput;
+window._buildFFGrid   = buildFFGrid;
+window._nPer          = function() { return nPer; };
+window._setNPer       = function(v) { nPer = v; };
 
 
   })();
@@ -4273,13 +4532,21 @@ function calcEmprestito() {
   );
 
   // ── Rentabilidad del suscriptor ───────────────────────
-  // Cupón del 1° período = VN * i (interés sobre VN)
-  // Inversión por título = PE
-  // r_per = (VN * i) / PE  → tasa periódica
-  const cupon1 = VN * i;  // interés del 1° período por título
-  const rPer   = cupon1 / PE;  // rentabilidad periódica
+  // TIR REAL del flujo del suscriptor:
+  //   t=0: paga PE por título (egreso)
+  //   t=1..n: recibe cuotas unitarias (interés + amortización reembolso)
   const diasP  = parseInt(document.getElementById('eFreqPer').value);
-  const teaSus = Math.pow(1 + rPer, 365/diasP) - 1;  // TEA equivalente
+  const cupon1 = VN * i;  // interés del 1° período por título (para referencia)
+  const ffSusc = [-PE, ...rows.map(r => r.cuota_unit)];
+  const tirSusc = bisect(
+    ii => { let pv=0; ffSusc.forEach((cf,t) => { pv += cf/Math.pow(1+Math.abs(ii),t); }); return pv; },
+    0.00001, 50
+  );
+  // También calcular tasa corriente (cupón/PE) como referencia académica
+  const rCorr  = cupon1 / PE;
+  const rPer   = tirSusc !== null ? tirSusc : rCorr;  // usar TIR si converge, si no tasa corriente
+  const teaSus = rPer !== null ? Math.pow(1 + rPer, 365/diasP) - 1 : null;
+  const teaCorr = Math.pow(1 + rCorr, 365/diasP) - 1;
 
   // ── KPI generales ─────────────────────────────────────
   const kpiExtras = queCalcE==='i' ? [
@@ -4316,19 +4583,22 @@ function calcEmprestito() {
   document.getElementById('colSuscriptor').innerHTML=`
     <div class="col-row"><span class="cl">Inversión (N × PE)</span><span class="cv c-red">$ ${f2(ingrBruto)}</span></div>
     <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">${N} × $ ${f2(PE)}</div>
-    <div class="col-row"><span class="cl">Cupón 1° período</span><span class="cv c-green">$ ${f2(cupon1*N)}</span></div>
-    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">V × i = ${f2(V)} × ${f6(i)}</div>
+    <div class="col-row"><span class="cl">Cupón 1° período / título</span><span class="cv c-green">$ ${f2(cupon1)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.3rem">VN × i = ${f2(VN)} × ${f6(i)}</div>
     <div class="col-row"><span class="cl">PE por título</span><span class="cv">$ ${f2(PE)}</span></div>
     <hr style="border:none;border-top:1px solid var(--border);margin:.4rem 0">
-    <div class="col-row"><span class="cl">r periódica = VN·i / PE</span><span class="cv big c-green">${f6(rPer)}</span></div>
-    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">${f6(cupon1)} / ${f2(PE)} = ${f6(rPer)}</div>
-    <div class="col-row"><span class="cl">TEA equivalente</span><span class="cv c-green">${f6(teaSus)}</span></div>
-    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3)">(1+${f6(rPer)})^(365/${diasP})−1 = ${f6(teaSus)}</div>
+    <div class="col-row"><span class="cl">TIR suscriptor (período)</span><span class="cv big c-green">${tirSusc!==null?f6(tirSusc):'—'}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">0 = −${f2(PE)} + Σ c_unit(t)/(1+TIR)^t</div>
+    <div class="col-row"><span class="cl">TEA suscriptor</span><span class="cv c-green">${teaSus!==null?f6(teaSus):'—'}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">(1+${tirSusc!==null?f6(tirSusc):'—'})^(365/${diasP})−1</div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:.4rem 0">
+    <div class="col-row"><span class="cl">Tasa corriente (cupón/PE)</span><span class="cv">${f6(rCorr)}</span></div>
+    <div style="font-family:var(--mono);font-size:.67rem;color:var(--text3);margin-bottom:.2rem">VN·i / PE = ${f6(cupon1)} / ${f2(PE)} · TEA corriente: ${f6(teaCorr)}</div>
     <div class="interp-box" style="margin-top:.6rem">
       <span class="interp-title">💡 Interpretación</span>
-      Por cada $${f2(PE)} invertidos en un título, el suscriptor recibe $${f2(cupon1)} de cupón en el 1° período.
-      Eso equivale a una <strong>tasa periódica de ${f6(rPer)}</strong> y una <strong>TEA de ${f6(teaSus)}</strong>.
-      ${prima>0?`Además recibe una prima de reembolso de $${f2(VN*prima/100)} por título al vencimiento.`:''}
+      La <strong>TIR del suscriptor</strong> descuenta todos los flujos futuros (cupones + reembolsos) contra el precio pagado PE = $${f2(PE)} por título.
+      ${prima>0?'Con prima de reembolso, la TIR real supera a la tasa corriente porque el suscriptor recibe más capital del que invirtió.':'La tasa corriente (cupón/PE) es una aproximación válida solo cuando PE ≈ VN sin primas.'}
+      ${PE < VN*0.99 ? '<br><strong>Emisión bajo la par:</strong> el suscriptor obtiene mayor rendimiento que la tasa contractual.' : PE > VN*1.01 ? '<br><strong>Emisión sobre la par:</strong> el suscriptor obtiene menor rendimiento que la tasa contractual.' : ''}
     </div>`;
 
   // ── Tabla flujo emisor ────────────────────────────────
@@ -4511,6 +4781,44 @@ function ejPrestamo(n) {
   setTimeout(()=>document.querySelector('#page-prestamos .btn-calc').click(), 100);
 }
 
+// ── COMPARADOR DE PROYECTOS: ejemplos precargados ─────────
+function ejCompProy(n) {
+  if (!window._initProyectos) { window._initProyectos=true; initProyectos(); }
+  buildFFGridComp('ffGridA', nPerA);
+  buildFFGridComp('ffGridB', nPerB);
+  
+  const pares = {
+    1: {
+      i: 0.08,
+      ffA: [-100000, 40000, 40000, 40000, 40000],
+      ffB: [-100000, 10000, 25000, 45000, 60000]
+    },
+    2: {
+      // Conflicto VAN vs TIR clásico
+      i: 0.10,
+      ffA: [-10000, 12000, 4000, 1000, 0],   // TIR alta, VAN bajo
+      ffB: [-10000, 2000, 4000, 6000, 10000]  // TIR baja, VAN alto
+    }
+  };
+  const ej = pares[n]; if (!ej) return;
+  document.getElementById('compTasa').value = ej.i;
+  nPerA = ej.ffA.length - 1;
+  nPerB = ej.ffB.length - 1;
+  buildFFGridComp('ffGridA', nPerA);
+  buildFFGridComp('ffGridB', nPerB);
+  setTimeout(() => {
+    ej.ffA.forEach((v,t) => {
+      const el = document.querySelector('#ffGridA .ff-input[data-t="'+t+'"]');
+      if (el) { el.value = v; if (window._colorearInput) window._colorearInput(el); }
+    });
+    ej.ffB.forEach((v,t) => {
+      const el = document.querySelector('#ffGridB .ff-input[data-t="'+t+'"]');
+      if (el) { el.value = v; if (window._colorearInput) window._colorearInput(el); }
+    });
+    compararProyectos();
+  }, 80);
+}
+
 // ── PROYECTOS ─────────────────────────────────────────────
 function ejProyecto(n) {
   if (!window._initProyectos) { window._initProyectos=true; initProyectos(); }
@@ -4522,15 +4830,20 @@ function ejProyecto(n) {
   const ej = flujos[n]; if (!ej) return;
   document.getElementById('inTasa').value = ej.i;
   document.getElementById('inPeriodos').value = ej.ff.length - 1;
-  nPer = ej.ff.length - 1;
-  buildFFGrid();
+  // CAMBIO 14: usar window._setNPer para modificar nPer dentro del closure
+  if (window._setNPer) window._setNPer(ej.ff.length - 1);
+  if (window._buildFFGrid) window._buildFFGrid();
   setTimeout(() => {
     ej.ff.forEach((v, t) => {
       const el = document.querySelector(`.ff-input[data-t="${t}"]`);
-      if (el) { el.value = v; colorearInput(el); }
+      if (el) {
+        el.value = v;
+        // colorear input: usar alias global
+        if (window._colorearInput) window._colorearInput(el);
+      }
     });
-    calcProyecto();
-  }, 50);
+    if (window._calcProyecto) window._calcProyecto();
+  }, 80);
 }
 
 // ── EMPRÉSTITOS ───────────────────────────────────────────
@@ -4654,7 +4967,9 @@ function buildFFGridComp(gridId, nPer) {
     inp.addEventListener('input', () => colorearInput(inp));
     div.appendChild(lbl); div.appendChild(inp); grid.appendChild(div);
   }
-  grid.querySelectorAll('.ff-input').forEach(el => colorearInput(el));
+  grid.querySelectorAll('.ff-input').forEach(el => {
+    if (window._colorearInput) window._colorearInput(el);
+  });
 }
 
 function agregarPeriodoA() { if(nPerA<20){nPerA++;buildFFGridComp('ffGridA',nPerA);} }
@@ -4675,24 +4990,30 @@ function leerFFComp(gridId, nPer) {
 }
 
 function compararProyectos() {
+  if (!window._initProyectos) { window._initProyectos=true; initProyectos(); }
   const err = document.getElementById('errComp');
+  if (!err) return;
   err.classList.remove('show');
-  document.getElementById('resComp').style.display = 'none';
+  const resComp = document.getElementById('resComp');
+  if (resComp) resComp.style.display = 'none';
 
-  const i   = cfRate('compTasa');
+  const i = cfRate('compTasa');
   if (!isFinite(i) || i < 0) return showCompErr('Ingresá la tasa de corte.');
 
   const ffA = leerFFComp('ffGridA', nPerA);
   const ffB = leerFFComp('ffGridB', nPerB);
   if (!ffA) return showCompErr('Completá todos los flujos del Proyecto A.');
   if (!ffB) return showCompErr('Completá todos los flujos del Proyecto B.');
-  if (ffA[0] >= 0) return showCompErr('FF(0) del Proyecto A debe ser negativo (inversión).');
-  if (ffB[0] >= 0) return showCompErr('FF(0) del Proyecto B debe ser negativo (inversión).');
 
-  const vanA  = calcVAN(ffA, i), vanB  = calcVAN(ffB, i);
-  const tirA  = calcTIR(ffA),    tirB  = calcTIR(ffB);
-  const prA   = calcPR(ffA, i, false), prB = calcPR(ffB, i, false);
-  const prDA  = calcPR(ffA, i, true),  prDB = calcPR(ffB, i, true);
+  // CAMBIO 4: Usar funciones expuestas desde initProyectos
+  const calcVANfn  = window._calcVAN  || function(ff,i){ return ff.reduce((s,v,t)=>s+v/Math.pow(1+i,t),0); };
+  const calcTIRfn  = window._calcTIR  || function(){ return null; };
+  const calcPRfn   = window._calcPR   || function(){ return null; };
+
+  const vanA  = calcVANfn(ffA, i), vanB  = calcVANfn(ffB, i);
+  const tirA  = calcTIRfn(ffA),    tirB  = calcTIRfn(ffB);
+  const prA   = calcPRfn(ffA, i, false), prB = calcPRfn(ffB, i, false);
+  const prDA  = calcPRfn(ffA, i, true),  prDB = calcPRfn(ffB, i, true);
   const f2l   = v => isFinite(v) ? v.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
   const f6l   = v => isFinite(v) ? v.toFixed(6).replace('.',',') : '—';
   const f4l   = v => isFinite(v) ? v.toFixed(4).replace('.',',') : '—';
@@ -4709,6 +5030,7 @@ function compararProyectos() {
       <span class="cr-v ${ganador==='B'?'comp-winner':'comp-loser'}">${vB}</span>
     </div>`;
 
+  if (!document.getElementById('compResultados')) return;
   document.getElementById('compResultados').innerHTML = `
     <div class="comp-proj-card">
       <h3 style="color:var(--accent2)">Proyecto A</h3>
@@ -4738,8 +5060,8 @@ function compararProyectos() {
   if (!ambosPositivos) veredicto += `⚠ Al menos uno de los proyectos tiene VAN negativo a esta tasa — no es conveniente invertir en él. `;
   if (mejorVAN !== mejorTIR) veredicto += `⚠ VAN y TIR señalan proyectos distintos: en caso de conflicto, <strong>priorizar VAN</strong> como criterio de decisión.`;
 
-  document.getElementById('compVeredicto').innerHTML = veredicto;
-  document.getElementById('resComp').style.display = '';
+  if (document.getElementById('compVeredicto')) document.getElementById('compVeredicto').innerHTML = veredicto;
+  if (resComp) resComp.style.display = '';
 
   function showCompErr(msg) { cfSetError(err,msg); }
 }
@@ -4750,6 +5072,7 @@ const _origShowPage = showPage;
 document.addEventListener('DOMContentLoaded', () => {
   buildFFGridComp('ffGridA', nPerA);
   buildFFGridComp('ffGridB', nPerB);
+  // initViewMode() se llama en el DOMContentLoaded al final del script
 });
 
 
@@ -4773,6 +5096,34 @@ function initViewMode() {
   setViewMode(saved);
 }
 
+
+// ── PERSISTENCIA DE ESTADOS (Cambio 12) ─────────────────
+function guardarEstadoModulo(modulo, datos) {
+  try {
+    localStorage.setItem('calcfin-estado-' + modulo, JSON.stringify(datos));
+  } catch(e) {}
+}
+function restaurarEstadoModulo(modulo) {
+  try {
+    const saved = localStorage.getItem('calcfin-estado-' + modulo);
+    return saved ? JSON.parse(saved) : null;
+  } catch(e) { return null; }
+}
+// Guardar estado de tasas después de calcular
+const _origCalcular = window._calcular;
+window._calcular = function() {
+  if (typeof _origCalcular === 'function') _origCalcular();
+  // Guardar inputs de tasas
+  try {
+    const tasa = document.getElementById('inputTasa');
+    if (tasa && tasa.value) {
+      guardarEstadoModulo('tasas', {
+        tasa: tasa.value,
+        freqInput: document.getElementById('freqInput').value,
+      });
+    }
+  } catch(e) {}
+};
 
 // ── MODO CLARO / OSCURO ───────────────────────────────────
 function toggleTheme() {
