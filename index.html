@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080c14">
-<meta name="description" content="CalcFin v3 - Calculadora integral de Cálculo Financiero. Tasas, Rentas, Préstamos, Proyectos y Empréstitos. Prof. Mg. Diego Pagano.">
-<title>CalcFin v3 · Cálculo Financiero</title>
+<meta name="description" content="CalcFin v4 - Herramienta didáctica de Cálculo Financiero. Capitales, Tasas, Rentas, Préstamos, Proyectos y Empréstitos. Prof. Mg. Diego Pagano.">
+<title>CalcFin v4 · Cálculo Financiero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -25,7 +25,7 @@
     --gold:      #f0b429;
     --text:      #dde6f5;
     --text2:     #7a9bc4;
-    --text3:     #3d5a80;
+    --text3:     #6f8fb7;
     --green:     #34d399;
     --mono:      'DM Mono', monospace;
     --sans:      'Syne', sans-serif;
@@ -172,6 +172,15 @@
   }
   input::placeholder { color: var(--text3); }
   select option { background: var(--bg3); }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--gold); outline-offset: 2px;
+  }
+  textarea {
+    font-family: var(--mono); font-size: .82rem; line-height: 1.55;
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    border-radius: var(--radius2); padding: .7rem .8rem; width: 100%; min-height: 112px;
+    resize: vertical;
+  }
 
   .toggle-row {
     display: flex; align-items: center; gap: .5rem;
@@ -295,6 +304,7 @@
 .que-tab{font-family:var(--mono);font-size:.72rem;font-weight:500;padding:.32rem .7rem;border-radius:5px;border:1px solid var(--border);cursor:pointer;color:var(--text2);background:var(--bg3);transition:all .15s}
 .que-tab:hover{border-color:var(--border2);color:var(--text)}
 .que-tab.active{background:rgba(52,211,153,.15);border-color:var(--green);color:var(--green)}
+.que-tab:disabled{opacity:.45;cursor:not-allowed}
 .input-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:.9rem}
 .calc-que{margin-bottom:1.1rem}
 .calc-que label{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text2);font-family:var(--mono);display:block;margin-bottom:.45rem}
@@ -735,7 +745,10 @@ body.simple-mode #pTablaFórmula,
 body.simple-mode #progAmort,
 body.simple-mode #chartAmort,
 body.simple-mode #tablaAmort,
-body.simple-mode #page-prestamos main > .calc-card:not(:first-of-type) { display:none !important; }
+body.simple-mode #cardComparativa,
+body.simple-mode #cardSimulador,
+body.simple-mode #cardFreq,
+body.simple-mode #cardEquivSistemas { display:none !important; }
 
 /* Proyectos: en simple queda decisión + indicadores principales. */
 body.simple-mode #resProy .divider,
@@ -804,6 +817,21 @@ body.light-mode .lbl-tooltip:hover::after {
 }
 .timeline-svg { display: block; min-width: 320px; }
 
+.convention-banner {
+  max-width: 940px; margin: .8rem auto 0; padding: .7rem 1rem; position: relative; z-index: 2;
+  background: rgba(240,180,41,.08); border: 1px solid rgba(240,180,41,.35);
+  border-left: 3px solid var(--gold); border-radius: var(--radius2);
+  color: var(--text2); font-family: var(--mono); font-size: .72rem; line-height: 1.55;
+}
+.calc-steps { counter-reset: cfstep; display:grid; gap:.45rem; margin-top:.8rem; }
+.calc-step { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:.55rem .75rem; font-family:var(--mono); font-size:.75rem; color:var(--text2); line-height:1.55; }
+.calc-step::before { counter-increment:cfstep; content:counter(cfstep) ". "; color:var(--gold); font-weight:700; }
+@media (max-width: 720px) {
+  nav { width:100%; overflow-x:auto; flex-wrap:nowrap; padding-bottom:.15rem; }
+  .nav-btn { flex:0 0 auto; }
+  .convention-banner { margin:.6rem .75rem 0; }
+}
+
 
 </style>
 </head>
@@ -812,7 +840,7 @@ body.light-mode .lbl-tooltip:hover::after {
 <header>
   <div class="logo" onclick="showPage('home')" style="cursor:pointer">
     <div class="logo-escudo">CF</div>
-    <div class="logo-text">CalcFin <span></span></div>
+    <div class="logo-text">CalcFin <span>v4</span></div>
   </div>
   <button id="toggleTheme" onclick="toggleTheme()" title="Cambiar modo claro/oscuro"
     style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;
@@ -825,6 +853,7 @@ body.light-mode .lbl-tooltip:hover::after {
     <button type="button" class="view-btn" id="btnViewAdvanced" onclick="setViewMode('advanced')">Avanzada</button>
   </div>
   <nav>
+    <button class="nav-btn" onclick="showPage('capitales')">Capitales</button>
     <button class="nav-btn" onclick="showPage('tasas')">Tasas</button>
     <button class="nav-btn" onclick="showPage('rentas')">Rentas</button>
     <button class="nav-btn" onclick="showPage('prestamos')">Préstamos</button>
@@ -834,15 +863,22 @@ body.light-mode .lbl-tooltip:hover::after {
   </nav>
 </header>
 
+<div class="convention-banner"><strong style="color:var(--gold)">Convención de la cátedra:</strong> año de 365 días. Mes = 30, bimestre = 60, trimestre = 90, cuatrimestre = 120 y semestre = 180 días. Cuando el plazo no coincide con esos períodos, se trabaja con los días reales indicados.</div>
+
 
 <div id="page-home" style="display:block">
 <div style="max-width:680px;margin:3rem auto 0;padding:0 1.25rem;position:relative;z-index:1">
   <div style="margin-bottom:2.2rem">
     <div style="font-family:var(--mono);font-size:.73rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem">Prof. Mg. Diego Pagano</div>
     <h1 style="font-size:clamp(2rem,6vw,2.8rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:.65rem">Cálculo<br><span style="background:linear-gradient(90deg,var(--primary-blue2),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Financiero</span></h1>
-    <p style="font-family:var(--mono);font-size:.82rem;color:var(--text2);line-height:1.7;max-width:460px">Calculadora integral de Cálculo Financiero  CF. Seleccioná un módulo para comenzar.</p>
+    <p style="font-family:var(--mono);font-size:.82rem;color:var(--text2);line-height:1.7;max-width:520px">Herramienta didáctica para plantear, resolver y comprobar ejercicios de Cálculo Financiero. Seleccioná un módulo para comenzar.</p>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.5rem">
+    <div onclick="showPage('capitales')" style="grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--primary-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:1.3rem;margin-bottom:.4rem">🧭</div>
+      <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Capitalización, descuento y equivalencia</div>
+      <div style="font-family:var(--mono);font-size:.69rem;color:var(--text3);line-height:1.5">Interés simple y compuesto · Descuento racional y comercial · Fecha focal · Vencimiento común</div>
+    </div>
     <div onclick="showPage('tasas')" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;cursor:pointer;transition:border-color .2s" onmouseover="this.style.borderColor='var(--primary-blue2)'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="font-size:1.3rem;margin-bottom:.4rem">📐</div>
       <div style="font-weight:700;font-size:.87rem;margin-bottom:.2rem">Tasas de Interés</div>
@@ -874,6 +910,87 @@ body.light-mode .lbl-tooltip:hover::after {
   </div>
 </div>
 </div>
+<div id="page-capitales" style="display:none"><main>
+  <div class="page-title">
+    <h1>Capitalización, descuento y <em>equivalencia de capitales</em></h1>
+    <p>Capital único · Interés simple y compuesto · Descuento racional y comercial · Fecha focal · Vencimiento común</p>
+  </div>
+  <div class="view-hint">Vista simple activa: se muestra el planteo esencial y la interpretación. Cambiá a Vista Avanzada para ver el desarrollo completo.</div>
+  <div class="concept-box">
+    <h2>Antes de calcular</h2>
+    <p>Un capital solo queda definido financieramente por su <strong style="color:var(--text)">importe y su fecha</strong>. Para comparar capitales, trasladalos a una misma fecha focal con una tasa y un régimen explícitos. En esta cátedra se usa año de 365 días y los períodos convencionales indicados arriba.</p>
+  </div>
+  <div class="fórmulas-box">
+    <h2>Modelos incluidos</h2>
+    <div class="formula-grid">
+      <div class="formula-item"><div class="label">Interés simple</div><div class="expr">M = C·(1+i·t/p)</div></div>
+      <div class="formula-item"><div class="label">Interés compuesto</div><div class="expr">M = C·(1+i)^(t/p)</div></div>
+      <div class="formula-item"><div class="label">Descuento racional simple</div><div class="expr">C = M/(1+i·t/p)</div></div>
+      <div class="formula-item"><div class="label">Descuento comercial simple</div><div class="expr">C = M·(1−d·t/p)</div></div>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-header"><h2>Operación con un capital</h2><span class="badge">Unidades 1–3</span></div>
+    <div class="calc-body">
+      <div class="input-row">
+        <div class="field"><label>Régimen</label><select id="capRegimen">
+          <option value="compuesto">Interés compuesto</option><option value="simple">Interés simple</option>
+          <option value="racional">Descuento racional simple</option><option value="comercial">Descuento comercial simple</option>
+        </select></div>
+        <div class="field"><label>Incógnita</label><select id="capIncognita">
+          <option value="M">Monto o valor nominal (M)</option><option value="C">Capital actual o efectivo (C)</option>
+          <option value="i">Tasa (i o d)</option><option value="t">Plazo en días (t)</option>
+        </select></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>Capital actual / efectivo C <span>— $</span></label><input id="capC" inputmode="decimal" placeholder="Ej: 100000"></div>
+        <div class="field"><label>Monto / valor nominal M <span>— $</span></label><input id="capM" inputmode="decimal" placeholder="Ej: 112000"></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>Tasa efectiva i o d <span>— tanto por 1 o %</span></label><input id="capI" inputmode="decimal" placeholder="Ej: 3% o 0,03"></div>
+        <div class="field"><label>Período de la tasa <span>— días</span></label><select id="capPeriodo" onchange="document.getElementById('capPeriodoOtro').style.display=this.value==='0'?'':'none'">
+          <option value="1">1 día</option><option value="30" selected>Mes — 30 días</option><option value="60">Bimestre — 60 días</option>
+          <option value="90">Trimestre — 90 días</option><option value="120">Cuatrimestre — 120 días</option><option value="180">Semestre — 180 días</option><option value="365">Año — 365 días</option><option value="0">Otro período…</option>
+        </select><input id="capPeriodoOtro" inputmode="decimal" placeholder="Cantidad de días del período" style="display:none;margin-top:.4rem"></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>Plazo t <span>— días reales</span></label><input id="capDias" inputmode="decimal" placeholder="Ej: 120"></div>
+        <div class="field"><label>Fecha inicial <span>— opcional, para interpretar</span></label><input id="capFecha" type="date"></div>
+      </div>
+      <div class="ejemplos-wrap"><span class="ejemplos-label">Cargar ejemplo</span><div class="ejemplos-btns">
+        <button class="ej-btn" type="button" onclick="ejCapital(1)">Monto compuesto 120 días</button>
+        <button class="ej-btn" type="button" onclick="ejCapital(2)">Descuento comercial</button>
+        <button class="ej-btn" type="button" onclick="ejCapital(3)">Despejar tasa</button>
+      </div></div>
+      <button class="btn-calc" type="button" onclick="calcCapitalUnico()">Calcular y explicar</button>
+      <div class="error-msg" id="capErr"></div>
+      <div class="results" id="capRes"><div class="result-main"><div class="rm-label" id="capResLbl">Resultado</div><div class="rm-value" id="capResVal">—</div><div class="rm-formula" id="capResFormula"></div></div><div class="calc-steps" id="capSteps"></div><div class="interp-box" id="capInterp" style="margin-top:.8rem"></div></div>
+    </div>
+  </div>
+
+  <div class="calc-card" style="margin-top:1.4rem">
+    <div class="calc-header"><h2>Equivalencia de capitales y vencimiento común</h2><span class="badge">Fecha focal</span></div>
+    <div class="calc-body">
+      <div class="field" style="margin-bottom:.9rem"><label>Capitales <span>— una línea: importe ; día. Use signo − para obligaciones opuestas</span></label><textarea id="eqCapitales" placeholder="100000;0&#10;-55000;60&#10;-60000;120"></textarea></div>
+      <div class="input-row">
+        <div class="field"><label>Régimen de traslado</label><select id="eqCapReg"><option value="compuesto">Compuesto</option><option value="simple">Simple racional</option></select></div>
+        <div class="field"><label>Fecha focal <span>— día</span></label><input id="eqFocal" inputmode="decimal" value="120"></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>Tasa efectiva <span>— tanto por 1 o %</span></label><input id="eqCapI" inputmode="decimal" placeholder="Ej: 2%"></div>
+        <div class="field"><label>Período de la tasa <span>— días</span></label><select id="eqCapPeriodo"><option value="30">Mes — 30</option><option value="60">Bimestre — 60</option><option value="90">Trimestre — 90</option><option value="120">Cuatrimestre — 120</option><option value="180">Semestre — 180</option><option value="365">Año — 365</option></select></div>
+      </div>
+      <div class="input-row">
+        <div class="field"><label>Capital único sustituto <span>— opcional, para hallar vencimiento común</span></label><input id="eqCapObjetivo" inputmode="decimal" placeholder="Ej: 120000"></div>
+        <div class="field" style="justify-content:end"><div class="nota-equiv">Los días se miden desde un origen común. El signo expresa el sentido del flujo, no si el importe es “bueno” o “malo”.</div></div>
+      </div>
+      <button class="btn-calc" type="button" onclick="calcEquivCapitales()">Trasladar a la fecha focal</button>
+      <div class="error-msg" id="eqCapErr"></div>
+      <div class="results" id="eqCapRes"><div class="kpi-grid" id="eqCapKpis"></div><div class="tabla-wrap" id="eqCapTabla" style="margin-top:.8rem"></div><div class="interp-box" id="eqCapInterp" style="margin-top:.8rem"></div></div>
+    </div>
+  </div>
+</main></div>
 <div id="page-tasas" style="display:none"><main><div class="page-title">
     <h1>Equivalencia de <em>Tasas de Interés</em></h1>
     <p>Ingresá una tasa y obtené todas sus equivalentes · Interés &amp; Descuento · Nominal &amp; Efectiva · Continua · Tasa Real</p>
@@ -884,6 +1001,7 @@ body.light-mode .lbl-tooltip:hover::after {
     <h2>Marco Conceptual</h2>
     <p>Dos tasas son <strong style="color:var(--text)">financieramente equivalentes</strong> cuando, aplicadas a un mismo capital durante el mismo período, producen el mismo monto final. La equivalencia permite comparar tasas expresadas en distintas unidades temporales o bajo distintos regímenes (interés / descuento, nominal / efectiva, continua).</p>
     <p style="margin-top:.65rem">⚠ <strong style="color:var(--text)">Tasa nominal j(m)</strong>: en Argentina el BCRA define la tasa nominal anual capitalizable m veces como j(m) = m × i_sub. Esta es la convención usada en esta calculadora. No confundir con la acepción anglosajona donde "nominal" puede significar "antes de inflación".</p>
+    <p style="margin-top:.65rem">📅 <strong style="color:var(--text)">Base temporal de la cátedra:</strong> la equivalencia se calcula por días sobre un año de 365. Por eso una tasa efectiva mensual de 30 días se anualiza como (1+i₃₀)^(365/30)−1, y un cuatrimestre se trata como 120 días.</p>
   </div>
 
   <div class="fórmulas-box">
@@ -944,10 +1062,14 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="freqInput">
             <option value="1">Anual</option>
             <option value="2">Semestral</option>
+            <option value="3">Cuatrimestral (120 días)</option>
             <option value="4">Trimestral</option>
+            <option value="6">Bimestral (60 días)</option>
             <option value="12" selected>Mensual</option>
             <option value="365">Diaria</option>
+            <option value="0">Personalizada en días…</option>
           </select>
+          <input id="freqInputDias" inputmode="decimal" placeholder="Días del período" style="display:none;margin-top:.4rem">
         </div>
       </div>
 
@@ -966,7 +1088,9 @@ body.light-mode .lbl-tooltip:hover::after {
             <select id="freqInflacion">
               <option value="1">Anual</option>
               <option value="2">Semestral</option>
+              <option value="3">Cuatrimestral (120 días)</option>
               <option value="4">Trimestral</option>
+              <option value="6">Bimestral (60 días)</option>
               <option value="12" selected>Mensual</option>
               <option value="365">Diaria</option>
             </select>
@@ -1100,7 +1224,9 @@ body.light-mode .lbl-tooltip:hover::after {
             <select id="rFreqTasa">
               <option value="365">Anual</option>
               <option value="180">Semestral</option>
+              <option value="120">Cuatrimestral</option>
               <option value="90">Trimestral</option>
+              <option value="60">Bimestral</option>
               <option value="30" selected>Mensual</option>
               <option value="1">Diaria</option>
             </select>
@@ -1110,7 +1236,9 @@ body.light-mode .lbl-tooltip:hover::after {
             <select id="rFreqPago">
               <option value="365">Anual</option>
               <option value="180">Semestral</option>
+              <option value="120">Cuatrimestral</option>
               <option value="90">Trimestral</option>
+              <option value="60">Bimestral</option>
               <option value="30" selected>Mensual</option>
               <option value="1">Diaria</option>
             </select>
@@ -1228,7 +1356,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="rVFreqTasa">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1238,7 +1368,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="rVFreqPago">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1434,7 +1566,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="pFreqTasa">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1444,7 +1578,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="pFreqCuotas">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1545,7 +1681,7 @@ body.light-mode .lbl-tooltip:hover::after {
   </div>
 
   <!-- COMPARATIVA -->
-  <div class="calc-card">
+  <div class="calc-card" id="cardComparativa">
     <div class="calc-header"><h2>Comparativa entre Sistemas</h2><span class="badge">Módulo 3 · Extra</span></div>
     <div class="calc-body">
       <p style="font-family:var(--mono);font-size:.8rem;color:var(--text2);margin-bottom:1rem">Comparativa con la misma tasa efectiva del período. Se actualiza automáticamente al calcular.</p>
@@ -1554,7 +1690,7 @@ body.light-mode .lbl-tooltip:hover::after {
   </div>
 
       <!-- SIMULADOR DE ESCENARIOS -->
-      <div class="calc-card" style="margin-top:1.5rem" id="cardSimulador" style="display:none">
+      <div class="calc-card" id="cardSimulador" style="margin-top:1.5rem;display:none">
         <div class="calc-header">
           <h2>Simulador de Escenarios</h2>
           <span class="badge">Módulo 3 · Extra</span>
@@ -1570,7 +1706,7 @@ body.light-mode .lbl-tooltip:hover::after {
       </div>
 
       <!-- COMPARATIVA DE FRECUENCIAS -->
-      <div class="calc-card" style="margin-top:1.5rem">
+      <div class="calc-card" id="cardFreq" style="margin-top:1.5rem">
         <div class="calc-header">
           <h2>Cuota según Frecuencia de Pago</h2>
           <span class="badge">Módulo 3 · Extra</span>
@@ -1594,14 +1730,14 @@ body.light-mode .lbl-tooltip:hover::after {
         </div>
       </div>
       <!-- EQUIVALENCIA DE SISTEMAS -->
-      <div class="calc-card" style="margin-top:1.5rem">
+      <div class="calc-card" id="cardEquivSistemas" style="margin-top:1.5rem">
         <div class="calc-header">
-          <h2>Equivalencia entre Sistemas</h2>
+          <h2>Comparación con criterio de tasa común</h2>
           <span class="badge">Módulo 3 · Extra</span>
         </div>
         <div class="calc-body">
           <p style="font-family:var(--mono);font-size:.8rem;color:var(--text2);margin-bottom:1rem">
-            Dado un préstamo en un sistema, calculá la tasa equivalente en los demás sistemas para que el tomador enfrente el mismo flujo de fondos.
+            Convierte tasa directa a una tasa sobre saldos que reproduce la misma cuota fija y compara los sistemas con esa tasa. El sistema alemán no genera el mismo flujo: sus cuotas son decrecientes.
           </p>
           <div class="input-row-3">
             <div class="field"><label>Capital (V) <span>— $</span></label><input type="text" inputmode="decimal" id="eqV" placeholder="Ej: 100000" step="any" min="0"></div>
@@ -1803,13 +1939,13 @@ body.light-mode .lbl-tooltip:hover::after {
 <div id="page-emprestitos" style="display:none"><main>
   <div class="page-title">
     <h1>Análisis de <em>Empréstitos</em></h1>
-    <p>Francés · Alemán · Americano · Incógnita variable · Costo del emisor · Rentabilidad del suscriptor</p>
+    <p>Francés · Alemán · Americano · Cuadro y tasa · Costo del emisor · Rentabilidad del suscriptor</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
-    <p>Un <strong style="color:var(--text)">empréstito</strong> es un préstamo fraccionado en títulos emitidos por una empresa o Estado. El <strong style="color:var(--text)">costo del emisor</strong> es la TIR del flujo neto. La <strong style="color:var(--text)">rentabilidad del suscriptor</strong> se calcula como V·i (cupón del 1° período) sobre la inversión, expresada como tasa periódica y TEA equivalente.</p>
+    <p>Un <strong style="color:var(--text)">empréstito</strong> es un préstamo fraccionado en títulos emitidos por una empresa o Estado. El <strong style="color:var(--text)">costo del emisor</strong> es la TIR del flujo neto recibido y pagado. La <strong style="color:var(--text)">rentabilidad del suscriptor</strong> es la TIR del precio pagado y de todos los cobros; la tasa corriente cupón/precio se informa solo como referencia.</p>
     <p>La <strong style="color:var(--text)">prima de reembolso</strong> ocurre cuando los títulos se amortizan sobre la par, encareciendo el costo para el emisor y mejorando la rentabilidad del suscriptor.</p>
   </div>
 
@@ -1845,8 +1981,8 @@ body.light-mode .lbl-tooltip:hover::after {
         <label>Incógnita a calcular</label>
         <div class="que-tabs" id="eQueTab">
           <button class="que-tab active" data-eq="cuota">Ver cuadro completo</button>
-          <button class="que-tab" data-eq="V">Capital (V)</button>
-          <button class="que-tab" data-eq="n">N° períodos (n)</button>
+          <button class="que-tab" data-eq="V" disabled title="Requiere definir también cantidad o valor nominal de títulos">Capital (V) — próximamente</button>
+          <button class="que-tab" data-eq="n" disabled title="Requiere una condición adicional de cuota o precio">N° períodos — próximamente</button>
           <button class="que-tab" data-eq="i">Tasa (i)</button>
         </div>
       </div>
@@ -1870,7 +2006,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="eFreqTasa">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1880,7 +2018,9 @@ body.light-mode .lbl-tooltip:hover::after {
           <select id="eFreqPer">
             <option value="365">Anual</option>
             <option value="180">Semestral</option>
+            <option value="120">Cuatrimestral</option>
             <option value="90">Trimestral</option>
+            <option value="60">Bimestral</option>
             <option value="30" selected>Mensual</option>
             <option value="1">Diaria</option>
           </select>
@@ -1985,7 +2125,7 @@ body.light-mode .lbl-tooltip:hover::after {
   <div style="display:grid;gap:.65rem;" id="glosarioGrid"></div>
 </main></div>
 
-<footer>Cálculo Financiero - Prof. Mg. Diego Pagano</footer>
+<footer>CalcFin v4 · Cálculo Financiero · Prof. Mg. Diego Pagano · Uso didáctico: verificar siempre régimen, tasa y unidad de tiempo</footer>
 
 <script>
 
@@ -2011,7 +2151,7 @@ function setTipo(t) {
 }
 
 
-const PAGES = ['home','tasas','rentas','prestamos','proyectos','emprestitos','glosario'];
+const PAGES = ['home','capitales','tasas','rentas','prestamos','proyectos','emprestitos','glosario'];
 window._modoTam = 'VNxN'; // valor por defecto empréstitos
 
 function showPage(id) {
@@ -2027,7 +2167,7 @@ function showPage(id) {
       }
     }
   });
-  var navOrder = ['tasas','rentas','prestamos','proyectos','emprestitos'];
+  var navOrder = ['capitales','tasas','rentas','prestamos','proyectos','emprestitos','glosario'];
   document.querySelectorAll('.nav-btn').forEach(function(btn, i) {
     btn.classList.toggle('active', navOrder[i] === id);
   });
@@ -2257,6 +2397,113 @@ function cfSetError(el, msg) {
 }
 
 // ════════════════════════════════════════════════════════════
+// CAPITALIZACIÓN, DESCUENTO Y EQUIVALENCIA DE CAPITALES
+// ════════════════════════════════════════════════════════════
+function cfMoney(v) {
+  return isFinite(v) ? v.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+}
+function cfPeriodLabel(d) {
+  return ({365:'anual',180:'semestral',120:'cuatrimestral',90:'trimestral',60:'bimestral',30:'mensual',1:'diaria'})[d] || (d+' días');
+}
+
+function ejCapital(n) {
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
+  if(n===1){ set('capRegimen','compuesto');set('capIncognita','M');set('capC','100000');set('capM','');set('capI','3%');set('capPeriodo','30');set('capDias','120'); }
+  if(n===2){ set('capRegimen','comercial');set('capIncognita','C');set('capC','');set('capM','250000');set('capI','24%');set('capPeriodo','365');set('capDias','90'); }
+  if(n===3){ set('capRegimen','compuesto');set('capIncognita','i');set('capC','100000');set('capM','112550,88');set('capI','');set('capPeriodo','30');set('capDias','120'); }
+}
+
+function calcCapitalUnico() {
+  const err=document.getElementById('capErr'), res=document.getElementById('capRes');
+  err.classList.remove('show'); res.classList.remove('show');
+  const reg=document.getElementById('capRegimen').value;
+  const q=document.getElementById('capIncognita').value;
+  let C=cfNum('capC'), M=cfNum('capM'), i=cfRate('capI'), t=cfNum('capDias');
+  const pSel=Number(document.getElementById('capPeriodo').value);
+  const p=pSel || cfNum('capPeriodoOtro');
+  const fail=m=>cfSetError(err,m);
+  if(!(p>0)) return fail('Ingresá una cantidad de días válida para el período de la tasa.');
+  if(q!=='C' && (!(C>0))) return fail('Ingresá un capital actual C mayor que cero.');
+  if(q!=='M' && (!(M>0))) return fail('Ingresá un monto o valor nominal M mayor que cero.');
+  if(q!=='i' && (i===null || i<0)) return fail('Ingresá una tasa válida.');
+  if(q!=='t' && (!(t>0))) return fail('Ingresá un plazo en días mayor que cero.');
+  const k=t/p;
+  let value=null, formula='', model='', factor=null;
+  if(reg==='comercial') {
+    model='descuento comercial simple';
+    if(q==='M'){ factor=1-i*k; if(factor<=0)return fail('El descuento d·t/p debe ser menor que 1.'); value=C/factor; M=value; formula='M = C/(1−d·t/p)'; }
+    if(q==='C'){ factor=1-i*k; if(factor<=0)return fail('El descuento d·t/p debe ser menor que 1.'); value=M*factor; C=value; formula='C = M·(1−d·t/p)'; }
+    if(q==='i'){ value=(1-C/M)/(t/p); i=value; formula='d = (1−C/M)/(t/p)'; }
+    if(q==='t'){ if(!(i>0))return fail('Para despejar el plazo, la tasa debe ser mayor que cero.'); value=p*(1-C/M)/i; t=value; formula='t = p·(1−C/M)/d'; }
+    if(i<0 || i*(t/p)>=1) return fail('Los datos producen un descuento inválido: debe cumplirse 0 ≤ d·t/p < 1.');
+    factor=1-i*(t/p);
+  } else if(reg==='compuesto') {
+    model='interés compuesto';
+    if(q==='M'){ value=C*Math.pow(1+i,k); M=value; formula='M = C·(1+i)^(t/p)'; }
+    if(q==='C'){ value=M/Math.pow(1+i,k); C=value; formula='C = M/(1+i)^(t/p)'; }
+    if(q==='i'){ value=Math.pow(M/C,p/t)-1; i=value; formula='i = (M/C)^(p/t)−1'; }
+    if(q==='t'){ if(!(i>0))return fail('Para despejar el plazo compuesto, la tasa debe ser mayor que cero.'); value=p*Math.log(M/C)/Math.log(1+i); t=value; formula='t = p·ln(M/C)/ln(1+i)'; }
+    factor=Math.pow(1+i,t/p);
+  } else {
+    model=reg==='racional'?'descuento racional simple':'interés simple';
+    if(q==='M'){ value=C*(1+i*k); M=value; formula='M = C·(1+i·t/p)'; }
+    if(q==='C'){ value=M/(1+i*k); C=value; formula='C = M/(1+i·t/p)'; }
+    if(q==='i'){ value=(M/C-1)/(t/p); i=value; formula='i = (M/C−1)/(t/p)'; }
+    if(q==='t'){ if(!(i>0))return fail('Para despejar el plazo, la tasa debe ser mayor que cero.'); value=p*(M/C-1)/i; t=value; formula='t = p·(M/C−1)/i'; }
+    if(i<0 || t<0) return fail('Los datos no son compatibles con una tasa y un plazo no negativos.');
+    factor=1+i*(t/p);
+  }
+  if(!isFinite(value) || value<0) return fail('No se obtuvo una solución financiera válida con esos datos.');
+  const label={M:'Monto calculado (M)',C:'Capital calculado (C)',i:'Tasa efectiva del período',t:'Plazo calculado'}[q];
+  document.getElementById('capResLbl').textContent=label;
+  document.getElementById('capResVal').textContent=q==='i'?value.toFixed(8).replace('.',','):(q==='t'?value.toFixed(4).replace('.',',')+' días':'$ '+cfMoney(value));
+  document.getElementById('capResFormula').textContent=formula;
+  document.getElementById('capSteps').innerHTML=`<div class="calc-step">Régimen elegido: <strong>${model}</strong>. Tasa: ${(i*100).toFixed(4).replace('.',',')}% cada ${p} días.</div><div class="calc-step">Plazo homogéneo: t/p = ${t.toFixed(4).replace('.',',')}/${p} = ${(t/p).toFixed(6).replace('.',',')} períodos.</div><div class="calc-step">Factor financiero = ${factor.toFixed(8).replace('.',',')}.</div><div class="calc-step">Sustitución: C = $ ${cfMoney(C)}; M = $ ${cfMoney(M)}; i/d = ${i.toFixed(8).replace('.',',')}; t = ${t.toFixed(4).replace('.',',')} días.</div>`;
+  let fechaTxt=''; const fecha=document.getElementById('capFecha').value;
+  if(fecha && isFinite(t)){ const d=new Date(fecha+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+Math.round(t)); fechaTxt=` Si la fecha inicial es ${fecha}, el vencimiento aproximado es ${d.toISOString().slice(0,10)}.`; }
+  document.getElementById('capInterp').innerHTML=`<span class="interp-title">💡 Interpretación y control</span>El capital de $ ${cfMoney(C)} en la fecha inicial es equivalente a $ ${cfMoney(M)} ${t.toFixed(2).replace('.',',')} días después bajo ${model}.${fechaTxt}`;
+  res.classList.add('show');
+}
+
+function calcEquivCapitales() {
+  const err=document.getElementById('eqCapErr'), res=document.getElementById('eqCapRes');
+  err.classList.remove('show'); res.classList.remove('show');
+  const raw=document.getElementById('eqCapitales').value.trim();
+  const i=cfRate('eqCapI'), p=Number(document.getElementById('eqCapPeriodo').value), focal=cfNum('eqFocal');
+  const reg=document.getElementById('eqCapReg').value, objetivo=cfNum('eqCapObjetivo');
+  const fail=m=>cfSetError(err,m);
+  if(i===null || i<0) return fail('Ingresá una tasa efectiva válida.');
+  if(focal===null) return fail('Ingresá la fecha focal expresada como día.');
+  if(!raw) return fail('Ingresá al menos un capital con el formato importe ; día.');
+  const caps=[];
+  for(const [idx,line] of raw.split(/\n+/).entries()){
+    const parts=line.split(';');
+    if(parts.length!==2) return fail(`Línea ${idx+1}: usá el formato importe ; día.`);
+    const amount=cfParseValue(parts[0]).value, day=cfParseValue(parts[1]).value;
+    if(amount===null || day===null) return fail(`Línea ${idx+1}: importe o día inválido.`);
+    caps.push({amount,day});
+  }
+  const moved=caps.map(c=>{
+    const delta=focal-c.day;
+    const factor=reg==='compuesto'?Math.pow(1+i,delta/p):(delta>=0?1+i*delta/p:1/(1+i*(-delta)/p));
+    return {...c,delta,factor,value:c.amount*factor};
+  });
+  const total=moved.reduce((s,c)=>s+c.value,0);
+  let common=null;
+  if(objetivo!==null){
+    if(!(objetivo>0)) return fail('El capital sustituto debe ser mayor que cero.');
+    const pv=caps.reduce((s,c)=>s+c.amount*(reg==='compuesto'?Math.pow(1+i,-c.day/p):1/(1+i*c.day/p)),0);
+    if(!(pv>0) || !(i>0)) return fail('Para hallar vencimiento común, el valor actual neto y la tasa deben ser positivos.');
+    common=reg==='compuesto'?-p*Math.log(pv/objetivo)/Math.log(1+i):p*(objetivo/pv-1)/i;
+  }
+  const commonCard=common===null?'':`<div class="kpi-card hl-gold"><div class="kpi-label">Vencimiento común</div><div class="kpi-value c-gold">Día ${common.toFixed(4).replace('.',',')}</div><div class="kpi-sub">Capital sustituto $ ${cfMoney(objetivo)}</div></div>`;
+  document.getElementById('eqCapKpis').innerHTML=`<div class="kpi-card ${Math.abs(total)<.01?'hl-green':'hl-blue'}"><div class="kpi-label">Valor neto en día ${focal}</div><div class="kpi-value ${Math.abs(total)<.01?'c-green':'c-blue'}">$ ${cfMoney(total)}</div><div class="kpi-sub">Suma algebraica en la fecha focal</div></div>${commonCard}`;
+  document.getElementById('eqCapTabla').innerHTML=`<table><thead><tr><th>Capital</th><th>Día origen</th><th>Traslado</th><th>Factor</th><th>Valor focal</th></tr></thead><tbody>${moved.map(c=>`<tr><td class="${c.amount<0?'neg':'pos'}">$ ${cfMoney(c.amount)}</td><td>${c.day}</td><td>${c.delta>=0?'Capitaliza':'Descuenta'} ${Math.abs(c.delta)} días</td><td>${c.factor.toFixed(8).replace('.',',')}</td><td class="${c.value<0?'neg':'pos'}">$ ${cfMoney(c.value)}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('eqCapInterp').innerHTML=`<span class="interp-title">💡 Lectura financiera</span>${Math.abs(total)<.01?'Las dos partes son equivalentes':'El saldo neto en la fecha focal es $ '+cfMoney(total)} usando régimen ${reg} y tasa ${(i*100).toFixed(4).replace('.',',')}% cada ${p} días. ${reg==='simple'?'<strong>En régimen simple, el resultado depende de la fecha focal elegida.</strong>':''}`;
+  res.classList.add('show');
+}
+
+// ════════════════════════════════════════════════════════════
 // CAMBIO 10: UTILIDADES FINANCIERAS GLOBALES COMPARTIDAS
 // Eliminan duplicación entre módulos (bisect ×5, an/sn ×4, fmt ×4)
 // ════════════════════════════════════════════════════════════
@@ -2319,12 +2566,21 @@ function initTasas() {
 const FREQS = [
   { m: 1,   label: 'Anual',      dias: 365 },
   { m: 2,   label: 'Semestral',  dias: 180 },
+  { m: 3,   label: 'Cuatrimestral', dias: 120 },
   { m: 4,   label: 'Trimestral', dias: 90  },
+  { m: 6,   label: 'Bimestral',  dias: 60  },
   { m: 12,  label: 'Mensual',    dias: 30  },
   { m: 365, label: 'Diaria',     dias: 1   },
 ];
 
-function getF(m) { return FREQS.find(f => f.m === m); }
+function getF(m) {
+  if(m===0){ const d=cfNum('freqInputDias'); return d>0?{m:365/d,label:`Personalizada (${d} días)`,dias:d}:null; }
+  return FREQS.find(f => f.m === m);
+}
+document.getElementById('freqInput').addEventListener('change', function(){
+  document.getElementById('freqInputDias').style.display=this.value==='0'?'':'none';
+  hide();
+});
 
 // ── TIPO TABS ─────────────────────────────────────────────
 const tabs = document.getElementById('page-tasas').querySelectorAll('.tipo-tab');
@@ -2505,6 +2761,7 @@ function calcular() {
   err.classList.remove('show');
 
   const fInput  = getF(mInput);
+  if(tipoActual!=='continua' && !fInput){ cfSetError(err,'Ingresá una cantidad de días válida para la frecuencia personalizada.'); return; }
   const diasInput = tipoActual === 'continua' ? 365 : fInput.dias;
 
   const tea = toTEA(tipoActual, tRaw, diasInput);
@@ -2718,7 +2975,7 @@ function actualizarTasaDisplay(tipoId, tasaId, freqTasaId, freqPeriodoId, displa
   if (valor !== null && valor >= 0) {
     const i = convertirTasa(tipo, valor, diasT, diasP);
     if (i !== null && isFinite(i)) {
-      span.textContent = fmt6c(i) + ' (' + (diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria') + ')';
+      span.textContent = fmt6c(i) + ' (' + cfPeriodLabel(diasP) + ')';
       display.style.display = '';
     } else { display.style.display = 'none'; }
   } else { display.style.display = 'none'; }
@@ -3057,7 +3314,7 @@ function calcConstante(){
   const sec=document.getElementById('resConstSec'); sec.innerHTML='';
   const iVal=queCalc==='i'?resultado:i;
   const cVal=queCalc==='C'?resultado:C;
-  const nVal=queCalc==='n'?Math.round(resultado):n;
+  const nVal=queCalc==='n'?Math.ceil(resultado-1e-10):n;
   const hVal=queCalc==='h'?resultado:h;
   if(iVal&&cVal&&nVal&&duracion!=='perpetua'){
     const vaV=an(nVal,iVal)*cVal, vfV=sn(nVal,iVal)*cVal;
@@ -3087,7 +3344,7 @@ function calcConstante(){
   if (bloqueIRenta) {
     if (queCalc === 'i' && isFinite(resultado)) {
       const diasP = parseInt(document.getElementById('rFreqPago').value);
-      const freqLabel = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      const freqLabel = cfPeriodLabel(diasP);
       const teaRenta = Math.pow(1+resultado, 365/diasP) - 1;
       const ecBase = VA !== null ? `a(1,n,i) = VA/C = ${(VA/C).toFixed(6).replace('.',',')}` : `s(1,n,i) = VF/C = ${(VF/C).toFixed(6).replace('.',',')}`;
       bloqueIRenta.innerHTML = `<div class="interp-box" style="margin-top:.8rem">
@@ -3109,7 +3366,7 @@ function calcConstante(){
   if (interpC && interpCT) {
     const iVal2 = queCalc==='i' ? resultado : i;
     const cVal2 = queCalc==='C' ? resultado : C;
-    const nVal2 = queCalc==='n' ? Math.round(resultado) : n;
+    const nVal2 = queCalc==='n' ? Math.ceil(resultado-1e-10) : n;
     const hVal2 = queCalc==='h' ? resultado : h;
     const vaVal = queCalc==='VA' ? resultado : (queCalc!=='VA' && iVal2 && cVal2 && nVal2 && duracion!=='perpetua') ? an(nVal2,iVal2)*cVal2*(momento==='adelantada'?(1+iVal2):diferimiento==='diferida'?Math.pow(vf(iVal2),expDiferConst(hVal2)):1) : null;
     let msg = '';
@@ -3120,7 +3377,7 @@ function calcConstante(){
     } else if (queCalc==='C' && isFinite(resultado)) {
       msg = `La <strong>cuota es ${fmt2(resultado)}</strong>: pagando este importe durante ${duracion==='perpetua'?'infinitos':nVal2} períodos a tasa ${fmt6(iVal2)}, el valor actual${diferimiento==='diferida'?' (primer pago en período '+fmtPeriodo(hVal2)+', descuento '+fmtPeriodo(expDiferConst(hVal2))+' períodos)':''} es equivalente al capital dado.`;
     } else if (queCalc==='n' && isFinite(resultado)) {
-      msg = `Se necesitan <strong>${fmtPeriodo(resultado)} períodos</strong> (redondeando al entero más cercano: ${Math.round(resultado)}) para que ${nVal2?nVal2:'n'} pagos de ${cVal2?fmt2(cVal2):'C'} equivalgan al capital dado a tasa ${iVal2?fmt6(iVal2):'i'}.`;
+      msg = `El resultado teórico es <strong>${fmtPeriodo(resultado)} períodos</strong>. Como n representa cantidad de pagos, se requieren <strong>${Math.ceil(resultado-1e-10)} pagos</strong> al redondear hacia arriba; el último puede ajustarse para cancelar exactamente el saldo.`;
     } else if (queCalc==='i' && isFinite(resultado)) {
       msg = `La <strong>tasa efectiva del período es ${fmt6(resultado)}</strong>. Equivale a una TEA de ${fmt6(Math.pow(1+resultado,365/parseInt(document.getElementById('rFreqPago').value))-1)}.`;
     } else if (queCalc==='h' && isFinite(resultado)) {
@@ -3132,7 +3389,7 @@ function calcConstante(){
 
   // Línea de tiempo constante
   const iTL  = queCalc==='i' ? resultado : (getTasaConst()||0);
-  const nTL  = queCalc==='n' ? Math.round(resultado) : n;
+  const nTL  = queCalc==='n' ? Math.ceil(resultado-1e-10) : n;
   const cTL  = queCalc==='C' ? resultado : C;
   const hTL  = diferimiento==='diferida' ? (queCalc==='h' ? Math.round(resultado) : h) : null;
   const vaTL = queCalc==='VA' ? resultado : null;
@@ -3202,7 +3459,7 @@ function calcVariable(){
         case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaArit(c,razon,nn,i)-VA/factMod(),0.5,5000);formula=`Solución numérica`;}else if(VF!==null){resultado=bisect(nn=>vfArit(c,razon,nn,i)-VF/(momentoV==='adelantada'?(1+i):1),0.5,5000);formula=`Solución numérica`;}else return mostrarError('errVar','Completá VA o VF.');break;}
       }
     }
-    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,rD=queCalcV==='razon'?resultado:razon;
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.ceil(resultado-1e-10):n,cD=queCalcV==='c'?resultado:c,rD=queCalcV==='razon'?resultado:razon;
     const limCuotas=Math.min(nD,60);
     window._cuotasVarTruncadas = nD > 60;
     window._cuotasVarTotal = nD;
@@ -3265,7 +3522,7 @@ function calcVariable(){
         case 'n':{iterativo=true;if(VA!==null){resultado=bisect(nn=>vaGeo(c,razon,nn,i)-VA/factMod(),0.5,5000);formula=`Solución numérica: c·(1−(q·v)^n)/(1+i−q) × factor = VA`;}else if(VF!==null){resultado=bisect(nn=>vfGeo(c,razon,nn,i)-VF/(momentoV==='adelantada'?(1+i):1),0.5,5000);formula=`Solución numérica: c·((1+i)^n−q^n)/(1+i−q) × factor = VF`;}else return mostrarError('errVar','Completá VA o VF.');break;}
       }
     }
-    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.round(resultado):n,cD=queCalcV==='c'?resultado:c,qD=queCalcV==='razon'?resultado:razon;
+    if(resultado!==null&&n!==null){const nD=queCalcV==='n'?Math.ceil(resultado-1e-10):n,cD=queCalcV==='c'?resultado:c,qD=queCalcV==='razon'?resultado:razon;
     const limCuotasG=Math.min(nD,60);
     window._cuotasVarTruncadas = nD > 60;
     window._cuotasVarTotal = nD;
@@ -3297,7 +3554,7 @@ function calcVariable(){
     let msg='';
     const desc=descModalidadVar().toLowerCase();
     if(queCalcV==='n'&&isFinite(resultado)){
-      msg=`Se necesitan <strong>${fmtPeriodo(resultado)} períodos</strong> (redondeando al entero más cercano: ${Math.round(resultado)}) para que la renta ${progresion} ${desc} alcance el valor indicado.`;
+      msg=`El resultado teórico es <strong>${fmtPeriodo(resultado)} períodos</strong>. Como n representa cantidad de pagos, se requieren <strong>${Math.ceil(resultado-1e-10)} pagos</strong> al redondear hacia arriba; el último puede ajustarse.`;
     } else if(queCalcV==='VA'&&isFinite(resultado)){
       msg=`El <strong>valor actual es ${fmt2(resultado)}</strong>: representa el valor equivalente hoy de la renta ${progresion} ${desc}.`;
     } else if(queCalcV==='VF'&&isFinite(resultado)){
@@ -3313,7 +3570,7 @@ function calcVariable(){
   }
 
   // Línea de tiempo variable
-  const nTLv = queCalcV==='n' ? Math.round(resultado) : n;
+  const nTLv = queCalcV==='n' ? Math.ceil(resultado-1e-10) : n;
   const cTLv = queCalcV==='c' ? resultado : c;
   const hTLv = diferimientoV==='diferida' ? (queCalcV==='h' ? Math.round(resultado) : h) : null;
   const vaTLv = queCalcV==='VA' ? resultado : null;
@@ -3525,7 +3782,7 @@ function actualizarDisplayTasa() {
   if (valor !== null && valor >= 0) {
     const i = convertirTasaPrest(pTipoTasa, valor, diasT, diasP);
     if (i !== null && isFinite(i)) {
-      const freq = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      const freq = cfPeriodLabel(diasP);
       span.textContent = `${i.toFixed(6).replace('.',',')} efectiva ${freq}`;
       display.style.display = '';
     } else display.style.display = 'none';
@@ -3684,7 +3941,7 @@ function calcPrestamo(){
   function showErr(msg){ if(err) cfSetError(err,msg); }
 
   // Leer datos según incognita
-  let V=null, n=null, iEf=null;  // iEf = i efectiva del período
+  let V=null, n=null, iEf=null, nExact=null;  // iEf = i efectiva del período
 
   if(queCalcP==='cuota'){
     V=pn('inV'); n=pn('prInN');
@@ -3724,26 +3981,26 @@ function calcPrestamo(){
       const ratio=V/cuotaK;
       const nCalc=bisect(nn=>an(nn,iEf)-ratio,0.001,10000);
       if(!nCalc) return showErr('No se encontró solución para n.');
-      n=Math.round(nCalc);
+      nExact=nCalc; n=Math.ceil(nCalc-1e-10);
     } else if(sistema==='aleman'){
       // En el sistema alemán la cuota VARÍA en cada período.
       // La cuota ingresada DEBE ser la primera cuota c(1) = V/n + V·i.
       // De c(1) = V/n + V·i → n = V / (c(1) − V·i)
       // AVISO: si se ingresa una cuota promedio o distinta de c(1), el resultado es incorrecto.
-      if(cuotaK <= V*iEf) return showErr('En el sistema alemán c(1) debe ser mayor que V·i = $'+an(1,iEf).toFixed(2)+'. Revisá que estés ingresando la primera cuota c(1) = V/n + V·i, no una cuota promedio.');
+      if(cuotaK <= V*iEf) return showErr('En el sistema alemán c(1) debe ser mayor que V·i = $'+(V*iEf).toFixed(2)+'. Revisá que estés ingresando la primera cuota c(1) = V/n + V·i, no una cuota promedio.');
       const nSimple=V/(cuotaK-V*iEf);
       if(nSimple < 1) return showErr('n calculado < 1. Verificá que la cuota ingresada sea c(1) (primera cuota del sistema alemán = V/n + V·i).');
-      n=Math.round(Math.max(1,nSimple));
+      nExact=nSimple; n=Math.ceil(Math.max(1,nSimple)-1e-10);
     } else if(sistema==='directa'){
       const r=pn('prInI');
-      n=Math.round(V/(cuotaK-V*r));
+      nExact=V/(cuotaK-V*r); n=Math.ceil(nExact-1e-10);
     } else if(sistema==='americano'){
       // c = V·i + V/s(n,iF) → despejar n numéricamente
       const iFond=cfRate('inIF');
       if(!iFond||iFond<=0) return showErr('Ingresá la tasa del fondo i\' para el sistema americano.');
       const nCalc=bisect(nn=>nn>0?(V*iEf + V/sn(nn,iFond))-cuotaK:NaN, 0.001, 10000);
       if(!nCalc||nCalc<1) return showErr('No se encontró n para esos datos en sistema americano.');
-      n=Math.round(nCalc);
+      nExact=nCalc; n=Math.ceil(nCalc-1e-10);
     }
     if(!n||n<1) return showErr('No se pudo calcular n. Verificá los datos.');
 
@@ -3754,8 +4011,10 @@ function calcPrestamo(){
     if(!n||n<1)  return showErr('Ingresá n.');
     if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota conocida.');
     // Despejar i efectiva del período
-    if(sistema==='frances'||sistema==='aleman'){
+    if(sistema==='frances'){
       iEf=bisect(i=>i>0?an(n,i)-V/cuotaK:NaN,0.00001,100);
+    } else if(sistema==='aleman'){
+      iEf=(cuotaK-V/n)/V;
     } else if(sistema==='directa'){
       iEf=rToI(cuotaK/V-1/n, n);
     } else {
@@ -3794,9 +4053,9 @@ function calcPrestamo(){
   // Incógnita resuelta - mostrar prominente
   let kpiExtra = [];
   if(queCalcP==='V')   kpiExtra=[{lbl:'Capital calculado (V)',val:'$ '+f2(V),sub:'Despejado de la cuota conocida',hl:'hl-green'}];
-  if(queCalcP==='n')   kpiExtra=[{lbl:'N° cuotas calculado (n)',val:String(n),sub:'Despejado de la cuota conocida',hl:'hl-green'}];
+  if(queCalcP==='n')   kpiExtra=[{lbl:'N° cuotas calculado (n)',val:String(n),sub:`Resultado teórico: ${nExact!==null?f6(nExact):n}. Se redondea hacia arriba.`,hl:'hl-green'}];
   if(queCalcP==='i')   kpiExtra=[
-    {lbl:'i efectiva del período',val:f6(iEf),sub:'Despejada numéricamente',hl:'hl-green'},
+    {lbl:'i efectiva del período',val:f6(iEf),sub:sistema==='aleman'?'Despeje algebraico desde c(1)':'Despejada numéricamente',hl:'hl-green'},
     {lbl:'TEA equivalente',val:f6(Math.pow(1+iEf,365/parseInt(document.getElementById('pFreqCuotas').value))-1),sub:'Anual efectiva',hl:'hl-green'},
   ];
 
@@ -3852,7 +4111,7 @@ function calcPrestamo(){
         : `En tasa directa r se despeja algebraicamente y luego se convierte a tasa sobre saldos equivalente.`;
       bloqueI.innerHTML = `
         <div class="interp-box" style="margin-top:.8rem">
-          <span class="interp-title">📐 ¿Por qué no se puede despejar i algebraicamente?</span>
+          <span class="interp-title">📐 ${sisAlem?'Despeje directo de i':'Resolución de la tasa i'}</span>
           <p style="margin-bottom:.55rem"><strong>Ecuación de partida</strong> — sistema ${sistema}:</p>
           <div style="font-family:var(--mono);font-size:.78rem;color:var(--accent2);background:var(--bg3);border-radius:5px;padding:.4rem .75rem;margin-bottom:.65rem">${ecuacion}</div>
           <p style="margin-bottom:.5rem">${porQueNum}</p>
@@ -3873,11 +4132,10 @@ function calcPrestamo(){
   if(gastosOn){
     const{tirPer,vNeto,selladoMonto}=calcCFT(V,rows,gFijo,gOtorg,sellado,ivaPorc);
     cftBlock.style.display='';
-    const tea=tirPer?Math.pow(1+tirPer,12)-1:null;
     const diasP=parseInt(document.getElementById('pFreqCuotas').value);
     const teaReal=tirPer?Math.pow(1+tirPer,365/diasP)-1:null;
     document.getElementById('kpiCFT').innerHTML=`
-      <div class="kpi-card hl-gold"><div class="kpi-label">CFT — TEM</div><div class="kpi-value c-gold">${tirPer?f6(tirPer):'N/D'}</div><div class="kpi-sub">TIR del flujo ajustado</div><div class="kpi-formula">0 = −${f2(vNeto)} + Σ c'(t)/(1+TEM)^t</div></div>
+      <div class="kpi-card hl-gold"><div class="kpi-label">CFT — tasa efectiva ${cfPeriodLabel(diasP)}</div><div class="kpi-value c-gold">${tirPer?f6(tirPer):'N/D'}</div><div class="kpi-sub">TIR del flujo ajustado por período de ${diasP} días</div><div class="kpi-formula">0 = −${f2(vNeto)} + Σ c'(t)/(1+CFTₚ)^t</div></div>
       <div class="kpi-card hl-gold"><div class="kpi-label">CFT — TEA</div><div class="kpi-value c-gold">${teaReal?f6(teaReal):'N/D'}</div><div class="kpi-sub">(1+TEM)^(365/${diasP})−1</div><div class="kpi-formula">${tirPer?`(1+${f6(tirPer)})^(365/${diasP})−1`:''}</div></div>
       <div class="kpi-card"><div class="kpi-label">Capital neto</div><div class="kpi-value c-blue">$ ${f2(vNeto)}</div><div class="kpi-sub">V − otorgamiento − sellado</div><div class="kpi-formula">${f2(V)} − ${f2(gOtorg)} − ${f2(selladoMonto)}</div></div>
       <div class="kpi-card"><div class="kpi-label">Sellado</div><div class="kpi-value c-blue">$ ${f2(selladoMonto)}</div><div class="kpi-sub">${f2(sellado)}% de V</div><div class="kpi-formula">${f2(V)} × ${f2(sellado)}/100</div></div>
@@ -3889,7 +4147,7 @@ function calcPrestamo(){
   const formulaSistema = sistema==='frances'
     ? `c = V/a(1,n,i) = ${f2(V)}/a(1,${n},${f6(iParaBuild)}) = ${f2(cuota1)} · t(p) = t(1)·(1+i)^(p−1) · V(p) = c·a(1,${n}-p,i)`
     : sistema==='aleman'
-    ? `t(p) = V/n = ${f2(V)}/${n} = ${f2(cuota1)} · c(p) = V/n·[1+(n−p+1)·i] · I(0;n) = V·(n+1)/2·i = ${f2(totInt)}`
+    ? `t(p) = V/n = ${f2(V)}/${n} = ${f2(V/n)} · c(p) = V/n·[1+(n−p+1)·i] · I(0;n) = V·(n+1)/2·i = ${f2(totInt)}`
     : sistema==='directa'
     ? `c = V/n + V·r = ${f2(V)}/${n} + ${f2(V)}·${f6(iParaBuild)} = ${f2(cuota1)} · I(0;n) = V·r·n = ${f2(totInt)}`
     : `c = V·[i + s⁻¹(1,n,i')] = ${f2(cuota1)} · dep = V/s(1,n,i') · Capital al vencimiento`;
@@ -4023,20 +4281,26 @@ function calcVAN(ff, i) {
 }
 
 // ── TIR ───────────────────────────────────────────────────
-function calcTIR(ff) {
+function calcTIRs(ff) {
   const f = i => calcVAN(ff, i);
-  // Buscar signos distintos en [0, 50]
-  let tirVal = null;
-  // Intentar desde i muy pequeño
-  tirVal = bisect(f, -0.9999, 0.00001) || bisect(f, 0.00001, 50);
-  if (tirVal === null) {
-    // Barrido
-    for (let a=0.00001; a<50; a+=0.5) {
-      const t = bisect(f, a, a+0.5);
-      if (t !== null) { tirVal = t; break; }
+  const roots=[];
+  const yMin=Math.log(0.0001), yMax=Math.log(51), steps=6000;
+  let a=Math.exp(yMin)-1, fa=f(a);
+  for(let s=1;s<=steps;s++){
+    const b=Math.exp(yMin+(yMax-yMin)*s/steps)-1, fb=f(b);
+    if(isFinite(fa)&&isFinite(fb)){
+      let root=null;
+      if(Math.abs(fa)<1e-8) root=a;
+      else if(fa*fb<0) root=bisect(f,a,b);
+      if(root!==null && !roots.some(r=>Math.abs(r-root)<1e-7)) roots.push(root);
     }
+    a=b; fa=fb;
   }
-  return tirVal;
+  return roots.sort((x,y)=>x-y);
+}
+function calcTIR(ff) {
+  const roots=calcTIRs(ff);
+  return roots.find(r=>r>=0) ?? roots[0] ?? null;
 }
 
 // ── PLAZO DE RECUPERO ─────────────────────────────────────
@@ -4081,13 +4345,14 @@ function calcProyecto() {
 
   // ── Calcular indicadores
   const van  = calcVAN(ff, i);
-  const tir  = calcTIR(ff);
+  const tirs = calcTIRs(ff);
+  const tir  = tirs.find(r=>r>=0) ?? tirs[0] ?? null;
   // Detectar cambios de signo en el flujo
   let cambiosSigno = 0;
   for (let t = 1; t < ff.length; t++) {
     if (ff[t-1] * ff[t] < 0) cambiosSigno++;
   }
-  const tirMultiple = cambiosSigno > 1;
+  const tirMultiple = tirs.length > 1 || cambiosSigno > 1;
   const pr   = calcPR(ff, i, false);
   const prD  = calcPR(ff, i, true);
   const inv  = Math.abs(ff[0]);
@@ -4097,7 +4362,7 @@ function calcProyecto() {
   const badge = document.getElementById('decisionBadge');
   const vanFórmula = `VAN = ${ff.map((v,t)=>`${v>=0?'+':''}${f2(v)}/(1+${f6(i)})^${t}`).join(' ')} = ${f2(van)}`;
   const tirMultipleMsg = tirMultiple
-    ? `<div style="font-family:var(--mono);font-size:.72rem;color:var(--gold);background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);border-radius:6px;padding:.4rem .85rem;margin-top:.5rem">⚠ Se detectaron ${cambiosSigno} cambios de signo en el flujo — puede existir más de una TIR. Se recomienda priorizar el criterio VAN.</div>`
+    ? `<div style="font-family:var(--mono);font-size:.72rem;color:var(--gold);background:rgba(240,180,41,.1);border:1px solid rgba(240,180,41,.3);border-radius:6px;padding:.4rem .85rem;margin-top:.5rem">⚠ Flujo no convencional: ${cambiosSigno} cambios de signo y ${tirs.length} TIR hallada(s)${tirs.length?': '+tirs.map(f6).join(' · '):''}. La regla TIR puede ser ambigua; priorizá VAN a la tasa de corte.</div>`
     : '';
   if (van > 0.01) {
     badge.innerHTML = `<div class="decision-badge dec-verde">✓ Proyecto CONVENIENTE — VAN = ${f2(van)} &gt; 0 a tasa ${f6(i)}</div><div style="font-family:var(--mono);font-size:.7rem;color:var(--text3);margin-top:.4rem;line-height:1.6;word-break:break-all">${vanFórmula}</div>${tirMultipleMsg}`;
@@ -4109,10 +4374,10 @@ function calcProyecto() {
 
   // ── KPI
   const kpiProy = document.getElementById('kpiProy');
-  const tirVsTasa = tir !== null && tir > i ? 'TIR &gt; i_corte → Aceptar' : tir !== null ? 'TIR &lt; i_corte → Rechazar' : 'No se encontró TIR';
+  const tirVsTasa = tirs.length>1 ? 'TIR múltiple: el criterio no es concluyente' : tir !== null && tir > i ? 'TIR &gt; i_corte → Aceptar' : tir !== null ? 'TIR &lt; i_corte → Rechazar' : 'No se encontró TIR';
   kpiProy.innerHTML = [
     {lbl:'VAN',              val:(van>=0?'$ +':'$ ')+f2(van),     sub:`a tasa ${f6(i)}`,           hl: van>=0?'hl-green':'hl-red',  form:`Σ FF(t)·v^t = Σ FF(t)/(1+${f6(i)})^t`},
-    {lbl:'TIR',              val: tir!==null ? f6(tir) : 'No conv.', sub:tirVsTasa,                hl:'hl-gold',  form: tir!==null?`0 = Σ FF(t)/(1+${f6(tir)})^t`:'Solución numérica (bisección)'},
+    {lbl:tirs.length>1?'TIR múltiples':'TIR', val:tirs.length?tirs.map(f6).join(' · '):'No existe en el rango', sub:tirVsTasa, hl:'hl-gold', form:tirs.length?`${tirs.length} raíz/raíces de VAN(i)=0 en −99,99% < i ≤ 5000%`:'No se detectó cambio de signo de VAN'},
     {lbl:'Inversión inicial',val:'$ '+f2(inv),                    sub:'|FF(0)|',                    hl:'hl-blue',  form:`FF(0) = −${f2(inv)}`},
     {lbl:'Suma flujos FF(t>0)',val:'$ '+f2(sumFF),                 sub:`${sumFF>=inv?'≥':'<'} inversión`,hl:'',   form:`FF(1)+…+FF(n) = ${f2(sumFF)}`},
     {lbl:'Plazo recupero simple (sin desc.)',val: pr!==null? f4(pr)+' per.': 'No recupera', sub: pr!==null?`Se recupera en el período ${f4(pr)} sin descontar flujos`:'No se recupera en el horizonte analizado', hl: pr!==null?'hl-blue':'hl-red', form: pr!==null?`PR: primer t tal que Σ FF(k) ≥ 0`:'Inversión no recuperada'},
@@ -4368,7 +4633,7 @@ function actualizarDisplayTasaE() {
   if (valor && valor > 0) {
     const i = convertirTasaEmp(eTipoTasa, valor, diasT, diasP);
     if (i !== null && isFinite(i)) {
-      const freq = diasP===365?'anual':diasP===180?'semestral':diasP===90?'trimestral':diasP===30?'mensual':'diaria';
+      const freq = cfPeriodLabel(diasP);
       span.textContent = `${i.toFixed(6).replace('.',',')} efectiva ${freq}`;
       display.style.display = '';
     } else display.style.display = 'none';
@@ -4568,8 +4833,16 @@ function calcEmprestito() {
     }
     const cuotaK=pn('eCuotaKnown');
     if(!cuotaK||cuotaK<=0) return showErr('Ingresá la cuota unitaria conocida.');
-    // Despejar i: para francés cuota=VN/a(n,i) → bisección
-    const iCalc=bisect(ii=>ii>0?VN/an(n,ii)-cuotaK:NaN,0.00001,10);
+    // Despejar i desde la primera cuota unitaria según el sistema y la prima.
+    let iCalc=null;
+    if(sistema==='frances'){
+      iCalc=bisect(ii=>buildCuadro(VN,1,n,ii,prima,'frances')[0].cuota_unit-cuotaK,0.00000001,10);
+    } else if(sistema==='aleman'){
+      iCalc=(cuotaK-(VN/n)*(1+prima/100))/VN;
+    } else {
+      // En americano se usa una cuota periódica de intereses, no la cuota final con reembolso.
+      iCalc=cuotaK/VN;
+    }
     if(!iCalc||iCalc<=0) return showErr('No se encontró tasa. Verificá los datos.');
     i = iCalc;
   }
@@ -5531,8 +5804,9 @@ function calcFreqCompar() {
 
   const freqs = [
     { lbl:'Anual',          dias:365,      m:1    },
-    { lbl:'Cuatrimestral',  dias:365/3,    m:3    },
+    { lbl:'Cuatrimestral',  dias:120,      m:3    },
     { lbl:'Trimestral',     dias:90,       m:4    },
+    { lbl:'Bimestral',      dias:60,       m:6    },
     { lbl:'Mensual',        dias:30,       m:12   },
     { lbl:'Quincenal',      dias:15,       m:24   },
   ];
@@ -5555,7 +5829,7 @@ function calcFreqCompar() {
 
   document.getElementById('kpiFq').innerHTML = resultados.map(r => `
     <div class="kpi-card ${r.int===minInt?'hl-green':r.int===maxInt?'hl-red':''}">
-      <div class="kpi-label">${r.lbl} (n=${r.n})</div>
+      <div class="kpi-label">${r.lbl} (n=${r.n}; ${r.n*r.dias} días)</div>
       <div class="kpi-value ${r.int===minInt?'c-green':r.int===maxInt?'c-red':'c-blue'}">$ ${f2(r.c)}</div>
       <div class="kpi-sub">i período: ${f6(r.i)}</div>
       <div class="kpi-formula">Total intereses: $ ${f2(r.int)}</div>
@@ -5565,7 +5839,7 @@ function calcFreqCompar() {
   const mejor = resultados.find(r=>r.int===minInt);
   const peor  = resultados.find(r=>r.int===maxInt);
   document.getElementById('notaFq').innerHTML =
-    `TEA = ${f6(tea)} · Plazo = ${anos} años · ` +
+    `TEA = ${f6(tea)} · Plazo de referencia = ${anos} años (${anos*365} días). Cada alternativa usa períodos enteros según la convención de cátedra; por eso se informa también el horizonte efectivo. ` +
     `<span style="color:var(--green)">Menor costo: ${mejor.lbl} ($ ${f2(mejor.int)} en intereses)</span> · ` +
     `<span style="color:var(--primary-red2)">Mayor costo: ${peor.lbl} ($ ${f2(peor.int)} en intereses)</span>. ` +
     `Pagar con mayor frecuencia reduce el saldo más rápido y genera menos intereses totales.`;
@@ -5575,7 +5849,7 @@ function calcFreqCompar() {
 }
 
 
-// ════ EQUIVALENCIA DE SISTEMAS ════════════════════════════
+// ════ COMPARACIÓN DE SISTEMAS CON TASA COMÚN ══════════════
 function calcEquivSistemas() {
   const err = document.getElementById('errEq');
   err.classList.remove('show');
@@ -5640,11 +5914,10 @@ function calcEquivSistemas() {
     <div class="kpi-formula">${k.form}</div>
   </div>`).join('');
 
-  document.getElementById('notaEq').textContent =
-    `Cuota base del sistema ${sis}: $ ${f2(cuota)} · `+
-    `i sobre saldos equiv.: ${f6(iSaldos)} · `+
-    `Los tres sistemas producen la misma cuota inicial solo en el francés y tasa directa. `+
-    `El alemán tiene cuota decreciente con el mismo i.`;
+  document.getElementById('notaEq').innerHTML =
+    `<strong>Alcance de la comparación:</strong> cuota base del sistema ${sis}: $ ${f2(cuota)} · `+
+    `i sobre saldos equivalente: ${f6(iSaldos)}. Francés y tasa directa reproducen la misma cuota fija mediante la conversión mostrada. `+
+    `<strong>El alemán no es financieramente equivalente flujo por flujo:</strong> aquí solo se lo ilustra usando la misma i sobre saldos, por lo que sus cuotas y su total difieren.`;
   document.getElementById('resEq').style.display = '';
 
   function eqErr(msg) { cfSetError(err,msg); }
