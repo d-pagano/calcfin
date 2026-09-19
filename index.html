@@ -122,6 +122,23 @@
   .formula-item .label { font-size: .62rem; color: var(--text3); font-family: var(--mono); letter-spacing: .05em; text-transform: uppercase; margin-bottom: .28rem; }
   .formula-item .expr { font-family: var(--mono); font-size: .87rem; color: var(--accent2); }
 
+  .nomenclatura {
+    background: color-mix(in srgb, var(--primary-blue) 7%, var(--bg2)); border: 1px solid var(--border);
+    border-radius: var(--radius); margin: 0 0 1.1rem; overflow: hidden;
+  }
+  .nomenclatura summary {
+    cursor: pointer; padding: .82rem 1.05rem; color: var(--accent2); font-size: .72rem;
+    font-weight: 800; letter-spacing: .08em; text-transform: uppercase; list-style: none;
+  }
+  .nomenclatura summary::-webkit-details-marker { display:none; }
+  .nomenclatura summary::after { content: '＋'; float:right; font-size: 1rem; line-height: .7rem; }
+  .nomenclatura[open] summary { border-bottom: 1px solid var(--border); }
+  .nomenclatura[open] summary::after { content: '−'; }
+  .nomenclatura-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.45rem .9rem; padding:.85rem 1.05rem; }
+  .nomenclatura-item { font-family:var(--mono); font-size:.76rem; line-height:1.45; color:var(--text2); }
+  .nomenclatura-item b { color:var(--text); font-size:.82rem; }
+  .nomenclatura-note { padding:0 1.05rem .9rem; color:var(--text3); font-family:var(--mono); font-size:.79rem; line-height:1.5; }
+
   .calc-card {
     background: var(--bg2); border: 1px solid var(--border);
     border-radius: var(--radius); overflow: hidden;
@@ -916,6 +933,16 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Capital único · Interés simple y compuesto · Descuento racional y comercial · Fecha focal · Vencimiento común</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestra el planteo esencial y la interpretación. Cambiá a Vista Avanzada para ver el desarrollo completo.</div>
+  <details class="nomenclatura">
+    <summary>Nomenclatura de este módulo</summary>
+    <div class="nomenclatura-grid">
+      <div class="nomenclatura-item"><b>C</b> = capital en el origen</div><div class="nomenclatura-item"><b>C(n)</b> = capital al final de n períodos</div>
+      <div class="nomenclatura-item"><b>N</b> = valor nominal</div><div class="nomenclatura-item"><b>V(n)</b> = valor actual, n períodos antes del vencimiento</div>
+      <div class="nomenclatura-item"><b>i / d</b> = tasa efectiva de interés / descuento</div><div class="nomenclatura-item"><b>n</b> = número de períodos de la operación</div>
+      <div class="nomenclatura-item"><b>t<sub>f</sub></b> = fecha focal (día desde el origen)</div><div class="nomenclatura-item"><b>C<sub>j</sub>, t<sub>j</sub></b> = capital j y su vencimiento</div>
+    </div>
+    <div class="nomenclatura-note">La interfaz rotula el valor de vencimiento como M: equivale a C(n) en interés y a N en descuento. Para operar en días, n = días / días del período de la tasa. Convención: año = 365 días; mes = 30, bimestre = 60, trimestre = 90, cuatrimestre = 120 y semestre = 180 días.</div>
+  </details>
   <div class="concept-box">
     <h2>Antes de calcular</h2>
     <p>Un capital solo queda definido financieramente por su <strong style="color:var(--text)">importe y su fecha</strong>. Para comparar capitales, trasladalos a una misma fecha focal con una tasa y un régimen explícitos. En esta cátedra se usa año de 365 días y los períodos convencionales indicados arriba.</p>
@@ -996,6 +1023,16 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Ingresá una tasa y obtené todas sus equivalentes · Interés &amp; Descuento · Nominal &amp; Efectiva · Continua · Tasa Real</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
+  <details class="nomenclatura">
+    <summary>Nomenclatura de este módulo</summary>
+    <div class="nomenclatura-grid">
+      <div class="nomenclatura-item"><b>i</b> = tasa efectiva de interés</div><div class="nomenclatura-item"><b>d</b> = tasa efectiva de descuento</div>
+      <div class="nomenclatura-item"><b>i(m)</b> = tasa efectiva de interés para m períodos</div><div class="nomenclatura-item"><b>d(m)</b> = tasa efectiva de descuento para m períodos</div>
+      <div class="nomenclatura-item"><b>j(m)</b> = tasa nominal anual de interés</div><div class="nomenclatura-item"><b>f(m)</b> = tasa nominal anual de descuento</div>
+      <div class="nomenclatura-item"><b>δ</b> = fuerza de interés o tasa continua</div><div class="nomenclatura-item"><b>φ; i(a); i(r)</b> = inflación; tasa aparente; tasa real</div>
+    </div>
+    <div class="nomenclatura-note">Las tasas equivalentes deben referirse al mismo horizonte. La conversión se realiza por días, con año de 365 días.</div>
+  </details>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1155,6 +1192,12 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Rentas constantes y variables · Ingresá cualquier tipo de tasa · Vencida · Adelantada · Diferida · Perpetua</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
+  <details class="nomenclatura"><summary>Nomenclatura de este módulo</summary><div class="nomenclatura-grid">
+    <div class="nomenclatura-item"><b>c</b> = importe de la primera cuota</div><div class="nomenclatura-item"><b>c(t)</b> = cuota correspondiente al período t</div>
+    <div class="nomenclatura-item"><b>n</b> = cantidad de cuotas o períodos</div><div class="nomenclatura-item"><b>i</b> = tasa efectiva por período de renta</div>
+    <div class="nomenclatura-item"><b>v</b> = factor de actualización: 1/(1+i)</div><div class="nomenclatura-item"><b>a(1;n;i)</b> = valor actual de una renta vencida de $1</div>
+    <div class="nomenclatura-item"><b>s(1;n;i)</b> = valor final de una renta vencida de $1</div><div class="nomenclatura-item"><b>r / q</b> = razón aritmética / razón geométrica</div>
+  </div><div class="nomenclatura-note">En renta aritmética: c(t) = c + (t−1)·r. En renta geométrica: c(t) = c·q<sup>t−1</sup>. La calculadora puede usar “cuota” como texto explicativo; el símbolo de la cátedra es c(t).</div></details>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1478,6 +1521,13 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Francés · Alemán · Tasa Directa · Americano · Ingresá cualquier tipo de tasa · Incógnita variable</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
+  <details class="nomenclatura"><summary>Nomenclatura de este módulo</summary><div class="nomenclatura-grid">
+    <div class="nomenclatura-item"><b>V</b> = capital prestado en el origen</div><div class="nomenclatura-item"><b>V(t)</b> = saldo de deuda luego de la cuota t</div>
+    <div class="nomenclatura-item"><b>c(t)</b> = cuota total del período t</div><div class="nomenclatura-item"><b>t(t)</b> = amortización de capital de la cuota t</div>
+    <div class="nomenclatura-item"><b>I(t−1;t)</b> = interés de la cuota t</div><div class="nomenclatura-item"><b>T(t)</b> = amortización acumulada hasta t</div>
+    <div class="nomenclatura-item"><b>I(0;t)</b> = intereses acumulados hasta t</div><div class="nomenclatura-item"><b>n / p</b> = total de períodos / período considerado</div>
+    <div class="nomenclatura-item"><b>i</b> = tasa efectiva sobre saldo</div><div class="nomenclatura-item"><b>r</b> = tasa directa cargada</div>
+  </div><div class="nomenclatura-note">La letra t cumple dos funciones en la hoja de fórmulas: en c(t) identifica el período y t(t) representa la amortización. Se mantiene esa notación por consistencia con la cátedra.</div></details>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1770,6 +1820,12 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Flujo de fondos · Valor Actual Neto (VAN) · Tasa Interna de Retorno (TIR) · Plazo de Recupero (PR)</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
+  <details class="nomenclatura"><summary>Nomenclatura de este módulo</summary><div class="nomenclatura-grid">
+    <div class="nomenclatura-item"><b>I</b> = inversión inicial</div><div class="nomenclatura-item"><b>FF(t)</b> = flujo de fondos neto del período t</div>
+    <div class="nomenclatura-item"><b>i</b> = tasa de corte o actualización</div><div class="nomenclatura-item"><b>v</b> = factor de actualización: 1/(1+i)</div>
+    <div class="nomenclatura-item"><b>n</b> = último período del proyecto</div><div class="nomenclatura-item"><b>VAN</b> = valor actual neto</div>
+    <div class="nomenclatura-item"><b>TIR</b> = tasa que hace VAN = 0</div><div class="nomenclatura-item"><b>PR / PR*</b> = recupero simple / descontado</div>
+  </div><div class="nomenclatura-note">La inversión se expresa separadamente como −I; por eso FF(t) representa los flujos operativos netos de cada período.</div></details>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
@@ -1942,6 +1998,12 @@ body.light-mode .lbl-tooltip:hover::after {
     <p>Francés · Alemán · Americano · Cuadro y tasa · Costo del emisor · Rentabilidad del suscriptor</p>
   </div>
   <div class="view-hint">Vista simple activa: se muestran los datos, ejemplos, resultado principal e interpretación. Cambiá a Vista Avanzada para ver fórmulas, tablas y comparativas completas.</div>
+  <details class="nomenclatura"><summary>Nomenclatura de este módulo</summary><div class="nomenclatura-grid">
+    <div class="nomenclatura-item"><b>V</b> = valor total del empréstito</div><div class="nomenclatura-item"><b>N</b> = cantidad de títulos emitidos</div>
+    <div class="nomenclatura-item"><b>VN</b> = valor nominal de cada título</div><div class="nomenclatura-item"><b>PE</b> = precio de emisión por título</div>
+    <div class="nomenclatura-item"><b>c(t)</b> = servicio o cuota en el período t</div><div class="nomenclatura-item"><b>i</b> = tasa de interés por período</div>
+    <div class="nomenclatura-item"><b>CF(t)</b> = flujo de caja del emisor o suscriptor</div><div class="nomenclatura-item"><b>TIR</b> = costo del emisor o rentabilidad del suscriptor</div>
+  </div><div class="nomenclatura-note">V = N·VN. La prima de reembolso se incorpora al flujo y no modifica el significado de VN.</div></details>
 
   <div class="concept-box">
     <h2>Marco Conceptual</h2>
